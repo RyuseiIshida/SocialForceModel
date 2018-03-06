@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 
 
@@ -26,10 +25,10 @@ public class SocialForceModel extends ApplicationAdapter {
 		batch = new SpriteBatch();
 
         person = new Rectangle();
-        person.x = 400;
-        person.y = 240;
-        person.width = 64;
-        person.height = 64;
+        person.x = 800/2 - 32/2;
+        person.y = 480/2 - 32/2;
+        person.width = 32;
+        person.height = 32;
 
 	}
 
