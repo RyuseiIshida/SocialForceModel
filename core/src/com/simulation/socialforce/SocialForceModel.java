@@ -39,24 +39,29 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnWall(){
-        for(int i = 10; i < 750; i += 32){
+        for(int i = 150; i < 750; i += 32){
             Sprite wall = new Sprite(wallImage);
-            wall.setPosition(i, 10);
+            wall.setPosition(i, 12);
             walls.add(wall);
             Sprite wall2 = new Sprite(wallImage);
-            wall2.setPosition(i, 450);
+            wall2.setPosition(i, 454);
             walls.add(wall2);
         }
 
         for(int i = 25; i < 450; i += 32){
-            Sprite wall = new Sprite(wallImage);
-            wall.setPosition(0, i);
-            wall.setRotation(90);
-            walls.add(wall);
-            Sprite wall2 = new Sprite(wallImage);
-            wall2.setPosition(760, i);
-            wall2.setRotation(90);
-            walls.add(wall2);
+            if(i>215 && i<248){
+                System.out.println("kita");
+            }
+            else {
+                Sprite wall = new Sprite(wallImage);
+                wall.setPosition(132, i);
+                wall.setRotation(90);
+                walls.add(wall);
+                Sprite wall2 = new Sprite(wallImage);
+                wall2.setPosition(745, i);
+                wall2.setRotation(90);
+                walls.add(wall2);
+            }
         }
 
     }
