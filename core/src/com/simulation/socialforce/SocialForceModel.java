@@ -46,8 +46,6 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnAgent(){
-
-
         /* ランダム生成
         Random rand = new Random();
         int randomNumber;
@@ -72,23 +70,17 @@ public class SocialForceModel extends ApplicationAdapter {
         }
 
         for(int i = 25; i < 450; i += 32){
-            if(i>215 && i<248){
-            }
-            else {
+            if(!(i>215 && i<248)) {
                 Sprite wall = new Sprite(wallImage);
                 wall.setPosition(132, i);
                 wall.setRotation(90);
                 walls.add(wall);
             }
-        }
-
-        for(int i = 25; i < 450; i += 32){
             Sprite wall2 = new Sprite(wallImage);
             wall2.setPosition(745, i);
             wall2.setRotation(90);
             walls.add(wall2);
         }
-
     }
 
     @Override
@@ -105,9 +97,9 @@ public class SocialForceModel extends ApplicationAdapter {
         batch.end();
 
         if(Gdx.input.isTouched()) { // クリックでエージェント生成
-            System.out.println("touched");
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            System.out.println("touched ( " + Gdx.input.getX() +", "+ Gdx.input.getY() + " )");
             camera.unproject(touchPos);
             Sprite agent = new Sprite(personImage);
             agent.setPosition(touchPos.x-32/2, touchPos.y-32/2);
