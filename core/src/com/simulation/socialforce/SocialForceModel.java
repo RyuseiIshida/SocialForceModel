@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.Iterator;
 import java.util.Random;
 
 
@@ -110,6 +111,16 @@ public class SocialForceModel extends ApplicationAdapter {
             camera.unproject(touchPos);
             Sprite agent = new Sprite(personImage);
             agent.setPosition(touchPos.x-32/2, touchPos.y-32/2);
+            //agentが置いてある場所には上書きして置く
+            Rectangle rect = agent.getBoundingRectangle();
+            Iterator<Sprite> iter = agents.iterator();
+            while(iter.hasNext()){
+                Sprite tmpsprite = iter.next();
+                Rectangle tmprect = tmpsprite.getBoundingRectangle();
+                if(tmprect.overlaps(rect)){
+                    iter.remove();
+                }
+            }
             agents.add(agent);
         }
     }
