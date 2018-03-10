@@ -20,24 +20,17 @@ public class SocialForceModel extends ApplicationAdapter {
     private Texture wallImage;
     private SpriteBatch batch;
     private OrthographicCamera camera;
-    private Rectangle person;
     private Array<Sprite> agents;
     private Array<Sprite> walls;
 
     @Override
     public void create () {
         personImage = new Texture(Gdx.files.internal("person.png"));
-        wallImage = new Texture(Gdx.files.internal("wall.png"));
+        wallImage = new Texture(Gdx.files.internal("black_texture.png"));
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
-
-        person = new Rectangle();
-        person.x = 800/2 - 32/2;
-        person.y = 480/2 - 32/2;
-        person.width = 32;
-        person.height = 32;
 
         agents = new Array<Sprite>();
         spawnAgent();
@@ -60,24 +53,24 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnWall(){
-        for(int i = 150; i < 750; i += 32){
+        for(int i = 150; i < 750; i++){
             Sprite wall = new Sprite(wallImage);
-            wall.setPosition(i, 12);
+            wall.setPosition(i, 30);
             walls.add(wall);
             Sprite wall2 = new Sprite(wallImage);
-            wall2.setPosition(i, 454);
+            wall2.setPosition(i, 450);
             walls.add(wall2);
         }
 
-        for(int i = 25; i < 450; i += 32){
-            if(!(i>215 && i<248)) {
+        for(int i = 30; i < 450; i++){
+            if(!(i>200 && i<250)) {
                 Sprite wall = new Sprite(wallImage);
-                wall.setPosition(132, i);
+                wall.setPosition(150, i);
                 wall.setRotation(90);
                 walls.add(wall);
             }
             Sprite wall2 = new Sprite(wallImage);
-            wall2.setPosition(745, i);
+            wall2.setPosition(750, i);
             wall2.setRotation(90);
             walls.add(wall2);
         }
@@ -92,8 +85,8 @@ public class SocialForceModel extends ApplicationAdapter {
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-        for(Sprite agent: agents){ agent.draw(batch); }
-        for(Sprite wall: walls){ wall.draw(batch); }
+        for(Sprite agent: agents) agent.draw(batch);
+        for(Sprite wall: walls) wall.draw(batch);
         batch.end();
 
         if(Gdx.input.isTouched()) { // クリックでエージェント生成
@@ -109,9 +102,7 @@ public class SocialForceModel extends ApplicationAdapter {
             while(iter.hasNext()){
                 Sprite tmpsprite = iter.next();
                 Rectangle tmprect = tmpsprite.getBoundingRectangle();
-                if(tmprect.overlaps(rect)){
-                    iter.remove();
-                }
+                if(tmprect.overlaps(rect)) iter.remove();
             }
             agents.add(agent);
         }
