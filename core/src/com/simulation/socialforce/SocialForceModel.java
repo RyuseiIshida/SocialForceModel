@@ -113,7 +113,7 @@ public class SocialForceModel extends ApplicationAdapter {
         exit.draw(batch);
         batch.end();
 
-        if(Gdx.input.justTouched()) { // クリックでエージェント生成
+        if(Gdx.input.justTouched()) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
