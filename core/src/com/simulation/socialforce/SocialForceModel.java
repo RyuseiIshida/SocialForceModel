@@ -47,7 +47,7 @@ public class SocialForceModel extends ApplicationAdapter {
 
         agents = new Array<Sprite>();
         sfagents = new LinkedList<SFAgent>();
-        spawnAgent();
+        //spawnAgent();
         walls = new Array<Sprite>();
         spawnWall();
         exit = new Sprite(exitImage);
@@ -118,7 +118,7 @@ public class SocialForceModel extends ApplicationAdapter {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
             sfvector = new SFVector(touchPos.x - 32/2, touchPos.y - 32/2);
-            sfwaypoint = new SFWaypoint(String.valueOf(id), 125, 480/2 - 32);
+            sfwaypoint = new SFWaypoint("goal", 125, 480/2 - 32);
             LinkedList<SFWaypoint> destination = new LinkedList<SFWaypoint>();
             destination.add(sfwaypoint);
             sfagent = new SFAgent(id,1, sfvector,destination, sfvector,1, new Sprite(personImage));
@@ -145,7 +145,6 @@ public class SocialForceModel extends ApplicationAdapter {
 
         // agentの移動ルール
         if(FLAG) {
-            System.out.println("FLAG TRUE");
             sfagent.move(sfagents);//agentと一致させなければならない
             /*
             for (Sprite agent : agents) {

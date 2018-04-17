@@ -33,6 +33,7 @@ public class SFAgent{
         if(path.size()>0) vel = SFVector.direction(this.pos, path.getFirst()).scale(this.max_vel.norm());
         else vel = new SFVector(0,0);
     }
+
     public void move(LinkedList<SFAgent> agents){
         if(destination.size()<1) return;
         else{
@@ -40,11 +41,24 @@ public class SFAgent{
             //p = p + v * h
             pos = SFVector.add(pos, vel.scale(tau));
             //v = 0.5 * v + a * h;
-            SFVector accel = SFVector.add(SFVector.add(desiredForce(), pedForce(agents)), pedForce(agents));
+            SFVector accel = SFVector.add(desiredForce(), pedForce(agents));
             vel = SFVector.add(vel.scale(0.5), accel.scale(tau));
             if(this.destination.getFirst().inWaypoint(this.pos)) destination.removeFirst();
+            this.sprite.setPosition((float)pos.x, (float)pos.y);
         }
     }
+
+    /*
+    public void move(LinkedList<SFAgent> agents){
+        for(SFAgent agent: agents){
+            agent.pos.x -= 1;
+            agent.sprite.setPosition((float)agent.pos.x,(float)agent.pos.y);
+            System.out.println(agent.pos.x);
+
+        }
+    }
+    */
+
     public void printInfo(){
         System.out.println("ID: " + id);
         System.out.println("POS: " + pos.toString());
@@ -97,8 +111,6 @@ public class SFAgent{
 
                 interactionT = interactionT.scale(interactionScale);
                 interactionN = interactionN.scale(normalScale);
-
-
 
                 tempForce = SFVector.add(interactionT, interactionN);
 
