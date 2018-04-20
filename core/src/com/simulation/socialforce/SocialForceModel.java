@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.Iterator;
@@ -28,12 +29,16 @@ public class SocialForceModel extends ApplicationAdapter {
     private Sprite exit;
 
     private SFVector sfvector;
-    private SFWaypoint sfwaypoint;
     private SFAgent sfagent;
     private LinkedList<SFAgent> sfagents;
     private int id = 0;
 
     private boolean FLAG = false;
+
+    private SFWaypoint sfwaypoint = new SFWaypoint("goal", 125, 480/2 - 32);
+    private LinkedList<SFWaypoint> destination = new LinkedList<SFWaypoint>();
+
+    private SFVector max_vel = new SFVector(10,10);
 
     @Override
     public void create () {
@@ -114,14 +119,13 @@ public class SocialForceModel extends ApplicationAdapter {
         batch.end();
 
         if(Gdx.input.justTouched()) {
+
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
-            sfvector = new SFVector(touchPos.x - 32/2, touchPos.y - 32/2);
-            sfwaypoint = new SFWaypoint("goal", 125, 480/2 - 32);
-            LinkedList<SFWaypoint> destination = new LinkedList<SFWaypoint>();
+
             destination.add(sfwaypoint);
-            sfagent = new SFAgent(id,1, sfvector,destination, sfvector,1, new Sprite(personImage));
+            sfagent = new SFAgent(id,1, new SFVector(touchPos.x-32/2,touchPos.y-32/2),destination,max_vel,1, new Sprite(personImage));
             sfagent.printInfo();
             sfagents.add(sfagent);
             for(SFAgent sfagent: sfagents) System.out.println(sfagent.getPos());
@@ -145,20 +149,15 @@ public class SocialForceModel extends ApplicationAdapter {
 
         // agentの移動ルール
         if(FLAG) {
-            sfagent.move(sfagents);//agentと一致させなければならない
-            /*
-            for (Sprite agent : agents) {
-                double speed = 1;
-                float sx = agent.getX();
-                float sy = agent.getY();
-                int ex = 125, ey = 480 / 2 - 32;
-                double angleRad = Math.atan2(ey - sy, ex - sx);
-                sx += Math.cos(angleRad) * speed;
-                sy += Math.sin(angleRad) * speed;
-                agent.setPosition(sx, sy);
-            }*/
+            Iterator<SFAgent> iterator = sfagents.iterator();
+            while(iterator.hasNext()){
+                SFAgent sfagent = iterator.next();
+                sfagent.move(sfagents);
+                if(sfagent.getSprite().getBoundingRectangle().overlaps(exit.getBoundingRectangle())){
+                    iterator.remove();
+                }
+            }
         }
-
     }
 
 

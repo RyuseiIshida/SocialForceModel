@@ -24,8 +24,8 @@ public class SFAgent{
         this.id = id;
         this.tau = tau;
         this.pos = pos;
-        this.destination = path;
-        this.max_vel = max_vel;
+        this.destination = path; //ゴール
+        this.max_vel = max_vel; //速度
         this.mass = mass;
         this.sprite = sprite;
         sprite.setPosition((float)pos.x, (float)pos.y);
