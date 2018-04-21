@@ -9,7 +9,7 @@ public class SFAgent{
     private SFVector pos, vel, max_vel;
     private int id;
     private double tau, mass = 1;
-    private Sprite sprite;
+    private Sprite sprite;    private SFWall closestWall;
     private SFVector closestWallPoint;
     //parameters
 
@@ -34,14 +34,14 @@ public class SFAgent{
         else vel = new SFVector(0,0);
     }
 
-    public void move(LinkedList<SFAgent> agents){
+    public void move(LinkedList<SFAgent> agents, LinkedList<SFWall> walls){
         if(destination.size()<1) return;
         else{
             //movement is euler method
             //p = p + v * h
             pos = SFVector.add(pos, vel.scale(tau));
             //v = 0.5 * v + a * h;
-            SFVector accel = SFVector.add(desiredForce(), pedForce(agents));
+            SFVector accel = SFVector.add(SFVector.add(desiredForce(), wallForce(walls)), pedForce(agents));
             vel = SFVector.add(vel.scale(0.5), accel.scale(tau));
             if(this.destination.getFirst().inWaypoint(this.pos)) destination.removeFirst();
             this.sprite.setPosition((float)pos.x, (float)pos.y);
@@ -90,6 +90,34 @@ public class SFAgent{
 
     public Sprite getSprite(){
         return this.sprite;
+    }
+
+    public SFVector wallForce(LinkedList<SFWall> allWalls){
+        SFVector sumForce = new SFVector(0, 0);
+        //find walls close to the point
+        double a = Double.MAX_VALUE;
+        for(SFWall temp: allWalls){
+            if(temp.distanceToPoint(this.pos)>1000) {
+                System.out.println("Continue distanceToPoint = " + temp.distanceToPoint(this.pos));
+                continue;
+            }
+            else{
+                System.out.println("Else distanceToPoint = " + temp.distanceToPoint(this.pos));
+                double distance = temp.distanceToPoint(this.pos);
+                if(distance<a){
+                    a = distance;
+                    closestWall = temp;
+                    closestWallPoint = temp.pointClosest(this.pos);
+                }
+                SFVector tempForce;
+                tempForce = SFVector.direction(temp.pointClosest(this.pos), this.pos);
+                tempForce = tempForce.scale(Math.exp(-temp.distanceToPoint(this.pos)/b));
+                sumForce = SFVector.add(sumForce, tempForce);
+            }
+        }
+        System.out.println(closestWall.distanceToPoint(this.pos));
+        sumForce = sumForce.scale(closestWall.distanceToPoint(this.pos));
+        return sumForce;
     }
 
     public SFVector pedForce(LinkedList<SFAgent> allAgents){
