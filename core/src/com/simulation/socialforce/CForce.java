@@ -3,10 +3,6 @@ package com.simulation.socialforce;
 import javax.vecmath.Vector2d;
 import java.util.ArrayList;
 
-/**
- * calculate all forces
- * Created by Fatema on 10/22/2016.
- */
 public class CForce {
 
     private static final double m_detta = 2;
@@ -16,19 +12,12 @@ public class CForce {
     private static final double m_repulsefactortowall = 5;
     private static final double m_R = 0.2;
 
-    /**
-     * calculate seek force towards goal position
-     * @return force vector
-     **/
+
     static Vector2d drivingForce( final Vector2d p_desiredvelocity, final Vector2d p_current )
     {
         return CVector.sub( p_desiredvelocity, p_current );
     }
 
-    /**
-     * helper function to calculate repulsive force to pedestrian
-     * @return double value
-     **/
     static double calculateb( final CPedestrian p_self, final CPedestrian p_other )
     {
         final Vector2d l_tempvector = CVector.sub( p_self.getPosition(), p_other.getPosition() );
@@ -39,10 +28,6 @@ public class CForce {
                                          - ( p_other.getSpeed() * p_other.getSpeed() ) );
     }
 
-    /**
-     * calculate repulsive force towards other pedestrian
-     * @return force vector
-     **/
     static Vector2d repulseothers( final CPedestrian p_self, final CPedestrian p_other )
     {
         final Vector2d l_normvector = CVector.direction( p_other.getPosition(), p_self.getPosition() );
@@ -52,10 +37,6 @@ public class CForce {
         return CVector.scale( m_repulsefactortoped * Math.exp( l_temp ), l_normvector );
     }
 
-    /**
-     * calculate repulsive force towards other pedestrian (another way)
-     * @return force vector
-     **/
     static Vector2d repulseotherPed( final CPedestrian p_self, final CPedestrian p_other, ArrayList<COutput> test )
     {
         final double l_radious = p_self.getM_radius() * 0.5 + p_other.getM_radius() * 0.5 ;
@@ -73,10 +54,6 @@ public class CForce {
         //return new Vector2d( 0, 0 );
     }
 
-    /**
-     * calculate repulsive force towards wall
-     * @return force vector
-     **/
     static Vector2d repulsewall( final CPedestrian p_self, final CWall p_wall, ArrayList<COutput> test )
     {
         final Vector2d l_normposition = CVector.perpendicular_derection( p_self.getPosition(), p_wall );
@@ -96,10 +73,6 @@ public class CForce {
         return new Vector2d(0,0);
     }
 
-    /**
-     * check if wall/other pedestrians is under pedestrain's point of view or not?
-     * @return double value
-     **/
     static double anisotropic_character( final Vector2d p_v1, final Vector2d p_v2 )
     {
         return m_lamda + ( 1 -m_lamda )*( ( 1 + CVector.angle( p_v1, p_v2 ) ) * 0.5 );

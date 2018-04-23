@@ -3,10 +3,6 @@ package com.simulation.socialforce;
 import javax.vecmath.Vector2d;
 import java.util.ArrayList;
 
-/**
- * to create goal list
- * Created by Fatema on 10/26/2016.
- */
 public class CGoal {
 
     private ArrayList<Vector2d> m_goals = new ArrayList<>();
@@ -19,10 +15,6 @@ public class CGoal {
         m_goals.add( new Vector2d( l_x2 + ( 20 + Math.random() * l_x3 ) , 400 + ( Math.random() * 140 ) ) );
     }
 
-    /**
-     * returns get list of goals
-     * @return list of goals
-     **/
     public ArrayList<Vector2d> get_goals()
     {
         return m_goals;

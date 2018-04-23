@@ -9,12 +9,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 
-/**
- * environment class
- * Created by Fatema on 10/20/2016.
- */
-
-public class CEnvironment extends JPanel {
+public class CEnvironment{
 
     private Graphics2D graphics2d;
     private Random rand = new Random();
@@ -26,10 +21,6 @@ public class CEnvironment extends JPanel {
     public ArrayList<COutput> test = new ArrayList<>();
 
     public CEnvironment() {
-
-        setFocusable( true );
-        setBackground( Color.WHITE );
-        setDoubleBuffered( true );
 
 
         //first test
@@ -51,7 +42,7 @@ public class CEnvironment extends JPanel {
 
 
         //first test
-
+/*
         IntStream.range( 0, 150 )
                 .forEach( i -> m_pedestrian.add( new CPedestrian( new Vector2d( 0 + ( Math.random() * 100 ), 100 + ( Math.random() * 50 ) ),
                         rand.nextGaussian() * m_GaussianStandardDeviation + m_GaussianMean, new CGoal( 415, 250, 0, 100 ).get_goals(), this ) ) );
@@ -60,79 +51,22 @@ public class CEnvironment extends JPanel {
                 .forEach( i -> m_pedestrian.add( new CPedestrian( new Vector2d( 400 + ( Math.random() * 100 ), 100 + ( Math.random() * 50 ) ),
                         rand.nextGaussian() * m_GaussianStandardDeviation + m_GaussianMean, new CGoal( 310, 350, 550, 200 ).get_goals(), this ) ) );
 
-
+*/
     }
 
-    /**
-     * paint all elements
-     * @return
-     **/
-    public void paint( Graphics g ) {
-        super.paint( g );
-        graphics2d = ( Graphics2D ) g;
-        drawWall(Color.GRAY);
-        drawPedestrian();
-        Toolkit.getDefaultToolkit().sync();
-        g.dispose();
-    }
 
-    /**
-     * draw each static element wall
-     * @return
-     **/
-    private void drawWall(Color color) {
-        graphics2d.setColor( color ) ;
-        m_wall.forEach( i -> graphics2d.fillRect( i.getX1(), i.getY1(), i.getWidth(), i.getHeight() ) );
-    }
 
-    /**
-     * draw each pedestrian
-     * @return
-     **/
-    private void drawPedestrian() {
-        graphics2d.setColor( Color.BLUE ) ;
-        for( int j = 0; j < 150; j++ )
-        {
-            Ellipse2D.Double shape = new Ellipse2D.Double( m_pedestrian.get(j).getPosition().getX(), m_pedestrian.get(j).getPosition().getY(), 10, 10 );
-            graphics2d.fill( shape );
-        }
-        graphics2d.setColor( Color.GREEN ) ;
-        for( int j = 150; j < 300; j++ )
-        {
-            Ellipse2D.Double shape = new Ellipse2D.Double( m_pedestrian.get(j).getPosition().getX(), m_pedestrian.get(j).getPosition().getY(), 10, 10 );
-            graphics2d.fill( shape );
-        }
-        /*
-        m_pedestrian.stream()
-                .forEach(i -> {
-                    Ellipse2D.Double shape = new Ellipse2D.Double( i.getPosition().getX(), i.getPosition().getY(), 10, 10 );
-                    graphics2d.fill( shape );
-
-                });*/
-
-    }
-    /**
-     * get the list of pedestrian with their information
-     * @return a list of pedestrian information
-     **/
     public ArrayList<CPedestrian> getPedestrianinfo()
     {
         return m_pedestrian;
     }
 
-    /**
-     * get the list of walls with their information
-     * @return a list of wall information
-     **/
+
     public ArrayList<CWall> getWallinfo()
     {
         return m_walledge;
     }
 
-    /**
-     * undate environment state
-     * @return
-     **/
     public void update() {
 
             m_pedestrian.stream()

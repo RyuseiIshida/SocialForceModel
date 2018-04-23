@@ -1,8 +1,5 @@
 package com.simulation.socialforce;
 
-/**
- * Created by Fatema on 11/6/2016.
- */
 public class COutput {
 
     public double m_selfX;

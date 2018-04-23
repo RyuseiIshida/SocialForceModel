@@ -3,10 +3,6 @@ package com.simulation.socialforce;
 import javax.vecmath.Vector2d;
 import java.util.concurrent.Callable;
 
-/**
- * pedestrian interface
- * Created by Fatema on 10/21/2016.
- */
 public interface IPedestrian extends Callable<IPedestrian>{
 
 

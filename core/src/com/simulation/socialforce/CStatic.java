@@ -2,10 +2,7 @@ package com.simulation.socialforce;
 
 import javax.vecmath.Vector2d;
 
-/**
- * static element's class
- * Created by Fatema on 10/21/2016.
- */
+
 public class CStatic {
 
     private final int m_X1;
@@ -21,72 +18,42 @@ public class CStatic {
         m_height = p_height;
     }
 
-    /**
-     * returns static object's position's X
-     * @return X
-     **/
     public final int getX1()
     {
         return m_X1;
     }
 
-    /**
-     * returns static object's position's Y
-     * @return Y
-     **/
     public final int getY1()
     {
         return m_Y1;
     }
 
-    /**
-     * returns static object's wall1 among 4 sorrounded walls
-     * @return wall1
-     **/
     public final CWall getwall1()
     {
         return new CWall( new Vector2d( m_X1, m_Y1 ), new Vector2d( m_X1 + m_width, m_Y1 ) ) ;
     }
 
-    /**
-     * returns static object's wall2 among 4 sorrounded walls
-     * @return wall2
-     **/
     public final CWall getwall2()
     {
         return new CWall( new Vector2d( m_X1, m_Y1 ), new Vector2d( ( m_X1 ), ( m_Y1 + m_height ) ) ) ;
     }
 
-    /**
-     * returns static object's wall3 among 4 sorrounded walls
-     * @return wall3
-     **/
+
     public final CWall getwall3()
     {
         return new CWall( new Vector2d( ( m_X1 + m_width ), ( m_Y1 + m_height ) ), new Vector2d( m_X1 + m_width, m_Y1 ) ) ;
     }
 
-    /**
-     * returns static object's wall4 among 4 sorrounded walls
-     * @return wall4
-     **/
     public final CWall getwall4()
     {
         return new CWall( new Vector2d( ( m_X1 + m_width ), ( m_Y1 + m_height ) ), new Vector2d( ( m_X1 ), ( m_Y1 + m_height ) ) ) ;
     }
 
-    /**
-     * returns static object's width
-     * @return width
-     **/
     public final int getWidth() {
         return m_width;
     }
 
-    /**
-     * returns static object's height
-     * @return height
-     **/
+
     public final int getHeight() {
         return m_height;
     }
