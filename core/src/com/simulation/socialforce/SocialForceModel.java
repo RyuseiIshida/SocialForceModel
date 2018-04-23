@@ -28,22 +28,9 @@ public class SocialForceModel extends ApplicationAdapter {
     private Array<Sprite> walls;
     private Sprite exit;
 
-    private SFVector sfvector;
-    private SFAgent sfagent;
-    private LinkedList<SFAgent> sfagents;
-    private int id = 0;
-    private int i = 0;
-
-    private SFWall sfwall;
-    private LinkedList<SFWall> sfwalls = new LinkedList<SFWall>();
 
     private boolean FLAG = false;
 
-    private SFWaypoint sfwaypoint = new SFWaypoint("goal", 100, 480/2 - 32);
-    private LinkedList<SFWaypoint> destination = new LinkedList<SFWaypoint>();
-
-    //スピード　
-    private SFVector max_vel = new SFVector(5,5);
 
     @Override
     public void create () {
@@ -58,29 +45,17 @@ public class SocialForceModel extends ApplicationAdapter {
         exit = new Sprite(exitImage);
         exit.setPosition(100, 480/2 - 32);
 
-        sfagents = new LinkedList<SFAgent>();
-        SFWaypoint sfwaypoint = new SFWaypoint("goal", 125, 480/2 - 32);
         walls = new Array<Sprite>();
         spawnWall();
     }
 
     private void spawnAgent(Vector3 pos){
-        ++i;
-        sfagent = new SFAgent(id,1, new SFVector(pos.x-32/2,pos.y-32/2),destination,max_vel,1, new Sprite(personImage));
-        sfagents.add(sfagent);
-        destination.add(sfwaypoint);
+
 
     }
 
     private void moveAgent(){
-        Iterator<SFAgent> iterator = sfagents.iterator();
-        while(iterator.hasNext()){
-            SFAgent sfagent = iterator.next();
-            sfagent.move(sfagents, sfwalls);
-            if(sfagent.getSprite().getBoundingRectangle().overlaps(exit.getBoundingRectangle())){
-                iterator.remove();
-            }
-        }
+
     }
 
     private void spawnWall(){
@@ -116,29 +91,7 @@ public class SocialForceModel extends ApplicationAdapter {
             walls.add(testwall);
         }
 
-        //SFWall
 
-        sfwall = new SFWall(150,30,750,30); //したライン
-        sfwalls.add(sfwall);
-        sfwall = new SFWall(150,450,750,450); //うえライン
-        sfwalls.add(sfwall);
-        sfwall = new SFWall(150,30,150,200); // exit したライン
-        sfwalls.add(sfwall);
-        sfwall = new SFWall(150,250,150,450); // exit うえライン
-        sfwalls.add(sfwall);
-        sfwall = new SFWall(750,30,750,450); // みぎライン
-        sfwalls.add(sfwall);
-
-        /*
-        sfwall = new SFWall(300,200,300,250);
-        sfwalls.add(sfwall);
-        sfwall = new SFWall(300,200,301,200);
-        sfwalls.add(sfwall);
-        sfwall = new SFWall(300,250,301,250);
-        sfwalls.add(sfwall);
-        sfwall = new SFWall(3001,200,301,250);
-        sfwalls.add(sfwall);
-        */
     }
 
     @Override
@@ -153,7 +106,6 @@ public class SocialForceModel extends ApplicationAdapter {
 
         //描画
         batch.begin();
-        for(SFAgent sfagent: sfagents) sfagent.getSprite().draw(batch);
         for(Sprite wall: walls) wall.draw(batch);
         exit.draw(batch);
         batch.end();

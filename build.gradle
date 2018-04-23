@@ -53,6 +53,7 @@ project(":core") {
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        compile "javax.vecmath:vecmath:1.5.2"
         
     }
 }
