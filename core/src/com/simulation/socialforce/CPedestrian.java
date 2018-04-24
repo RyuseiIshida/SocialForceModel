@@ -11,8 +11,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 public class CPedestrian implements IPedestrian{
 
     private static final double m_maxspeedfactor = 2.5;
-    private static final double m_maxforce = 3.0;
-    private static final double m_radius = 10;
+    private static final double m_maxforce = 0.1;
+    private static final double m_radius = 20;
     private Vector2d m_position;
     private Vector2d m_goal;
     private ArrayList<Vector2d> m_goals;

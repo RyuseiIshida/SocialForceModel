@@ -9,7 +9,7 @@ public class CForce {
     private static final double m_lamda = 0.2;
     private static final double m_repulsefactortoped = 2.1;
     private static final double m_sigma = 0.3;
-    private static final double m_repulsefactortowall = 5;
+    private static final double m_repulsefactortowall = 1;
     private static final double m_R = 0.2;
 
 

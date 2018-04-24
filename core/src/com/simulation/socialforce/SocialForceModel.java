@@ -17,9 +17,7 @@ import com.badlogic.gdx.utils.Array;
 import javax.vecmath.Vector2d;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class SocialForceModel extends ApplicationAdapter {
     private Texture personImage;
@@ -30,9 +28,8 @@ public class SocialForceModel extends ApplicationAdapter {
     private Array<Sprite> walls;
     private Sprite exit;
 
-    private boolean FLAG = false;
 
-    private Random rand = new Random();
+    private boolean FLAG = false;
     private static final double m_GaussianMean = 1.34;
     private static final double m_GaussianStandardDeviation = 0.26;
     private ArrayList<CPedestrian> m_pedestrian = new ArrayList<CPedestrian>();
@@ -59,13 +56,13 @@ public class SocialForceModel extends ApplicationAdapter {
 
     private void spawnAgent(Vector3 pos){
         m_pedestrian.add( new CPedestrian( new Vector2d(pos.x-16, pos.y-16),
-                1* m_GaussianStandardDeviation + m_GaussianMean, new CGoal( 0, 480/2+20, 0, 480/2+20).get_goals(), this, new Sprite(personImage)) );
+                1, new CGoal( 0, 240, 0, 240).get_goals(), this, new Sprite(personImage)) );
     }
 
     private void spawnWall(){
 
         //描画用スプライト
-        for(int i = 150; i < 750; i++){
+        for(int i = 160; i < 750; i++){
             Sprite wall = new Sprite(wallImage);
             wall.setPosition(i, 30);
             walls.add(wall);
@@ -75,9 +72,9 @@ public class SocialForceModel extends ApplicationAdapter {
         }
 
         for(int i = 30; i < 450; i++){
-            if(!(i>200 && i<250)) {
+            if(!(i>210 && i<252)) {
                 Sprite wall = new Sprite(wallImage);
-                wall.setPosition(150, i);
+                wall.setPosition(160, i);
                 wall.setRotation(90);
                 walls.add(wall);
             }
@@ -87,19 +84,22 @@ public class SocialForceModel extends ApplicationAdapter {
             walls.add(wall2);
         }
 
-        // テスト障害物
+        /* テスト障害物
         for(int i = 200; i < 250; i++){
             Sprite testwall = new Sprite(wallImage);
             testwall.setPosition(300,i);
             testwall.setRotation(90);
             walls.add(testwall);
         }
+        */
 
-        //force
+        //wall force
         //m_wall.add( new CStatic( 300,200,1,50) );
-        m_wall.add( new CStatic( 150,30,1,150) ); // exit したライン
-        m_wall.add( new CStatic( 150,230,1,450) ); // exit うえライン
-
+        m_wall.add( new CStatic( 150,20,600,0) ); // DownLine
+        m_wall.add( new CStatic( 150,430,600,0) ); // UpLine
+        m_wall.add( new CStatic( 740,30,0,420) ); // RightLine
+        m_wall.add( new CStatic( 150,30,0,160) ); // exit DownLine
+        m_wall.add( new CStatic( 150,250,0,200) ); // exit UpLine
         m_wall.forEach( i->
                 {
                     m_walledge.add(i.getwall1());
@@ -142,9 +142,19 @@ public class SocialForceModel extends ApplicationAdapter {
             else FLAG = true;
         }
 
+        // Pを押された時
+        if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            for(int i =0; i<100; i++) spawnAgent(new Vector3(600, 240, 0));
+        }
+
         if(FLAG) {
           update();
-        }
+            Iterator<CPedestrian> iterator = m_pedestrian.iterator();
+            while(iterator.hasNext()) {
+                CPedestrian agent = iterator.next();
+                if(agent.getPosition().x < 5) iterator.remove();
+            }
+          }
     }
 
 
