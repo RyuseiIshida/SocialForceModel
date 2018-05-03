@@ -9,97 +9,59 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 
 import javax.vecmath.Vector2d;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Random;
+
+import static java.lang.Math.pow;
 
 public class SocialForceModel extends ApplicationAdapter {
     private Texture personImage;
-    private Texture wallImage;
     private Texture exitImage;
     private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
-    private Array<Sprite> walls;
     private Sprite exit;
-
-
-    private boolean FLAG = false;
     private static final double m_GaussianMean = 1.34;
     private static final double m_GaussianStandardDeviation = 0.26;
-    private ArrayList<CPedestrian> m_pedestrian = new ArrayList<CPedestrian>();
+    private ArrayList<CPedestrian> m_pedestrian = new ArrayList<>();
     private ArrayList<CStatic> m_wall = new ArrayList<>( 2 );
     private ArrayList<CWall> m_walledge = new ArrayList<>( );
     public ArrayList<COutput> test = new ArrayList<>();
+    private boolean isSpaceButton = false;
+
+    private final CStatic  wallDownLine     = new CStatic(150,30,750,30);
+    private final CStatic  wallUpLine       = new CStatic(150,450,750,450);
+    private final CStatic  wallRightLine    = new CStatic(750,30,750,450);
+    private final CStatic  wallexitDownLine = new CStatic(150,30,150,200);
+    private final CStatic  wallexitUpLine   = new CStatic(150,250,150,450);
+
 
     @Override
     public void create () {
         personImage = new Texture(Gdx.files.internal("person.png"));
-        wallImage = new Texture(Gdx.files.internal("black_texture.png"));
         exitImage = new Texture(Gdx.files.internal("exit.png"));
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
-
-        exit = new Sprite(exitImage);
-        exit.setPosition(100, 480/2 - 32);
-
-        walls = new Array<Sprite>();
+        shapeRenderer = new ShapeRenderer();
         spawnWall();
     }
 
     private void spawnAgent(Vector3 pos){
-        m_pedestrian.add( new CPedestrian( new Vector2d(pos.x-16, pos.y-16),
-                1, new CGoal( 0, 240, 0, 240).get_goals(), this, new Sprite(personImage)) );
+        m_pedestrian.add( new CPedestrian( new Vector2d(pos.x, pos.y),
+                1, new CGoal( -10, 230, 0, 240).get_goals(), this, new Sprite(personImage)) );
     }
 
     private void spawnWall(){
-
-        //描画用スプライト
-        for(int i = 160; i < 750; i++){
-            Sprite wall = new Sprite(wallImage);
-            wall.setPosition(i, 30);
-            walls.add(wall);
-            Sprite wall2 = new Sprite(wallImage);
-            wall2.setPosition(i, 450);
-            walls.add(wall2);
-        }
-
-        for(int i = 30; i < 450; i++){
-            if(!(i>210 && i<252)) {
-                Sprite wall = new Sprite(wallImage);
-                wall.setPosition(160, i);
-                wall.setRotation(90);
-                walls.add(wall);
-            }
-            Sprite wall2 = new Sprite(wallImage);
-            wall2.setPosition(750, i);
-            wall2.setRotation(90);
-            walls.add(wall2);
-        }
-
-        /* テスト障害物
-        for(int i = 200; i < 250; i++){
-            Sprite testwall = new Sprite(wallImage);
-            testwall.setPosition(300,i);
-            testwall.setRotation(90);
-            walls.add(testwall);
-        }
-        */
-
-        //wall force
-        //m_wall.add( new CStatic( 300,200,1,50) );
-        m_wall.add( new CStatic( 150,20,600,0) ); // DownLine
-        m_wall.add( new CStatic( 150,430,600,0) ); // UpLine
-        m_wall.add( new CStatic( 740,30,0,420) ); // RightLine
-        m_wall.add( new CStatic( 150,30,0,160) ); // exit DownLine
-        m_wall.add( new CStatic( 150,250,0,200) ); // exit UpLine
+        m_wall.add(wallDownLine);
+        m_wall.add(wallUpLine);
+        m_wall.add(wallRightLine);
+        m_wall.add(wallexitDownLine);
+        m_wall.add(wallexitUpLine);
         m_wall.forEach( i->
                 {
                     m_walledge.add(i.getwall1());
@@ -108,7 +70,6 @@ public class SocialForceModel extends ApplicationAdapter {
                     m_walledge.add(i.getwall4());
                 }
         );
-
     }
 
     @Override
@@ -124,44 +85,68 @@ public class SocialForceModel extends ApplicationAdapter {
         //描画
         batch.begin();
         for(CPedestrian agent: m_pedestrian) agent.getSprite().draw(batch);
-        for(Sprite wall: walls) wall.draw(batch);
         //exit.draw(batch);
         batch.end();
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+        //壁の描画
+        shapeRenderer.setColor(0,0,0,0);
+        shapeRenderer.line(wallDownLine.getX1(),wallDownLine.getY1(),wallDownLine.getX2(),wallDownLine.getY2());
+        shapeRenderer.line(wallUpLine.getX1(),wallUpLine.getY1(),wallUpLine.getX2(),wallUpLine.getY2());
+        shapeRenderer.line(wallRightLine.getX1(),wallRightLine.getY1(),wallRightLine.getX2(),wallRightLine.getY2());
+        shapeRenderer.line(wallexitDownLine.getX1(),wallexitDownLine.getY1(),wallexitDownLine.getX2(),wallexitDownLine.getY2());
+        shapeRenderer.line(wallexitUpLine.getX1(),wallexitUpLine.getY1(),wallexitUpLine.getX2(),wallexitUpLine.getY2());
+
+        //agentの向きライン描画
+        shapeRenderer.setColor(((float) 0.9), ((float) 0), ((float) 0),1);
+        for(CPedestrian agent: m_pedestrian){
+            float delta_x =  (float)agent.getGoalposition().getX() - (float)agent.getPosition().getX();
+            float delta_y = (float)agent.getGoalposition().getY() - (float)agent.getPosition().getY();
+            float length = (float)Math.sqrt(pow(delta_x,2) + pow(delta_y,2));
+            delta_x = delta_x/length * 15 + (float)agent.getPosition().getX(); //15はエージェントの体分
+            delta_y = delta_y/length * 15 + (float)agent.getPosition().getY();
+            shapeRenderer.line(((float) agent.getPosition().x),(float)agent.getPosition().y,
+                    delta_x,delta_y);
+
+        }
+        shapeRenderer.end();
 
         // クリックされたとき
         if(Gdx.input.justTouched()) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
+            System.out.println(touchPos);
             spawnAgent(touchPos);
         }
 
         // スペースを押されたとき
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-            if(FLAG) FLAG = false;
-            else FLAG = true;
+            if(isSpaceButton) isSpaceButton = false;
+            else isSpaceButton = true;
+        }
+
+        if(isSpaceButton) {
+            update();
+            Iterator<CPedestrian> iterator = m_pedestrian.iterator();
+            while(iterator.hasNext()) {
+                CPedestrian agent = iterator.next();
+                if(agent.getPosition().x < 5) iterator.remove();
+            }
         }
 
         // Pを押された時
         if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             for(int i =0; i<100; i++) spawnAgent(new Vector3(600, 240, 0));
         }
-
-        if(FLAG) {
-          update();
-            Iterator<CPedestrian> iterator = m_pedestrian.iterator();
-            while(iterator.hasNext()) {
-                CPedestrian agent = iterator.next();
-                if(agent.getPosition().x < 5) iterator.remove();
-            }
-          }
     }
 
 
     @Override
     public void dispose () {
         personImage.dispose();
-        wallImage.dispose();
         exitImage.dispose();
         batch.dispose();
     }

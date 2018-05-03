@@ -33,7 +33,7 @@ public class CPedestrian implements IPedestrian{
         m_maxspeed = p_speed * m_maxspeedfactor;
         m_controlossilation = 0;
         sprite = sprites;
-        sprite.setPosition((float)m_position.x,(float)m_position.y);
+        sprite.setPosition((float)m_position.x-32/2,(float)m_position.y-32/2);
     }
 
 
@@ -59,7 +59,7 @@ public class CPedestrian implements IPedestrian{
     @Override
     public IPedestrian setPosition( final double p_x, final double p_y ) {
         this.m_position = new Vector2d( p_x, p_y );
-        sprite.setPosition((float)m_position.x,(float)m_position.y);
+        sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         return this;
     }
 
@@ -77,14 +77,14 @@ public class CPedestrian implements IPedestrian{
     @Override
     public IPedestrian setposX( final double p_posX ) {
         this.m_position.x = p_posX;
-        sprite.setPosition((float)m_position.x,(float)m_position.y);
+        sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         return this;
     }
 
     @Override
     public IPedestrian setposY( final double p_posY ) {
         this.m_position.y = p_posY;
-        sprite.setPosition((float)m_position.x,(float)m_position.y);
+        sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         return this;
     }
 
@@ -137,7 +137,7 @@ public class CPedestrian implements IPedestrian{
                 this.m_goal = this.m_goals.remove( 0 );
                 this.m_velocity = CVector.scale( m_maxspeed, CVector.normalize( CVector.add( this.m_velocity, this.accelaration() ) ) );
                 this.m_position = CVector.add( m_position, m_velocity );
-                sprite.setPosition((float)m_position.x,(float)m_position.y);
+                sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
             }
         }
         else
@@ -150,25 +150,25 @@ public class CPedestrian implements IPedestrian{
             {
                 this.m_velocity = CVector.scale( m_maxspeed, CVector.normalize( CVector.add( this.m_velocity, this.accelaration() ) ) );
                 this.m_position = CVector.add( m_position, m_velocity );
-                sprite.setPosition((float)m_position.x,(float)m_position.y);
+                sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
             }
         }
 
         if( m_position.getX() > 800.0 ) {
             setposX( 0.0 );
-            sprite.setPosition((float)m_position.x,(float)m_position.y);
+            sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         }
         if( m_position.getX() < 0.0 ) {
             setposX( 800.0 );
-            sprite.setPosition((float)m_position.x,(float)m_position.y);
+            sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         }
         if( m_position.getY() > 600.0 ) {
             setposY( 0.0 );
-            sprite.setPosition((float)m_position.x,(float)m_position.y);
+            sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         }
         if( m_position.getY() < 0.0 ) {
             setposY( 600.0);
-            sprite.setPosition((float)m_position.x,(float)m_position.y);
+            sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         }
 
         return this;
