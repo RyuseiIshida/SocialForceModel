@@ -4,6 +4,7 @@ package com.simulation.socialforce;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -25,20 +26,21 @@ public class SocialForceModel extends ApplicationAdapter {
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private Sprite exit;
-    private static final double m_GaussianMean = 1.34;
-    private static final double m_GaussianStandardDeviation = 0.26;
+
     private ArrayList<CPedestrian> m_pedestrian = new ArrayList<>();
     private ArrayList<CStatic> m_wall = new ArrayList<>( 2 );
     private ArrayList<CWall> m_walledge = new ArrayList<>( );
-    public ArrayList<COutput> test = new ArrayList<>();
     private boolean isSpaceButton = false;
 
+    private static final double m_GaussianMean = 1.34;
+    private static final double m_GaussianStandardDeviation = 0.26;
     private final CStatic  wallDownLine     = new CStatic(150,30,750,30);
     private final CStatic  wallUpLine       = new CStatic(150,450,750,450);
     private final CStatic  wallRightLine    = new CStatic(750,30,750,450);
     private final CStatic  wallexitDownLine = new CStatic(150,30,150,200);
     private final CStatic  wallexitUpLine   = new CStatic(150,250,150,450);
 
+    public ArrayList<COutput> test = new ArrayList<>();
 
     @Override
     public void create () {
@@ -90,7 +92,6 @@ public class SocialForceModel extends ApplicationAdapter {
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
         //壁の描画
         shapeRenderer.setColor(0,0,0,0);
         shapeRenderer.line(wallDownLine.getX1(),wallDownLine.getY1(),wallDownLine.getX2(),wallDownLine.getY2());
@@ -99,26 +100,36 @@ public class SocialForceModel extends ApplicationAdapter {
         shapeRenderer.line(wallexitDownLine.getX1(),wallexitDownLine.getY1(),wallexitDownLine.getX2(),wallexitDownLine.getY2());
         shapeRenderer.line(wallexitUpLine.getX1(),wallexitUpLine.getY1(),wallexitUpLine.getX2(),wallexitUpLine.getY2());
 
-        //agentの向きライン描画
-        shapeRenderer.setColor(((float) 0.9), ((float) 0), ((float) 0),1);
         for(CPedestrian agent: m_pedestrian){
             float delta_x =  (float)agent.getGoalposition().getX() - (float)agent.getPosition().getX();
             float delta_y = (float)agent.getGoalposition().getY() - (float)agent.getPosition().getY();
             float length = (float)Math.sqrt(pow(delta_x,2) + pow(delta_y,2));
-            delta_x = delta_x/length * 15 + (float)agent.getPosition().getX(); //15はエージェントの体分
-            delta_y = delta_y/length * 15 + (float)agent.getPosition().getY();
-            shapeRenderer.line(((float) agent.getPosition().x),(float)agent.getPosition().y,
-                    delta_x,delta_y);
+            delta_x = delta_x/length * 10 + (float)agent.getPosition().getX(); //15はエージェントの体分
+            delta_y = delta_y/length * 10 + (float)agent.getPosition().getY();
+            //agentの向きライン描画
+            shapeRenderer.line(((float) agent.getPosition().x),(float)agent.getPosition().y, delta_x,delta_y);
+        }
+        shapeRenderer.end();
+
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(new Color(0, 1, 0, 0.1f));
+        for(CPedestrian agent: m_pedestrian){
+            // 視野範囲の描写
+            //shapeRenderer.arc((float) agent.getPosition().x,(float)agent.getPosition().y,100,120,120);
 
         }
         shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+
 
         // クリックされたとき
         if(Gdx.input.justTouched()) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
-            System.out.println(touchPos);
             spawnAgent(touchPos);
         }
 
