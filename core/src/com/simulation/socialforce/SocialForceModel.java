@@ -14,10 +14,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 
 import javax.vecmath.Vector2d;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 public class SocialForceModel extends ApplicationAdapter {
     private Texture personImage;
@@ -34,6 +37,8 @@ public class SocialForceModel extends ApplicationAdapter {
 
     private static final double m_GaussianMean = 1.34;
     private static final double m_GaussianStandardDeviation = 0.26;
+    private static final float view_phi_theta = 120;
+    private static final float view_dmax = 100;
     private final CStatic  wallDownLine     = new CStatic(150,30,750,30);
     private final CStatic  wallUpLine       = new CStatic(150,450,750,450);
     private final CStatic  wallRightLine    = new CStatic(750,30,750,450);
@@ -54,8 +59,11 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnAgent(Vector3 pos){
+        //m_pedestrian.add( new CPedestrian( new Vector2d(pos.x, pos.y),
+        //        1, new CGoal( -10, 230, 0, 240).get_goals(), this, new Sprite(personImage)) );
         m_pedestrian.add( new CPedestrian( new Vector2d(pos.x, pos.y),
-                1, new CGoal( -10, 230, 0, 240).get_goals(), this, new Sprite(personImage)) );
+                1, new CGoal( 150, 250, 150, 250).get_goals(), this, new Sprite(personImage)) );
+
     }
 
     private void spawnWall(){
@@ -118,7 +126,11 @@ public class SocialForceModel extends ApplicationAdapter {
         shapeRenderer.setColor(new Color(0, 1, 0, 0.1f));
         for(CPedestrian agent: m_pedestrian){
             // 視野範囲の描写
-            //shapeRenderer.arc((float) agent.getPosition().x,(float)agent.getPosition().y,100,120,120);
+            //ゴールに対する角度θを求める
+            float goaltheta = getTheta(agent.getPosition().x,agent.getPosition().y,agent.getGoalposition().x,agent.getGoalposition().y);
+            goaltheta -= view_phi_theta/2;
+            shapeRenderer.arc((float) agent.getPosition().x,(float)agent.getPosition().y,view_dmax,goaltheta,view_phi_theta);
+            isEyeLap(agent.getPosition().x,agent.getPosition().y,agent.getGoalposition().x,agent.getGoalposition().y);
 
         }
         shapeRenderer.end();
@@ -184,5 +196,39 @@ public class SocialForceModel extends ApplicationAdapter {
                     }
                     catch ( final Exception l_exception ) {}
                 });
+    }
+
+    public int getDistance(double x1, double y1, double x2, double y2) {
+        double distance = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        return (int) distance;
+    }
+
+    public void isEyeLap(double x1, double y1, double x2, double y2){
+        double degree = getTheta(x1,y1,x2,y2);
+        int distance = getDistance(x1,y1,x2,y2);
+        if(degree<view_phi_theta && distance<view_dmax) System.out.println("Yes");
+        else System.out.println("No");
+        //if(degree<view_phi_theta && distance<view_dmax) return true;
+        //else return false;
+    }
+
+    public ArrayList<CPedestrian> isAgentLap(double x1, double y1, double x2, double y2){
+        double delta_x;
+        ArrayList<CPedestrian> langeMember = new ArrayList<>();
+        for (CPedestrian cPedestrian : m_pedestrian) {
+            //オブジェクト - 向かっている方向 = delta_x
+            // view_phi-theta - delta_x > 0 -> 重なっている
+            delta_x = getTheta(x1,y1,cPedestrian.getPosition().x,cPedestrian.getPosition().y) - getTheta(x1,y1,x2,y2);
+            if(delta_x > 0) delta_x *= -1;
+            if (view_phi_theta - delta_x > 0) langeMember.add(cPedestrian);
+        }
+        return langeMember;
+    }
+
+    public float getTheta(double x1, double y1, double x2, double y2){
+        double radian = Math.atan2(y2-y1, x2-x1);
+        double degree = radian * 180d / Math.PI;
+        if(degree<0) degree = 360 + degree;
+        return (float)degree;
     }
 }
