@@ -41,7 +41,7 @@ public class SocialForceModel extends ApplicationAdapter {
     private static final double m_GaussianStandardDeviation = 0.26;
     private static final float view_phi_theta = 120;
     private static final float view_dmax = 100;
-    private final ArrayList<Vector2d> exitVec = new ArrayList<>(Arrays.asList(new Vector2d(30,230), new Vector2d(700, 230)));
+    private final ArrayList<Vector2d> exitVec = new ArrayList<>(Arrays.asList(new Vector2d(30,230),new Vector2d(700, 230)));
     private final CStatic wallDownLine     = new CStatic(150,30,750,30);
     private final CStatic wallUpLine       = new CStatic(150,450,750,450);
     private final CStatic wallRightLine    = new CStatic(750,30,750,450);
@@ -187,7 +187,8 @@ public class SocialForceModel extends ApplicationAdapter {
         while (cPedestrianIterator.hasNext()) {
             CPedestrian next =  cPedestrianIterator.next();
             for (Sprite sprite : exit) {
-                if(next.getSprite().getBoundingRectangle().overlaps(sprite));
+                if(next.getSprite().getBoundingRectangle().overlaps(sprite.getBoundingRectangle()))
+                    cPedestrianIterator.remove();
             }
         }
     }
