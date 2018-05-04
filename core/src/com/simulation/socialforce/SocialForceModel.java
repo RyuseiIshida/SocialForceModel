@@ -11,11 +11,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import javax.vecmath.Vector2d;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,22 +31,22 @@ public class SocialForceModel extends ApplicationAdapter {
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
-    private Sprite exit;
-
     private ArrayList<CPedestrian> m_pedestrian = new ArrayList<>();
     private ArrayList<CStatic> m_wall = new ArrayList<>( 2 );
-    private ArrayList<CWall> m_walledge = new ArrayList<>( );
+    private ArrayList<CWall> m_walledge = new ArrayList<>();
+    private ArrayList<Sprite> exit = new ArrayList<>();
     private boolean isSpaceButton = false;
 
     private static final double m_GaussianMean = 1.34;
     private static final double m_GaussianStandardDeviation = 0.26;
     private static final float view_phi_theta = 120;
     private static final float view_dmax = 100;
-    private final CStatic  wallDownLine     = new CStatic(150,30,750,30);
-    private final CStatic  wallUpLine       = new CStatic(150,450,750,450);
-    private final CStatic  wallRightLine    = new CStatic(750,30,750,450);
-    private final CStatic  wallexitDownLine = new CStatic(150,30,150,200);
-    private final CStatic  wallexitUpLine   = new CStatic(150,250,150,450);
+    private final ArrayList<Vector2d> exitVec = new ArrayList<>(Arrays.asList(new Vector2d(30,230), new Vector2d(700, 230)));
+    private final CStatic wallDownLine     = new CStatic(150,30,750,30);
+    private final CStatic wallUpLine       = new CStatic(150,450,750,450);
+    private final CStatic wallRightLine    = new CStatic(750,30,750,450);
+    private final CStatic wallexitDownLine = new CStatic(150,30,150,200);
+    private final CStatic wallexitUpLine   = new CStatic(150,250,150,450);
 
     public ArrayList<COutput> test = new ArrayList<>();
 
@@ -55,6 +58,7 @@ public class SocialForceModel extends ApplicationAdapter {
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
+        spawnExit();
         spawnWall();
     }
 
@@ -62,8 +66,19 @@ public class SocialForceModel extends ApplicationAdapter {
         //m_pedestrian.add( new CPedestrian( new Vector2d(pos.x, pos.y),
         //        1, new CGoal( -10, 230, 0, 240).get_goals(), this, new Sprite(personImage)) );
         m_pedestrian.add( new CPedestrian( new Vector2d(pos.x, pos.y),
-                1, new CGoal( 150, 250, 150, 250).get_goals(), this, new Sprite(personImage)) );
+                1, new CGoal( pos.x, pos.y, pos.x, pos.y).get_goals(), this, new Sprite(personImage)) );
+        for (CPedestrian cPedestrian : m_pedestrian) {
+            cPedestrian.setGoalposition(exitVec.get(MathUtils.random(1)));
+        }
 
+    }
+
+    private void spawnExit(){
+        for (Vector2d exitvec : exitVec) {
+            Sprite spexit = new Sprite(exitImage);
+            spexit.setPosition((float)exitvec.x-16,(float)exitvec.y-16);
+            exit.add(spexit);
+        }
     }
 
     private void spawnWall(){
@@ -95,7 +110,9 @@ public class SocialForceModel extends ApplicationAdapter {
         //描画
         batch.begin();
         for(CPedestrian agent: m_pedestrian) agent.getSprite().draw(batch);
-        //exit.draw(batch);
+        for (Sprite spexit: exit) {
+            spexit.draw(batch);
+        }
         batch.end();
 
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -164,6 +181,15 @@ public class SocialForceModel extends ApplicationAdapter {
         if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             for(int i =0; i<100; i++) spawnAgent(new Vector3(600, 240, 0));
         }
+
+        //ゴールについたら消す → exitImageと重なったら削除
+        Iterator<CPedestrian> cPedestrianIterator = m_pedestrian.iterator();
+        while (cPedestrianIterator.hasNext()) {
+            CPedestrian next =  cPedestrianIterator.next();
+            for (Sprite sprite : exit) {
+                if(next.getSprite().getBoundingRectangle().overlaps(sprite));
+            }
+        }
     }
 
 
@@ -206,8 +232,8 @@ public class SocialForceModel extends ApplicationAdapter {
     public void isEyeLap(double x1, double y1, double x2, double y2){
         double degree = getTheta(x1,y1,x2,y2);
         int distance = getDistance(x1,y1,x2,y2);
-        if(degree<view_phi_theta && distance<view_dmax) System.out.println("Yes");
-        else System.out.println("No");
+        //if(degree<view_phi_theta && distance<view_dmax) System.out.println("Yes");
+        //else System.out.println("No");
         //if(degree<view_phi_theta && distance<view_dmax) return true;
         //else return false;
     }
