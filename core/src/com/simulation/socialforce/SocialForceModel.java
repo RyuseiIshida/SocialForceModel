@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import javax.vecmath.Vector2d;
+import javax.vecmath.Vector2f;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ public class SocialForceModel extends ApplicationAdapter {
     private static final double m_GaussianStandardDeviation = 0.26;
     private static final float view_phi_theta = 120;
     private static final float view_dmax = 100;
-    private final ArrayList<Vector2d> exitVec = new ArrayList<>(Arrays.asList(new Vector2d(30,230),new Vector2d(700, 230)));
+    private final ArrayList<Vector2d> exitVec = new ArrayList<>(Arrays.asList(new Vector2d(30,230),new Vector2d(300,300),new Vector2d(700, 230)));
     private final CStatic wallDownLine     = new CStatic(150,30,750,30);
     private final CStatic wallUpLine       = new CStatic(150,450,750,450);
     private final CStatic wallRightLine    = new CStatic(750,30,750,450);
@@ -64,11 +65,17 @@ public class SocialForceModel extends ApplicationAdapter {
 
     private void spawnAgent(Vector3 pos){
         //m_pedestrian.add( new CPedestrian( new Vector2d(pos.x, pos.y),
-        //        1, new CGoal( -10, 230, 0, 240).get_goals(), this, new Sprite(personImage)) );
+        //        1, new CGoal( 700, 230, 700, 230).get_goals(), this, new Sprite(personImage)) );
+        //m_pedestrian.add( new CPedestrian( new Vector2d(pos.x, pos.y),
+        //       1, new CGoal( pos.x, pos.y, pos.x, pos.y).get_goals(), this, new Sprite(personImage)) );
+
+        //ランダムな方向を向いた歩行者を追加
         m_pedestrian.add( new CPedestrian( new Vector2d(pos.x, pos.y),
-                1, new CGoal( pos.x, pos.y, pos.x, pos.y).get_goals(), this, new Sprite(personImage)) );
+                1, new CGoal( MathUtils.random(pos.x-1,pos.x+1),MathUtils.random(pos.y-1,pos.y+1),
+                        MathUtils.random(pos.x-1,pos.x+1), MathUtils.random(pos.y-1,pos.y+1)).get_goals(), this, new Sprite(personImage)) );
+        //for (CPedestrian cPedestrian : m_pedestrian) cPedestrian.setGoalposition(exitVec.get(MathUtils.random(1)));
         for (CPedestrian cPedestrian : m_pedestrian) {
-            cPedestrian.setGoalposition(exitVec.get(MathUtils.random(1)));
+            cPedestrian.setGoalposition(getTargetExit(cPedestrian));
         }
 
     }
@@ -146,9 +153,7 @@ public class SocialForceModel extends ApplicationAdapter {
             //ゴールに対する角度θを求める
             float goaltheta = getTheta(agent.getPosition().x,agent.getPosition().y,agent.getGoalposition().x,agent.getGoalposition().y);
             goaltheta -= view_phi_theta/2;
-            shapeRenderer.arc((float) agent.getPosition().x,(float)agent.getPosition().y,view_dmax,goaltheta,view_phi_theta);
-            isEyeLap(agent.getPosition().x,agent.getPosition().y,agent.getGoalposition().x,agent.getGoalposition().y);
-
+            shapeRenderer.arc((float)agent.getPosition().x,(float)agent.getPosition().y,view_dmax,goaltheta,view_phi_theta);
         }
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -180,6 +185,10 @@ public class SocialForceModel extends ApplicationAdapter {
         // Pを押された時
         if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             for(int i =0; i<100; i++) spawnAgent(new Vector3(600, 240, 0));
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+            m_pedestrian.removeAll(m_pedestrian);
         }
 
         //ゴールについたら消す → exitImageと重なったら削除
@@ -225,37 +234,29 @@ public class SocialForceModel extends ApplicationAdapter {
                 });
     }
 
+    public Vector2d getTargetExit(CPedestrian ped){
+        Vector2d exitvec = new Vector2d(ped.getGoalposition().x,ped.getGoalposition().y);
+        for (Vector2d  vec: exitVec) {
+            int distance = getDistance(ped.getPosition().x,ped.getPosition().y,vec.x,vec.y);
+            //対象 - 向かっている方向 = delta_x
+            //view_phi-theta/2 - delta_x > 0 -> 重なっている
+            double delta_x = getTheta(ped.getPosition().x,ped.getPosition().y,vec.x,vec.y)
+                - getTheta(ped.getPosition().x,ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
+            if(delta_x < 0) delta_x *= -1;
+            if(view_dmax >= distance && view_phi_theta/2 - delta_x >= 0 ) exitvec.set(vec.x,vec.y);
+        }
+    return exitvec;
+    }
+
     public int getDistance(double x1, double y1, double x2, double y2) {
         double distance = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
         return (int) distance;
     }
 
-    public void isEyeLap(double x1, double y1, double x2, double y2){
-        double degree = getTheta(x1,y1,x2,y2);
-        int distance = getDistance(x1,y1,x2,y2);
-        //if(degree<view_phi_theta && distance<view_dmax) System.out.println("Yes");
-        //else System.out.println("No");
-        //if(degree<view_phi_theta && distance<view_dmax) return true;
-        //else return false;
-    }
-
-    public ArrayList<CPedestrian> isAgentLap(double x1, double y1, double x2, double y2){
-        double delta_x;
-        ArrayList<CPedestrian> langeMember = new ArrayList<>();
-        for (CPedestrian cPedestrian : m_pedestrian) {
-            //オブジェクト - 向かっている方向 = delta_x
-            // view_phi-theta - delta_x > 0 -> 重なっている
-            delta_x = getTheta(x1,y1,cPedestrian.getPosition().x,cPedestrian.getPosition().y) - getTheta(x1,y1,x2,y2);
-            if(delta_x > 0) delta_x *= -1;
-            if (view_phi_theta - delta_x > 0) langeMember.add(cPedestrian);
-        }
-        return langeMember;
-    }
-
     public float getTheta(double x1, double y1, double x2, double y2){
         double radian = Math.atan2(y2-y1, x2-x1);
         double degree = radian * 180d / Math.PI;
-        if(degree<0) degree = 360 + degree;
+        //if(degree<0) degree = 360 + degree;
         return (float)degree;
     }
 }
