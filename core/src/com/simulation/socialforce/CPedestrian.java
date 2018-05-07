@@ -157,7 +157,7 @@ public class CPedestrian implements IPedestrian{
             }
         }
 
-        if( m_position.getX() > 800.0 ) {
+/*        if( m_position.getX() > 800.0 ) {
             setposX( 0.0 );
             sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         }
@@ -172,7 +172,7 @@ public class CPedestrian implements IPedestrian{
         if( m_position.getY() < 0.0 ) {
             setposY( 600.0);
             sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
-        }
+        }*/
 
         return this;
     }
