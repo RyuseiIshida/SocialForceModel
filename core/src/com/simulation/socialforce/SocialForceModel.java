@@ -37,18 +37,24 @@ public class SocialForceModel extends ApplicationAdapter {
     private ArrayList<CWall> m_walledge = new ArrayList<>();
     private ArrayList<Sprite> exit = new ArrayList<>();
     private boolean isSpaceButton = false;
+    private Vector2d initVec = new Vector2d(0,0);
 
     private static final double m_GaussianMean = 1.34;
     private static final double m_GaussianStandardDeviation = 0.26;
     private static final float view_phi_theta = 120;
-    private static final float view_dmax = 200;
-    private final ArrayList<Vector2d> exitVec = new ArrayList<>(Arrays.asList(new Vector2d(30,230),new Vector2d(700, 230)));
-    private final CStatic wallDownLine     = new CStatic(150,30,750,30);
-    private final CStatic wallUpLine       = new CStatic(150,450,750,450);
-    private final CStatic wallRightLine    = new CStatic(750,30,750,450);
-    private final CStatic wallexitDownLine = new CStatic(150,30,150,200);
-    private final CStatic wallexitUpLine   = new CStatic(150,250,150,450);
-
+    private static final float view_dmax = 400;
+    //private final ArrayList<Vector2d> exitVec = new ArrayList<>(Arrays.asList(new Vector2d(30,230),new Vector2d(700, 230)));
+    private final ArrayList<Vector2d> exitVec = new ArrayList<>(Arrays.asList(new Vector2d(700, 230)));
+    private final CStatic wallDownLine     = new CStatic(0,0,0,0);
+    private final CStatic wallUpLine       = new CStatic(0,0,0,0);
+    private final CStatic wallRightLine    = new CStatic(0,0,0,0);
+    private final CStatic wallexitDownLine = new CStatic(0,0,0,0);
+    private final CStatic wallexitUpLine   = new CStatic(0,0,0,0);
+    //private final CStatic wallDownLine     = new CStatic(150,30,750,30);
+    //private final CStatic wallUpLine       = new CStatic(150,450,750,450);
+    //private final CStatic wallRightLine    = new CStatic(750,30,750,450);
+    //private final CStatic wallexitDownLine = new CStatic(150,30,150,200);
+    //private final CStatic wallexitUpLine   = new CStatic(150,250,150,450);
     public ArrayList<COutput> test = new ArrayList<>();
 
     @Override
@@ -65,9 +71,9 @@ public class SocialForceModel extends ApplicationAdapter {
 
     private void spawnAgent(Vector3 pos){
         //m_pedestrian.add( new CPedestrian( new Vector2d(pos.x, pos.y),
-        //        1, new CGoal( 700, 230, 700, 230).get_goals(), this, new Sprite(personImage)) );
+        //        1, new CGoal( 0, 0, 0, 0).get_goals(), this, new Sprite(personImage)) );
         //m_pedestrian.add(new CPedestrian(false,new Vector2d(pos.x, pos.y),
-        //      1, new CGoal( pos.x, pos.y, pos.x, pos.y).get_goals(), this, new Sprite(personImage)) );
+        //      1, new CGoal( pos.x+initVec.getX(), pos.y+initVec.getY(), pos.x+initVec.getX(), pos.y+initVec.getY()).get_goals(), this, new Sprite(personImage)) );
 
         //ランダムな方向を向いた歩行者を追加
         double initGoalX=MathUtils.random(pos.x-1,pos.x+1);
@@ -167,22 +173,25 @@ public class SocialForceModel extends ApplicationAdapter {
             spawnAgent(touchPos);
         }
 
-        // スペースを押されたとき
+
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
             if(isSpaceButton) isSpaceButton = false;
             else isSpaceButton = true;
         }
-        if(isSpaceButton) update();
-
-
-        // Pを押された時
-        if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.P))
             for(int i =0; i<100; i++) spawnAgent(new Vector3(600, 240, 0));
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.D))
             m_pedestrian.removeAll(m_pedestrian);
-        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.UP))
+            initVec.set(0,1);
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN))
+            initVec.set(0,-1);
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT))
+            initVec.set(1,0);
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
+            initVec.set(-1,0);
+
+
 
         //ゴールについたら消す → exitImageと重なったら削除
         Iterator<CPedestrian> cPedestrianIterator = m_pedestrian.iterator();
@@ -198,6 +207,7 @@ public class SocialForceModel extends ApplicationAdapter {
             if(cPedestrian.getisExitInfo()==false) cPedestrian.setGoalposition(getTargetPedestrian(cPedestrian));
             cPedestrian.setGoalposition(getTargetExit(cPedestrian));
         }
+        if(isSpaceButton) update();
     }
 
 
