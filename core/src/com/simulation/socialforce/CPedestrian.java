@@ -16,6 +16,7 @@ public class CPedestrian implements IPedestrian{
     private Vector2d m_position;
     private Vector2d m_goal;
     private ArrayList<Vector2d> m_goals;
+    private ArrayList<Vector2d> subGoal;
     private Vector2d m_velocity ;
     private double m_speed;
     private SocialForceModel l_env;
@@ -48,7 +49,7 @@ public class CPedestrian implements IPedestrian{
     }
 
     @Override
-    public IPedestrian setGoalposition( final Vector2d p_position )
+    public IPedestrian setGoalposition(  Vector2d p_position )
     {
         this.m_goal = p_position;
         return this;
@@ -130,7 +131,7 @@ public class CPedestrian implements IPedestrian{
 
         final double l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length();
 
-        if ( this.m_goals.isEmpty() ) { m_controlossilation ++; }
+        //if ( this.m_goals.isEmpty() ) { m_controlossilation ++; }
 
         if ( l_check <= this.getM_radius() * 0.5 )
         {
@@ -157,7 +158,7 @@ public class CPedestrian implements IPedestrian{
             }
         }
 
-/*        if( m_position.getX() > 800.0 ) {
+        if( m_position.getX() > 1440.0 ) {
             setposX( 0.0 );
             sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         }
@@ -165,14 +166,14 @@ public class CPedestrian implements IPedestrian{
             setposX( 800.0 );
             sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         }
-        if( m_position.getY() > 600.0 ) {
+        if( m_position.getY() > 900.0 ) {
             setposY( 0.0 );
             sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
         }
         if( m_position.getY() < 0.0 ) {
             setposY( 600.0);
             sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
-        }*/
+        }
 
         return this;
     }
