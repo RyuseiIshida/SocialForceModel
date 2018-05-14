@@ -25,9 +25,8 @@ public class CPedestrian implements IPedestrian{
     private Sprite sprite;
     private boolean aisExitInfo;
 
-    public CPedestrian(boolean isExitInfo,final Vector2d p_position, final double p_speed, final ArrayList<Vector2d> p_goal, final SocialForceModel p_env, Sprite sprites) {
-        m_goals = p_goal;
-        m_goal = p_goal.remove( 0 );
+    public CPedestrian(boolean isExitInfo,final Vector2d p_position, final double p_speed, Vector2d p_goal, final SocialForceModel p_env, Sprite sprites) {
+        m_goal = p_goal;
         m_position = p_position;
         m_speed = p_speed;
         m_velocity = CVector.scale( p_speed, CVector.direction( m_goal, m_position ) );
@@ -38,6 +37,10 @@ public class CPedestrian implements IPedestrian{
         sprite = sprites;
         sprite.setPosition((float)m_position.x-32/2,(float)m_position.y-32/2);
     }
+
+    public void setSubGoal(){
+
+    };
 
     public void setExitInfo(boolean bool) { aisExitInfo = bool;}
     public boolean getisExitInfo(){ return aisExitInfo;}
