@@ -15,8 +15,6 @@ public class CGoal {
         //m_goals.add( new Vector2f( l_x, 265 ) );
         //m_goals.add( new Vector2f( l_x2 + ( 20 + Math.random() * l_x3 ) , 400 + ( Math.random() * 140 ) ) );
         m_goals.add( new Vector2f( l_x , l_x1) );
-        m_goals.add( new Vector2f( l_x , l_x1) );
-        m_goals.add( new Vector2f( l_x , l_x1) );
     }
     public ArrayList<Vector2f> get_goals()
     {

@@ -3,6 +3,7 @@ package com.simulation.socialforce;
 import javax.vecmath.Vector2f;
 import java.util.*;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 
 public class CPedestrian implements IPedestrian{
     private Parameter parameter = new Parameter();
@@ -21,12 +22,11 @@ public class CPedestrian implements IPedestrian{
     private Sprite sprite;
     private boolean aisExitInfo;
 
-    public CPedestrian(boolean isExitInfo,final Vector2f p_position, final float p_speed, Vector2f p_goal, final SocialForceModel p_env, Sprite sprites) {
+    public CPedestrian(boolean isExitInfo,final Vector2f p_position, final float p_speed, Vector2f p_goal,Sprite sprites) {
         m_goal = p_goal;
         m_position = p_position;
         m_speed = p_speed;
         m_velocity = CVector.scale( p_speed, CVector.direction( m_goal, m_position ) );
-        l_env = p_env;
         m_maxspeed = p_speed * m_maxspeedfactor;
         m_controlossilation = 0;
         aisExitInfo = isExitInfo;
@@ -123,7 +123,21 @@ public class CPedestrian implements IPedestrian{
 
 
     @Override
-    public IPedestrian call() throws Exception {
+    public IPedestrian call(double step) throws Exception {
+
+        //ルール
+        //ゴールが視界に入っているか
+        this.setGoalposition(getTargetExit());
+        //ゴールを知っていない場合,視界内にいるゴールを目指すエージェントに向かう
+                if(this.getisExitInfo()==false) {
+                    this.setGoalposition(getTargetPedestrian_turn(this));
+                    this.setGoalposition(getTargetPedestrian(this));
+                    if (step % 50 == 0) {
+                        int randomx = MathUtils.random(-200, 200);
+                        int randomy = MathUtils.random(-200, 200);
+                        this.setGoalposition(new Vector2f(this.getPosition().x + randomx, cPedestrian.getPosition().y + randomy));
+                    }
+                }
 
         final float l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length();
 

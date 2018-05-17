@@ -33,6 +33,7 @@ public class SocialForceModel extends ApplicationAdapter {
     private boolean isGoalInfo = false; //Fボタン
     private Vector2f initVec = new Vector2f(0,0);
     public ArrayList<COutput> test = new ArrayList<>();
+    public double step=0;
 
     @Override
     public void create () {
@@ -49,7 +50,7 @@ public class SocialForceModel extends ApplicationAdapter {
 
     private void spawnInitAgent(){
         m_pedestrian.add( new CPedestrian(true,new Vector2f(200, 80),
-                1, new Vector2f(100,100), this, new Sprite(personImage)) );
+                1, new Vector2f(100,100),new Sprite(personImage)) );
     }
 
     private void spawnAgent(Vector3 pos){
@@ -58,7 +59,7 @@ public class SocialForceModel extends ApplicationAdapter {
         //ゴール情報あり
         if(isGoalInfo){
             m_pedestrian.add( new CPedestrian(true,new Vector2f(pos.x, pos.y),
-                    1, new Vector2f(parameter.exitVec.get(0).x,parameter.exitVec.get(0).y), this, new Sprite(personImage)) );
+                    1, new Vector2f(parameter.exitVec.get(0).x,parameter.exitVec.get(0).y), new Sprite(personImage)) );
         }
         //ゴール情報なし
         else {
@@ -69,7 +70,7 @@ public class SocialForceModel extends ApplicationAdapter {
             float initDirectionX = MathUtils.random(pos.x - 1, pos.x + 1);
             float initDirectionY = MathUtils.random(pos.y - 1, pos.y + 1);
             m_pedestrian.add(new CPedestrian(false, new Vector2f(pos.x, pos.y),
-                    1, new Vector2f(initDirectionX, initDirectionY), this, new Sprite(personImage)));
+                    1, new Vector2f(initDirectionX, initDirectionY),new Sprite(personImage)));
         }
     }
 
@@ -107,7 +108,7 @@ public class SocialForceModel extends ApplicationAdapter {
 
     @Override
     public void render () {
-
+        step++;
 
         Gdx.gl.glClearColor(255, 255, 255, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -211,7 +212,7 @@ public class SocialForceModel extends ApplicationAdapter {
         }
 
         if(isStart){
-            update();
+            update(step);
 //            //ステップ毎のエージェントの行動
 //            for (CPedestrian cPedestrian : m_pedestrian) {
 //                //ゴールが視界に入っているか
