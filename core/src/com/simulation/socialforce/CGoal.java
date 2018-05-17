@@ -7,6 +7,7 @@ public class CGoal {
 
     private ArrayList<Vector2f> m_goals = new ArrayList<>();
 
+
     public CGoal( final float l_x, final float l_x1, final float l_x2, final float l_x3  )
     {
         //m_goals.add( new Vector2f( l_x , 20 + ( Math.random() * 100 )) );
