@@ -13,9 +13,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.sun.xml.internal.bind.v2.util.QNameMap;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Vector2f;
 import java.util.*;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,7 +35,7 @@ public class SocialForceModel extends ApplicationAdapter {
     private ArrayList<Sprite> exit = new ArrayList<>();
     private boolean isStart = false; //スペースボタン
     private boolean isGoalInfo = false; //Fボタン
-    private Vector2d initVec = new Vector2d(0,0);
+    private Vector2f initVec = new Vector2f(0,0);
 
     private int step = 0;
     private int num = 0;
@@ -45,8 +44,8 @@ public class SocialForceModel extends ApplicationAdapter {
     private static final double m_GaussianStandardDeviation = 0.26;
     private static final float view_phi_theta = 360;
     private static final float view_dmax = 800;
-    //private final ArrayList<Vector2d> exitVec = new ArrayList<>(Arrays.asList(new Vector2d(30,230),new Vector2d(700, 230)));
-    private final ArrayList<Vector2d> exitVec = new ArrayList<>(Arrays.asList(new Vector2d(500, 600)));
+    //private final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(30,230),new Vector2f(700, 230)));
+    private final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(500, 600)));
     //private final ArrayList<Rect> arrayRect = new ArrayList<>();
     private final ArrayList<Rect> arrayRect = new ArrayList<>(Arrays.asList(new Rect(300,200,400,300)));
     private final CStatic wallDownLine     = new CStatic(0,0,0,0);
@@ -75,35 +74,35 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnInitAgent(){
-        m_pedestrian.add( new CPedestrian(true,new Vector2d(200, 80),
-                1, new CGoal(exitVec.get(0).x,exitVec.get(0).y,exitVec.get(0).x,exitVec.get(0).y).get_goals(), this, new Sprite(personImage)) );
+        m_pedestrian.add( new CPedestrian(true,new Vector2f(200, 80),
+                1, new Vector2f(100,100), this, new Sprite(personImage)) );
     }
 
     private void spawnAgent(Vector3 pos){
-        //m_pedestrian.add( new CPedestrian( new Vector2d(pos.x, pos.y),
+        //m_pedestrian.add( new CPedestrian( new Vector2f(pos.x, pos.y),
         //        1, new CGoal( 0, 0, 0, 0).get_goals(), this, new Sprite(personImage)) );
         //ゴール情報あり
         if(isGoalInfo){
-            m_pedestrian.add( new CPedestrian(true,new Vector2d(pos.x, pos.y),
+            m_pedestrian.add( new CPedestrian(true,new Vector2f(pos.x, pos.y),
                     1, new CGoal(exitVec.get(0).x,exitVec.get(0).y,exitVec.get(0).x,exitVec.get(0).y).get_goals(), this, new Sprite(personImage)) );
         }
         //ゴール情報なし
         else {
-            //m_pedestrian.add(new CPedestrian(false,new Vector2d(pos.x, pos.y),
+            //m_pedestrian.add(new CPedestrian(false,new Vector2f(pos.x, pos.y),
             //        1, new CGoal( pos.x+initVec.getX(), pos.y+initVec.getY(), pos.x+initVec.getX(), pos.y+initVec.getY()).get_goals(), this, new Sprite(personImage)) );
 
             //ランダムな方向を向いた歩行者を追加
-            double initDirectionX = MathUtils.random(pos.x - 1, pos.x + 1);
-            double initDirectionY = MathUtils.random(pos.y - 1, pos.y + 1);
-            m_pedestrian.add(new CPedestrian(false, new Vector2d(pos.x, pos.y),
+            float initDirectionX = MathUtils.random(pos.x - 1, pos.x + 1);
+            float initDirectionY = MathUtils.random(pos.y - 1, pos.y + 1);
+            m_pedestrian.add(new CPedestrian(false, new Vector2f(pos.x, pos.y),
                     1, new CGoal(initDirectionX, initDirectionY, initDirectionX, initDirectionY).get_goals(), this, new Sprite(personImage)));
         }
     }
 
     private void spawnExit(){
-        for (Vector2d exitvec : exitVec) {
+        for (Vector2f exitvec : exitVec) {
             Sprite spexit = new Sprite(exitImage);
-            spexit.setPosition((float)exitvec.x-16,(float)exitvec.y-16);
+            spexit.setPosition(exitvec.x-16,exitvec.y-16);
             exit.add(spexit);
         }
     }
@@ -250,7 +249,7 @@ public class SocialForceModel extends ApplicationAdapter {
                     if (step % 50 == 0) {
                         int randomx = MathUtils.random(-200,200);
                         int randomy = MathUtils.random(-200,200);
-                        cPedestrian.setGoalposition(new Vector2d(cPedestrian.getPosition().x+randomx,cPedestrian.getPosition().y+randomy));
+                        cPedestrian.setGoalposition(new Vector2f(cPedestrian.getPosition().x+randomx,cPedestrian.getPosition().y+randomy));
                     }
                 }
                 //getSubGoal(cPedestrian);
@@ -293,44 +292,44 @@ public class SocialForceModel extends ApplicationAdapter {
                 });
     }
 
-    public int getDistance(double x1, double y1, double x2, double y2) {
-        double distance = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+    public int getDistance(float x1, float y1, float x2, float y2) {
+        float distance = (float)Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
         return (int) distance;
     }
 
-    public float getTheta(double x1, double y1, double x2, double y2){
-        double radian = Math.atan2(y2-y1, x2-x1);
-        double degree = radian * 180d / Math.PI;
+    public float getTheta(float x1, float y1, float x2, float y2){
+        float radian = (float)Math.atan2(y2-y1, x2-x1);
+        float degree = (float)(radian * 180d / Math.PI);
         //if(degree<0) degree = 360 + degree;
         return (float)degree;
     }
 
-    public Vector2d getTargetPedestrian_turn(CPedestrian ped){
-        Vector2d pedvec = new Vector2d(ped.getGoalposition().x,ped.getGoalposition().y);
+    public Vector2f getTargetPedestrian_turn(CPedestrian ped){
+        Vector2f pedvec = new Vector2f(ped.getGoalposition().x,ped.getGoalposition().y);
         for (CPedestrian mvec : m_pedestrian) {
             int distance = getDistance(ped.getPosition().x,ped.getPosition().y,mvec.getPosition().x,mvec.getPosition().y);
             //対象 - 向かっている方向 = delta_x
             //view_phi-theta/2 - delta_x > 0 -> 重なっている
-            double delta_x = getTheta(ped.getPosition().x,ped.getPosition().y,mvec.getPosition().x,mvec.getPosition().y)
+            float delta_x = getTheta(ped.getPosition().x,ped.getPosition().y,mvec.getPosition().x,mvec.getPosition().y)
                     - getTheta(ped.getPosition().x,ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
             if(delta_x < 0) delta_x *= -1;
             if(mvec.getisExitInfo() && view_dmax >= distance && view_phi_theta/2 - delta_x >= 0 ){
-                double d = getDistance(mvec.getPosition().x,mvec.getPosition().y,mvec.getGoalposition().x,mvec.getGoalposition().y);
-                double tmpx = mvec.getGoalposition().x / d;
-                double tmpy = mvec.getGoalposition().y / d;
+                float d = getDistance(mvec.getPosition().x,mvec.getPosition().y,mvec.getGoalposition().x,mvec.getGoalposition().y);
+                float tmpx = mvec.getGoalposition().x / d;
+                float tmpy = mvec.getGoalposition().y / d;
                 pedvec.set(pedvec.x+tmpx,pedvec.y+tmpy);
             }
         }
         return pedvec;
     }
 
-    public Vector2d getTargetPedestrian(CPedestrian ped){
-        Vector2d pedvec = new Vector2d(ped.getGoalposition().x,ped.getGoalposition().y);
+    public Vector2f getTargetPedestrian(CPedestrian ped){
+        Vector2f pedvec = new Vector2f(ped.getGoalposition().x,ped.getGoalposition().y);
         for (CPedestrian mvec : m_pedestrian) {
             int distance = getDistance(ped.getPosition().x,ped.getPosition().y,mvec.getPosition().x,mvec.getPosition().y);
             //対象 - 向かっている方向 = delta_x
             //view_phi-theta/2 - delta_x > 0 -> 重なっている
-            double delta_x = getTheta(ped.getPosition().x,ped.getPosition().y,mvec.getPosition().x,mvec.getPosition().y)
+            float delta_x = getTheta(ped.getPosition().x,ped.getPosition().y,mvec.getPosition().x,mvec.getPosition().y)
                     - getTheta(ped.getPosition().x,ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
             if(delta_x < 0) delta_x *= -1;
             if(mvec.getisExitInfo() && view_dmax >= distance && view_phi_theta/2 - delta_x >= 0 ) pedvec.set(mvec.getPosition().x,mvec.getPosition().y);
@@ -338,13 +337,13 @@ public class SocialForceModel extends ApplicationAdapter {
         return pedvec;
     }
 
-    public Vector2d getTargetExit(CPedestrian ped){
-        Vector2d exitvec = new Vector2d(ped.getGoalposition().x,ped.getGoalposition().y);
-        for (Vector2d  vec: exitVec) {
+    public Vector2f getTargetExit(CPedestrian ped){
+        Vector2f exitvec = new Vector2f(ped.getGoalposition().x,ped.getGoalposition().y);
+        for (Vector2f  vec: exitVec) {
             int distance = getDistance(ped.getPosition().x,ped.getPosition().y,vec.x,vec.y);
             //対象 - 向かっている方向 = delta_x
             //view_phi-theta/2 - delta_x > 0 -> 重なっている
-            double delta_x = getTheta(ped.getPosition().x,ped.getPosition().y,vec.x,vec.y)
+            float delta_x = getTheta(ped.getPosition().x,ped.getPosition().y,vec.x,vec.y)
                 - getTheta(ped.getPosition().x,ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
             if(delta_x < 0) delta_x *= -1;
             if(view_dmax >= distance && view_phi_theta/2 - delta_x >= 0 ){
@@ -354,11 +353,11 @@ public class SocialForceModel extends ApplicationAdapter {
         }
     return exitvec;
     }
-    public boolean judgeIntersected(double ax,double ay,double bx,double by,double cx,double cy,double dx,double dy){
-        double ta = (cx - dx) * (ay - cy) + (cy - dy) * (cx - ax);
-        double tb = (cx - dx) * (by - cy) + (cy - dy) * (cx - bx);
-        double tc = (ax - bx) * (cy - ay) + (ay - by) * (ax - cx);
-        double td = (ax - bx) * (dy - ay) + (ay - by) * (ax - dx);
+    public boolean judgeIntersected(float ax,float ay,float bx,float by,float cx,float cy,float dx,float dy){
+        float ta = (cx - dx) * (ay - cy) + (cy - dy) * (cx - ax);
+        float tb = (cx - dx) * (by - cy) + (cy - dy) * (cx - bx);
+        float tc = (ax - bx) * (cy - ay) + (ay - by) * (ax - cx);
+        float td = (ax - bx) * (dy - ay) + (ay - by) * (ax - dx);
         return tc * td < 0 && ta * tb < 0;
         // return tc * td <= 0 && ta * tb <= 0; // 端点を含む場合
     }
@@ -384,18 +383,18 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     public void setSubGoal(CPedestrian ped){
-        Vector2d goalVec;
+        Vector2f goalVec;
         for(Rect rect : arrayRect){
             //交差判定
             if(judgeIntersectedRect(ped,rect)){
-                Map<Vector2d, Double> goalDis = new HashMap<>();
-                goalDis.put(rect.leftButtom, (double) getDistance(ped.getGoalposition().x, ped.getGoalposition().y, rect.leftButtom.x, rect.leftButtom.y));
-                goalDis.put(rect.leftTop, (double) getDistance(ped.getGoalposition().x, ped.getGoalposition().y, rect.leftTop.x, rect.leftTop.y));
-                goalDis.put(rect.rightButtom, (double) getDistance(ped.getGoalposition().x, ped.getGoalposition().y, rect.rightButtom.x, rect.rightButtom.y));
-                goalDis.put(rect.rightTop, (double) getDistance(ped.getGoalposition().x, ped.getGoalposition().y, rect.rightTop.x, rect.rightTop.y));
-                List<Entry<Vector2d, Double>> list_entries = new ArrayList<Entry<Vector2d, Double>>(goalDis.entrySet());
-                Collections.sort(list_entries, new Comparator<Entry<Vector2d, Double>>() {
-                    public int compare(Entry<Vector2d, Double> obj1, Entry<Vector2d, Double> obj2) {
+                Map<Vector2f, Float> goalDis = new HashMap<>();
+                goalDis.put(rect.leftButtom, (float) getDistance(ped.getGoalposition().x, ped.getGoalposition().y, rect.leftButtom.x, rect.leftButtom.y));
+                goalDis.put(rect.leftTop, (float) getDistance(ped.getGoalposition().x, ped.getGoalposition().y, rect.leftTop.x, rect.leftTop.y));
+                goalDis.put(rect.rightButtom, (float) getDistance(ped.getGoalposition().x, ped.getGoalposition().y, rect.rightButtom.x, rect.rightButtom.y));
+                goalDis.put(rect.rightTop, (float) getDistance(ped.getGoalposition().x, ped.getGoalposition().y, rect.rightTop.x, rect.rightTop.y));
+                List<Entry<Vector2f, Float>> list_entries = new ArrayList<Entry<Vector2f, Float>>(goalDis.entrySet());
+                Collections.sort(list_entries, new Comparator<Entry<Vector2f, Float>>() {
+                    public int compare(Entry<Vector2f, Float> obj1, Entry<Vector2f, Float> obj2) {
                         return obj1.getValue().compareTo(obj2.getValue());
                     }
                 });
@@ -405,7 +404,7 @@ public class SocialForceModel extends ApplicationAdapter {
                 int tmpGoal2 = getDistance(ped.getPosition().x, ped.getPosition().y, list_entries.get(2).getKey().x, list_entries.get(2).getKey().y);
                 if (tmpGoal1 < tmpGoal2) goalVec = list_entries.get(1).getKey();
                 else goalVec = list_entries.get(2).getKey();
-                ped.setSubGoalposition(new Vector2d(goalVec.x+50,goalVec.y));
+                //ped.setSubGoalposition(new Vector2f(goalVec.x+50,goalVec.y));
                 //ゴールベクトルが重なっていたら
                 //if (judgeIntersectedRect(ped,rect) setSubGoal(ped);
                 //else ped.setGoalposition(goalVec);
@@ -414,7 +413,7 @@ public class SocialForceModel extends ApplicationAdapter {
     }
     public void getSubGoal(CPedestrian ped){
         for (Rect rect : arrayRect) {
-            double pedDegree = getTheta(ped.getPosition().x, ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
+            float pedDegree = getTheta(ped.getPosition().x, ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
             //rect.leftButtom = (300.0, 400.0)
             //rect.leftTop = (300.0, 430.0)
             //rect.rightButtom = (700.0, 400.0)
@@ -425,16 +424,16 @@ public class SocialForceModel extends ApplicationAdapter {
             //rect_leftTop = 142
             //rect_rightButtom = 16
             //rect_rightTop = 22
-            double rect_leftButtom = getTheta(ped.getPosition().x,ped.getPosition().y,rect.leftButtom.x,rect.leftButtom.y);
+            float rect_leftButtom = getTheta(ped.getPosition().x,ped.getPosition().y,rect.leftButtom.x,rect.leftButtom.y);
             //System.out.println("rect_leftButtom = " + rect_leftButtom);
-            double rect_leftTop = getTheta(ped.getPosition().x,ped.getPosition().y,rect.leftTop.x,rect.leftTop.y);
+            float rect_leftTop = getTheta(ped.getPosition().x,ped.getPosition().y,rect.leftTop.x,rect.leftTop.y);
             //System.out.println("rect_leftTop = " + rect_leftTop);
-            double rect_rightButtom = getTheta(ped.getPosition().x,ped.getPosition().y,rect.rightButtom.x,rect.rightButtom.y);
+            float rect_rightButtom = getTheta(ped.getPosition().x,ped.getPosition().y,rect.rightButtom.x,rect.rightButtom.y);
             //System.out.println("rect_rightButtom = " + rect_rightButtom);
-            double rect_rightTop = getTheta(ped.getPosition().x,ped.getPosition().y,rect.rightTop.x,rect.rightTop.y);
+            float rect_rightTop = getTheta(ped.getPosition().x,ped.getPosition().y,rect.rightTop.x,rect.rightTop.y);
             //System.out.println("rect_rightTop = " + rect_rightTop);
 
-            ArrayList<Vector2d> tmpRect = new ArrayList<>();
+            ArrayList<Vector2f> tmpRect = new ArrayList<>();
             if(pedDegree > rect_leftButtom) tmpRect.add(rect.leftButtom);
             if(pedDegree > rect_leftTop); tmpRect.add(rect.leftTop);
             if(pedDegree > rect_rightButtom); tmpRect.add(rect.rightButtom);
@@ -445,22 +444,22 @@ public class SocialForceModel extends ApplicationAdapter {
             }
             if(tmpRect.size() == 2){ //角度が小さい方に進む
                 System.out.println("2てん");
-                double tmpDegree0 = getTheta(ped.getPosition().x,ped.getPosition().y,tmpRect.get(0).x,tmpRect.get(0).y);
-                double tmpDegree1 = getTheta(ped.getPosition().x,ped.getPosition().y,tmpRect.get(1).x,tmpRect.get(1).y);
+                float tmpDegree0 = getTheta(ped.getPosition().x,ped.getPosition().y,tmpRect.get(0).x,tmpRect.get(0).y);
+                float tmpDegree1 = getTheta(ped.getPosition().x,ped.getPosition().y,tmpRect.get(1).x,tmpRect.get(1).y);
                 if(tmpDegree0 < tmpDegree1) ped.setGoalposition(tmpRect.get(0));
                 else ped.setGoalposition(tmpRect.get(1));
             }
             if(tmpRect.size() == 3){ //関係のないmaxシータをサブゴールにする //一番近い点
                 System.out.println("3てん");
-                //double values[] = {rect_leftButtom,rect_leftTop,rect_rightButtom,rect_rightTop};
-                double values[] = {
+                //float values[] = {rect_leftButtom,rect_leftTop,rect_rightButtom,rect_rightTop};
+                float values[] = {
                         getDistance(ped.getPosition().x,ped.getPosition().y,rect.leftButtom.x,rect.leftButtom.y),
                         getDistance(ped.getPosition().x,ped.getPosition().y,rect.leftTop.x,rect.leftTop.y),
                         getDistance(ped.getPosition().x,ped.getPosition().y,rect.rightButtom.x,rect.rightButtom.y),
                         getDistance(ped.getPosition().x,ped.getPosition().y,rect.rightTop.x,rect.rightTop.y),
                 };
-                double max = values[0];
-                double min = values[0];
+                float max = values[0];
+                float min = values[0];
                 int max_index = 0;
                 int min_index = 0;
                 for (int i = 1; i<values.length; i++) {
@@ -476,26 +475,26 @@ public class SocialForceModel extends ApplicationAdapter {
                 switch (min_index) {
                     case 0:
                         //ped.setGoalposition(rect.leftButtom);
-                        ped.setGoalposition(new Vector2d(rect.leftButtom.x-50, rect.leftButtom.y+30));
+                        ped.setGoalposition(new Vector2f(rect.leftButtom.x-50, rect.leftButtom.y+30));
                         break;
                     case 1:
                         //ped.setGoalposition(rect.leftTop);
-                        ped.setGoalposition(new Vector2d(rect.leftTop.x-30,rect.leftTop.y+30));
+                        ped.setGoalposition(new Vector2f(rect.leftTop.x-30,rect.leftTop.y+30));
                         break;
                     case 2:
                         //ped.setGoalposition(rect.rightButtom);
-                        ped.setGoalposition(new Vector2d(rect.rightButtom.x+50, rect.rightButtom.y+30));
+                        ped.setGoalposition(new Vector2f(rect.rightButtom.x+50, rect.rightButtom.y+30));
                         break;
                     default:
                         //ped.setGoalposition(rect.rightTop);
-                        ped.setGoalposition(new Vector2d(rect.rightTop.x+30, rect.rightTop.y+30));
+                        ped.setGoalposition(new Vector2f(rect.rightTop.x+30, rect.rightTop.y+30));
                 }
             }
             //else System.out.println("当たっていない");
         }
     }
     public void changeGoal(CPedestrian ped){
-        double distance = getDistance(ped.getPosition().x,ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
+        float distance = getDistance(ped.getPosition().x,ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
         if (distance > 30) {
          //   next();
         }

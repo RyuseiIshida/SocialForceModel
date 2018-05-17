@@ -1,6 +1,6 @@
 package com.simulation.socialforce;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Vector2f;
 
 
 public class CStatic {
@@ -44,23 +44,23 @@ public class CStatic {
 
     public final CWall getwall1()
     {
-        return new CWall( new Vector2d( m_X1, m_Y1 ), new Vector2d( m_X1 + m_width, m_Y1 ) ) ;
+        return new CWall( new Vector2f( m_X1, m_Y1 ), new Vector2f( m_X1 + m_width, m_Y1 ) ) ;
     }
 
     public final CWall getwall2()
     {
-        return new CWall( new Vector2d( m_X1, m_Y1 ), new Vector2d( ( m_X1 ), ( m_Y1 + m_height ) ) ) ;
+        return new CWall( new Vector2f( m_X1, m_Y1 ), new Vector2f( ( m_X1 ), ( m_Y1 + m_height ) ) ) ;
     }
 
 
     public final CWall getwall3()
     {
-        return new CWall( new Vector2d( ( m_X1 + m_width ), ( m_Y1 + m_height ) ), new Vector2d( m_X1 + m_width, m_Y1 ) ) ;
+        return new CWall( new Vector2f( ( m_X1 + m_width ), ( m_Y1 + m_height ) ), new Vector2f( m_X1 + m_width, m_Y1 ) ) ;
     }
 
     public final CWall getwall4()
     {
-        return new CWall( new Vector2d( ( m_X1 + m_width ), ( m_Y1 + m_height ) ), new Vector2d( ( m_X1 ), ( m_Y1 + m_height ) ) ) ;
+        return new CWall( new Vector2f( ( m_X1 + m_width ), ( m_Y1 + m_height ) ), new Vector2f( ( m_X1 ), ( m_Y1 + m_height ) ) ) ;
     }
 
     public final int getWidth() {

@@ -2,10 +2,10 @@ package com.simulation.socialforce;
 
 public class COutput {
 
-    public double m_selfX;
-    public double m_selfY;
-    public double m_force;
-    public COutput( double p_selfX, double p_selfY, double p_force )
+    public float m_selfX;
+    public float m_selfY;
+    public float m_force;
+    public COutput( float p_selfX, float p_selfY, float p_force )
     {
         m_selfX = p_selfX;
         m_selfY = p_selfY;

@@ -1,6 +1,6 @@
 package com.simulation.socialforce;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Vector2f;
 import java.util.concurrent.Callable;
 
 public interface IPedestrian extends Callable<IPedestrian>{
@@ -10,54 +10,54 @@ public interface IPedestrian extends Callable<IPedestrian>{
      * returns the current goal position
      * @return goal position
      **/
-    Vector2d getGoalposition();
+    Vector2f getGoalposition();
 
     /**
      * set the goal position
      * @return the object itself
      **/
-    IPedestrian setGoalposition(Vector2d p_position);
+    IPedestrian setGoalposition(Vector2f p_position);
 
     /**
      * returns the current position
      * @return current position
      **/
-    Vector2d getPosition();
+    Vector2f getPosition();
 
     /**
      * set the current position
      * @return the object itself
      **/
-    IPedestrian setPosition(final double p_x, final double p_y);
+    IPedestrian setPosition(final float p_x, final float p_y);
 
     /**
      * returns the current velocity
      * @return current velocity
      **/
-    Vector2d getVelocity();
+    Vector2f getVelocity();
 
     /**
      * returns the current speed
      * @return current speed
      **/
-    double getSpeed();
+    float getSpeed();
 
     /**
      * set the current position's X
      * @return the object itself
      **/
-    IPedestrian setposX(final double p_posX);
+    IPedestrian setposX(final float p_posX);
 
     /**
      * set the current position's Y
      * @return the object itself
      **/
-    IPedestrian setposY(final double p_posY);
+    IPedestrian setposY(final float p_posY);
 
     /**
      * calculate accelaration
      * @return accelaration
      **/
-    Vector2d accelaration();
+    Vector2f accelaration();
 
 }

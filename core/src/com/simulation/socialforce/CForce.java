@@ -1,81 +1,82 @@
 package com.simulation.socialforce;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Vector2f;
+import javax.vecmath.Vector2f;
 import java.util.ArrayList;
 
 public class CForce {
 
-    private static final double m_detta = 2;
-    private static final double m_lamda = 0.2;
-    private static final double m_repulsefactortoped = 2.1;
-    private static final double m_sigma = 0.3;
-    private static final double m_repulsefactortowall = 1;
-    private static final double m_R = 0.2;
+    private static final float m_detta = 2f;
+    private static final float m_lamda = 0.2f;
+    private static final float m_repulsefactortoped = 2.1f;
+    private static final float m_sigma = 0.3f;
+    private static final float m_repulsefactortowall = 1f;
+    private static final float m_R = 0.2f;
 
 
-    static Vector2d drivingForce( final Vector2d p_desiredvelocity, final Vector2d p_current )
+    static Vector2f drivingForce( final Vector2f p_desiredvelocity, final Vector2f p_current )
     {
         return CVector.sub( p_desiredvelocity, p_current );
     }
 
-    static double calculateb( final CPedestrian p_self, final CPedestrian p_other )
+    static float calculateb( final CPedestrian p_self, final CPedestrian p_other )
     {
-        final Vector2d l_tempvector = CVector.sub( p_self.getPosition(), p_other.getPosition() );
+        final Vector2f l_tempvector = CVector.sub( p_self.getPosition(), p_other.getPosition() );
 
-        final double l_tempvalue = CVector.sub( l_tempvector, CVector.scale( m_detta, p_other.getVelocity() ) ).length();
+        final float l_tempvalue = CVector.sub( l_tempvector, CVector.scale( m_detta, p_other.getVelocity() ) ).length();
 
-        return Math.sqrt( ( l_tempvector.length() + l_tempvalue ) * ( l_tempvector.length() + l_tempvalue )
+        return (float)Math.sqrt( ( l_tempvector.length() + l_tempvalue ) * ( l_tempvector.length() + l_tempvalue )
                                          - ( p_other.getSpeed() * p_other.getSpeed() ) );
     }
 
-    static Vector2d repulseothers( final CPedestrian p_self, final CPedestrian p_other )
+    static Vector2f repulseothers( final CPedestrian p_self, final CPedestrian p_other )
     {
-        final Vector2d l_normvector = CVector.direction( p_other.getPosition(), p_self.getPosition() );
+        final Vector2f l_normvector = CVector.direction( p_other.getPosition(), p_self.getPosition() );
 
-        final double l_temp = - calculateb( p_self, p_other ) / m_sigma;
+        final float l_temp = - calculateb( p_self, p_other ) / m_sigma;
 
-        return CVector.scale( m_repulsefactortoped * Math.exp( l_temp ), l_normvector );
+        return CVector.scale( m_repulsefactortoped * (float)Math.exp( l_temp ), l_normvector );
     }
 
-    static Vector2d repulseotherPed( final CPedestrian p_self, final CPedestrian p_other, ArrayList<COutput> test )
+    static Vector2f repulseotherPed( final CPedestrian p_self, final CPedestrian p_other, ArrayList<COutput> test )
     {
-        final double l_radious = p_self.getM_radius() * 0.5 + p_other.getM_radius() * 0.5 ;
-        final double l_temp = l_radious - CVector.distance( p_self.getPosition(), p_other.getPosition() );
+        final float l_radious = p_self.getM_radius() * 0.5f + p_other.getM_radius() * 0.5f ;
+        final float l_temp = l_radious - CVector.distance( p_self.getPosition(), p_other.getPosition() );
         //System.out.println( p_self + " dis " + l_temp );
         //if ( l_temp >= -4 ) {
         //test.add( new COutput( p_self.getPosition().x,p_self.getPosition().y, m_repulsefactortoped * Math.exp( l_temp / m_sigma ) * anisotropic_character( p_self.getPosition(),
                // p_other.getPosition() ) ) );
            // System.out.println( p_self.getPosition()+" self "+m_repulsefactortoped * Math.exp( l_temp / m_sigma )*anisotropic_character( p_self.getPosition(),
                    // p_other.getPosition() ) +" other "+ p_other.getPosition());
-        return CVector.scale( m_repulsefactortoped * Math.exp( l_temp / m_sigma ) * anisotropic_character( p_self.getPosition(),
+        return CVector.scale( m_repulsefactortoped * (float)Math.exp( l_temp / m_sigma ) * anisotropic_character( p_self.getPosition(),
                     p_other.getPosition() ), CVector.normalize( CVector.sub( p_self.getPosition(), p_other.getPosition() ) ) );
         //}
 
-        //return new Vector2d( 0, 0 );
+        //return new Vector2f( 0, 0 );
     }
 
-    static Vector2d repulsewall( final CPedestrian p_self, final CWall p_wall, ArrayList<COutput> test )
+    static Vector2f repulsewall( final CPedestrian p_self, final CWall p_wall, ArrayList<COutput> test )
     {
-        final Vector2d l_normposition = CVector.perpendicular_derection( p_self.getPosition(), p_wall );
+        final Vector2f l_normposition = CVector.perpendicular_derection( p_self.getPosition(), p_wall );
 
         if ( CVector.check( l_normposition, p_wall.getPoint1(), p_wall.getPoint2() ) )
         {
-            final double l_temp = p_self.getM_radius() - CVector.distance( p_self.getPosition(), l_normposition );
-            double p = m_repulsefactortowall * Math.exp( l_temp / m_R );
+            final float l_temp = p_self.getM_radius() - CVector.distance( p_self.getPosition(), l_normposition );
+            float p = m_repulsefactortowall * (float)Math.exp( l_temp / m_R );
             if ( l_temp >= - 4 ) {
                 //test.add( new COutput( p_self.getPosition().x,p_self.getPosition().y, p ) );
 
                 //System.out.println( p_self.getPosition()+" self "+m_repulsefactortowall * Math.exp( l_temp / m_R )+" wall "+ l_normposition);
-                return CVector.scale( m_repulsefactortowall * Math.exp( l_temp / m_R ), CVector.normalize(
+                return CVector.scale( m_repulsefactortowall * (float)Math.exp( l_temp / m_R ), CVector.normalize(
                         CVector.sub( p_self.getPosition(), l_normposition ) ) );
             }
         }
-        return new Vector2d(0,0);
+        return new Vector2f(0,0);
     }
 
-    static double anisotropic_character( final Vector2d p_v1, final Vector2d p_v2 )
+    static float anisotropic_character( final Vector2f p_v1, final Vector2f p_v2 )
     {
-        return m_lamda + ( 1 -m_lamda )*( ( 1 + CVector.angle( p_v1, p_v2 ) ) * 0.5 );
+        return m_lamda + ( 1 -m_lamda )*( ( 1 + CVector.angle( p_v1, p_v2 ) ) * 0.5f );
     }
 
 }

@@ -1,6 +1,6 @@
 package com.simulation.socialforce;
 
-import javax.vecmath.Vector2d;
+import javax.vecmath.Vector2f;
 import java.util.ArrayList;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
@@ -10,22 +10,22 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
  */
 public class CPedestrian implements IPedestrian{
 
-    private static final double m_maxspeedfactor = 2.5;
-    private static final double m_maxforce = 0.1;
-    private static final double m_radius = 20;
-    private Vector2d m_position;
-    private Vector2d m_goal;
-    private ArrayList<Vector2d> m_goals;
-    private ArrayList<Vector2d> subGoal;
-    private Vector2d m_velocity ;
-    private double m_speed;
+    private static final float m_maxspeedfactor = 2.5f;
+    private static final float m_maxforce = 0.1f;
+    private static final float m_radius = 20f;
+    private Vector2f m_position;
+    private Vector2f m_goal;
+    private ArrayList<Vector2f> m_goals;
+    private ArrayList<Vector2f> subGoal;
+    private Vector2f m_velocity ;
+    private float m_speed;
     private SocialForceModel l_env;
-    private double m_maxspeed;
+    private float m_maxspeed;
     private int m_controlossilation;
     private Sprite sprite;
     private boolean aisExitInfo;
 
-    public CPedestrian(boolean isExitInfo,final Vector2d p_position, final double p_speed, Vector2d p_goal, final SocialForceModel p_env, Sprite sprites) {
+    public CPedestrian(boolean isExitInfo,final Vector2f p_position, final float p_speed, Vector2f p_goal, final SocialForceModel p_env, Sprite sprites) {
         m_goal = p_goal;
         m_position = p_position;
         m_speed = p_speed;
@@ -35,7 +35,7 @@ public class CPedestrian implements IPedestrian{
         m_controlossilation = 0;
         aisExitInfo = isExitInfo;
         sprite = sprites;
-        sprite.setPosition((float)m_position.x-32/2,(float)m_position.y-32/2);
+        sprite.setPosition(m_position.x-32/2,m_position.y-32/2);
     }
 
     public void setSubGoal(){
@@ -47,60 +47,60 @@ public class CPedestrian implements IPedestrian{
     public Sprite getSprite(){return sprite;}
 
     @Override
-    public Vector2d getGoalposition() {
+    public Vector2f getGoalposition() {
         return m_goal;
     }
 
     @Override
-    public IPedestrian setGoalposition(  Vector2d p_position )
+    public IPedestrian setGoalposition(  Vector2f p_position )
     {
         this.m_goal = p_position;
         return this;
     }
 
     @Override
-    public Vector2d getPosition() {
+    public Vector2f getPosition() {
         return m_position;
     }
 
     @Override
-    public IPedestrian setPosition( final double p_x, final double p_y ) {
-        this.m_position = new Vector2d( p_x, p_y );
-        sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
+    public IPedestrian setPosition( final float p_x, final float p_y ) {
+        this.m_position = new Vector2f( p_x, p_y );
+        sprite.setPosition(m_position.x-16,m_position.y-16);
         return this;
     }
 
     @Override
-    public Vector2d getVelocity() {
+    public Vector2f getVelocity() {
         return m_velocity;
     }
 
     @Override
-    public double getSpeed() {
+    public float getSpeed() {
         return m_speed;
     }
 
 
     @Override
-    public IPedestrian setposX( final double p_posX ) {
+    public IPedestrian setposX( final float p_posX ) {
         this.m_position.x = p_posX;
-        sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
+        sprite.setPosition(m_position.x-16,m_position.y-16);
         return this;
     }
 
     @Override
-    public IPedestrian setposY( final double p_posY ) {
+    public IPedestrian setposY( final float p_posY ) {
         this.m_position.y = p_posY;
-        sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
+        sprite.setPosition(m_position.x-16,m_position.y-16);
         return this;
     }
 
     @Override
-    public Vector2d accelaration()
+    public Vector2f accelaration()
     {
-        Vector2d l_repulsetoWall = new Vector2d( 0, 0 );
-        Vector2d l_repulsetoOthers = new Vector2d( 0, 0 );
-        Vector2d l_desiredVelocity = CVector.scale( this.m_maxspeed, CVector.direction( this.getGoalposition(), this.getPosition() ) );
+        Vector2f l_repulsetoWall = new Vector2f( 0, 0 );
+        Vector2f l_repulsetoOthers = new Vector2f( 0, 0 );
+        Vector2f l_desiredVelocity = CVector.scale( this.m_maxspeed, CVector.direction( this.getGoalposition(), this.getPosition() ) );
 
         for ( int i = 0; i < l_env.getWallinfo().size(); i++ )
         {
@@ -116,14 +116,14 @@ public class CPedestrian implements IPedestrian{
             }
         }
 
-        final Vector2d l_temp = CVector.add( CForce.drivingForce( l_desiredVelocity, this.getVelocity() ), l_repulsetoOthers );
+        final Vector2f l_temp = CVector.add( CForce.drivingForce( l_desiredVelocity, this.getVelocity() ), l_repulsetoOthers );
 
         return CVector.truncate( CVector.add( l_temp, l_repulsetoWall ), m_maxforce );
 
     }
 
 
-    public double getM_radius()
+    public float getM_radius()
     {
         return m_radius;
     }
@@ -132,50 +132,50 @@ public class CPedestrian implements IPedestrian{
     @Override
     public IPedestrian call() throws Exception {
 
-        final double l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length();
+        final float l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length();
 
         //if ( this.m_goals.isEmpty() ) { m_controlossilation ++; }
 
         if ( l_check <= this.getM_radius() * 0.5 )
         {
-            this.m_velocity = new Vector2d(0, 0);
+            this.m_velocity = new Vector2f(0, 0);
             if ( this.m_goals.size() > 0 )
             {
                 this.m_goal = this.m_goals.remove( 0 );
-                this.m_velocity = CVector.scale( m_maxspeed, CVector.normalize( CVector.add( this.m_velocity, this.accelaration() ) ) );
+                this.m_velocity = CVector.scale( m_maxspeed, CVector.normalize( CVector.add( this.m_velocity, this.accelaration())));
                 this.m_position = CVector.add( m_position, m_velocity );
-                sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
+                sprite.setPosition(m_position.x-16,m_position.y-16);
             }
         }
         else
         {
             if( m_controlossilation >= 1000 )
             {
-                this.m_velocity = new Vector2d( 0, 0 );
+                this.m_velocity = new Vector2f( 0, 0 );
             }
             else
             {
                 this.m_velocity = CVector.scale( m_maxspeed, CVector.normalize( CVector.add( this.m_velocity, this.accelaration() ) ) );
                 this.m_position = CVector.add( m_position, m_velocity );
-                sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
+                sprite.setPosition(m_position.x-16,m_position.y-16);
             }
         }
 
         if( m_position.getX() > 1440.0 ) {
-            setposX( 0.0 );
-            sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
+            setposX( 0.0f );
+            sprite.setPosition(m_position.x-16,m_position.y-16);
         }
         if( m_position.getX() < 0.0 ) {
-            setposX( 800.0 );
-            sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
+            setposX( 800.0f );
+            sprite.setPosition(m_position.x-16,m_position.y-16);
         }
         if( m_position.getY() > 900.0 ) {
-            setposY( 0.0 );
-            sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
+            setposY( 0.0f );
+            sprite.setPosition(m_position.x-16,m_position.y-16);
         }
         if( m_position.getY() < 0.0 ) {
-            setposY( 600.0);
-            sprite.setPosition((float)m_position.x-16,(float)m_position.y-16);
+            setposY( 600.0f);
+            sprite.setPosition(m_position.x-16,m_position.y-16);
         }
 
         return this;
