@@ -45,11 +45,18 @@ public class SocialForceModel extends ApplicationAdapter {
         spawnExit();
         spawnWall();
         spawnRect();
+        spawnInitAgent();
     }
 
     private void spawnInitAgent(){
-        m_pedestrian.add( new CPedestrian(this,true,new Vector2f(200, 80),
-                1, new Vector2f(100,100),new Sprite(personImage)) );
+        for (int i = 0; i < 100; i++) {
+            //ランダムな方向を向いた歩行者を追加
+            Vector2f initPos = new Vector2f(MathUtils.random(50,1500),MathUtils.random(50,900));
+            float initDirectionX = MathUtils.random(initPos.x - 1, initPos.x + 1);
+            float initDirectionY = MathUtils.random(initPos.y - 1, initPos.y + 1);
+            m_pedestrian.add(new CPedestrian(this,false, initPos,
+                    1, new Vector2f(initDirectionX, initDirectionY),new Sprite(personImage)));
+        }
     }
 
     private void spawnAgent(Vector3 pos){
