@@ -25,15 +25,14 @@ public class SocialForceModel extends ApplicationAdapter {
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private Parameter parameter = new Parameter();
-    private ArrayList<CPedestrian> m_pedestrian = new ArrayList<>();
-    private ArrayList<CStatic> m_wall = new ArrayList<>( 2 );
+    public ArrayList<CPedestrian> m_pedestrian = new ArrayList<>();
     private ArrayList<CWall> m_walledge = new ArrayList<>();
     private ArrayList<Sprite> exit = new ArrayList<>();
     private boolean isStart = false; //スペースボタン
     private boolean isGoalInfo = false; //Fボタン
     private Vector2f initVec = new Vector2f(0,0);
     public ArrayList<COutput> test = new ArrayList<>();
-    public double step=0;
+    public static double step = 0;
 
     @Override
     public void create () {
@@ -49,7 +48,7 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnInitAgent(){
-        m_pedestrian.add( new CPedestrian(true,new Vector2f(200, 80),
+        m_pedestrian.add( new CPedestrian(this,true,new Vector2f(200, 80),
                 1, new Vector2f(100,100),new Sprite(personImage)) );
     }
 
@@ -58,7 +57,7 @@ public class SocialForceModel extends ApplicationAdapter {
         //        1, new CGoal( 0, 0, 0, 0).get_goals(), this, new Sprite(personImage)) );
         //ゴール情報あり
         if(isGoalInfo){
-            m_pedestrian.add( new CPedestrian(true,new Vector2f(pos.x, pos.y),
+            m_pedestrian.add(new CPedestrian(this,true,new Vector2f(pos.x, pos.y),
                     1, new Vector2f(parameter.exitVec.get(0).x,parameter.exitVec.get(0).y), new Sprite(personImage)) );
         }
         //ゴール情報なし
@@ -69,7 +68,7 @@ public class SocialForceModel extends ApplicationAdapter {
             //ランダムな方向を向いた歩行者を追加
             float initDirectionX = MathUtils.random(pos.x - 1, pos.x + 1);
             float initDirectionY = MathUtils.random(pos.y - 1, pos.y + 1);
-            m_pedestrian.add(new CPedestrian(false, new Vector2f(pos.x, pos.y),
+            m_pedestrian.add(new CPedestrian(this,false, new Vector2f(pos.x, pos.y),
                     1, new Vector2f(initDirectionX, initDirectionY),new Sprite(personImage)));
         }
     }
@@ -83,13 +82,7 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnWall(){
-        m_wall.add(parameter.wallDownLine);
-        m_wall.add(parameter.wallUpLine);
-        m_wall.add(parameter.wallRightLine);
-        m_wall.add(parameter.wallexitDownLine);
-        m_wall.add(parameter.wallexitUpLine);
-        //m_wall.add(wallLeftLine);
-        for (CStatic cStatic : m_wall) {
+        for (CStatic cStatic : parameter.m_wall) {
             m_walledge.add(cStatic.getwall1());
             m_walledge.add(cStatic.getwall2());
             m_walledge.add(cStatic.getwall3());
@@ -128,11 +121,9 @@ public class SocialForceModel extends ApplicationAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         //壁の描画
         shapeRenderer.setColor(0,0,0,0);
-        shapeRenderer.line(parameter.wallDownLine.getX1(),parameter.wallDownLine.getY1(),parameter.wallDownLine.getX2(),parameter.wallDownLine.getY2());
-        shapeRenderer.line(parameter.wallUpLine.getX1(),parameter.wallUpLine.getY1(),parameter.wallUpLine.getX2(),parameter.wallUpLine.getY2());
-        shapeRenderer.line(parameter.wallRightLine.getX1(),parameter.wallRightLine.getY1(),parameter.wallRightLine.getX2(),parameter.wallRightLine.getY2());
-        shapeRenderer.line(parameter.wallexitDownLine.getX1(),parameter.wallexitDownLine.getY1(),parameter.wallexitDownLine.getX2(),parameter.wallexitDownLine.getY2());
-        shapeRenderer.line(parameter.wallexitUpLine.getX1(),parameter.wallexitUpLine.getY1(),parameter.wallexitUpLine.getX2(),parameter.wallexitUpLine.getY2());
+        for (CStatic cStatic : parameter.m_wall) {
+            shapeRenderer.line(cStatic.getX1(),cStatic.getY1(),cStatic.getX2(),cStatic.getY2());
+        }
 
         for(CPedestrian agent: m_pedestrian){
             //agentの向きライン描画
@@ -212,7 +203,7 @@ public class SocialForceModel extends ApplicationAdapter {
         }
 
         if(isStart){
-            update(step);
+            update();
 //            //ステップ毎のエージェントの行動
 //            for (CPedestrian cPedestrian : m_pedestrian) {
 //                //ゴールが視界に入っているか
