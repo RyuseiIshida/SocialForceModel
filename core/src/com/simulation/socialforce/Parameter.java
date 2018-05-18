@@ -10,7 +10,7 @@ public class Parameter {
     public static final double m_GaussianStandardDeviation = 0.26;
     public static final float view_phi_theta = 120;
     public static final float view_dmax = 400;
-    public final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(800, 800)));
+    public final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(800, 920)));
     public final ArrayList<Rect> arrayRect = new ArrayList<>();
     //public final ArrayList<Rect> arrayRect = new ArrayList<>(Arrays.asList(new Rect(300,200,400,300)));
     private final CStatic wallDownLine     = new CStatic(10,10,(int)scale.x-10,10);

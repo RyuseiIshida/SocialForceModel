@@ -136,7 +136,6 @@ public class CPedestrian implements IPedestrian{
             getTargetPedestrian(l_env.m_pedestrian);
             //ランダムに歩1く
             if (l_env.step % 50 == 0) {
-                System.out.println("kita");
                 int randomx = MathUtils.random(-200, 200);
                 int randomy = MathUtils.random(-200, 200);
                 this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));

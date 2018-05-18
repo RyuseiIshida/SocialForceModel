@@ -57,6 +57,12 @@ public class SocialForceModel extends ApplicationAdapter {
             m_pedestrian.add(new CPedestrian(this,false, initPos,
                     1, new Vector2f(initDirectionX, initDirectionY),new Sprite(personImage)));
         }
+        for (int i = 0; i < m_pedestrian.size(); i++) {
+            for (int j = 0; j < m_pedestrian.size(); j++) {
+                if(m_pedestrian.get(j).getSprite().getBoundingRectangle().overlaps(m_pedestrian.get(i).getSprite().getBoundingRectangle()))
+                    m_pedestrian.remove(j);
+            }
+        }
     }
 
     private void spawnAgent(Vector3 pos){
