@@ -49,20 +49,23 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnInitAgent(){
-        for (int i = 0; i < 100; i++) {
-            //ランダムな方向を向いた歩行者を追加
-            Vector2f initPos = new Vector2f(MathUtils.random(50,1500),MathUtils.random(50,900));
-            float initDirectionX = MathUtils.random(initPos.x - 1, initPos.x + 1);
-            float initDirectionY = MathUtils.random(initPos.y - 1, initPos.y + 1);
-            m_pedestrian.add(new CPedestrian(this,false, initPos,
-                    1, new Vector2f(initDirectionX, initDirectionY),new Sprite(personImage)));
-        }
-        for (int i = 0; i < m_pedestrian.size(); i++) {
-            for (int j = 0; j < m_pedestrian.size(); j++) {
-                if(m_pedestrian.get(j).getSprite().getBoundingRectangle().overlaps(m_pedestrian.get(i).getSprite().getBoundingRectangle()))
-                    m_pedestrian.remove(j);
-            }
-        }
+//        for (int i = 0; i < 100; i++) {
+//            //ランダムな方向を向いた歩行者を追加
+//            Vector2f initPos = new Vector2f(MathUtils.random(50,1500),MathUtils.random(50,900));
+//            float initDirectionX = MathUtils.random(initPos.x - 1, initPos.x + 1);
+//            float initDirectionY = MathUtils.random(initPos.y - 1, initPos.y + 1);
+//            m_pedestrian.add(new CPedestrian(this,false, initPos,
+//                    1, new Vector2f(initDirectionX, initDirectionY),new Sprite(personImage)));
+//        }
+//        for (int i = 0; i < m_pedestrian.size(); i++) {
+//            for (int j = 0; j < m_pedestrian.size(); j++) {
+//                if(m_pedestrian.get(j).getSprite().getBoundingRectangle().overlaps(m_pedestrian.get(i).getSprite().getBoundingRectangle()))
+//                    m_pedestrian.remove(j);
+//            }
+//        }
+        m_pedestrian.add(new CPedestrian(this,true,new Vector2f(560,250),2,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
+        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(600,450),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
+
     }
 
     private void spawnAgent(Vector3 pos){
