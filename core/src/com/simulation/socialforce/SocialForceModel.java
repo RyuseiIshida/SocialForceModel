@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.simulation.ifcparser.IfcParser;
 
 import javax.vecmath.Vector2f;
 import java.util.*;
@@ -25,6 +26,7 @@ public class SocialForceModel extends ApplicationAdapter {
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private Parameter parameter = new Parameter();
+    private IfcParser ifcParser;
     public ArrayList<CPedestrian> m_pedestrian = new ArrayList<>();
     private ArrayList<CWall> m_walledge = new ArrayList<>();
     private ArrayList<Sprite> exit = new ArrayList<>();
@@ -42,10 +44,19 @@ public class SocialForceModel extends ApplicationAdapter {
         camera.setToOrtho(false, parameter.scale.x, parameter.scale.y);
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
+        //getIfc();
         spawnExit();
         spawnWall();
         spawnRect();
         spawnInitAgent();
+    }
+
+    private void getIfc() throws Exception{
+        try{
+            ifcParser = new IfcParser(parameter.IfcModelPath);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void spawnInitAgent(){
@@ -63,7 +74,7 @@ public class SocialForceModel extends ApplicationAdapter {
 //                    m_pedestrian.remove(j);
 //            }
 //        }
-        m_pedestrian.add(new CPedestrian(this,true,new Vector2f(560,250),2,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
+        m_pedestrian.add(new CPedestrian(this,false,new Vector2f(560,250),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(600,450),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
 
     }
@@ -165,7 +176,7 @@ public class SocialForceModel extends ApplicationAdapter {
             float goaltheta = agent.getPedestrianDegree();
             goaltheta -= parameter.view_phi_theta/2;
             shapeRenderer.setColor(new Color(0, 1, 0, 0.1f));
-            shapeRenderer.arc((float)agent.getPosition().x,(float)agent.getPosition().y,parameter.view_dmax,goaltheta,parameter.view_phi_theta);
+            //shapeRenderer.arc((float)agent.getPosition().x,(float)agent.getPosition().y,parameter.view_dmax,goaltheta,parameter.view_phi_theta);
         }
 
         //障害物の描画

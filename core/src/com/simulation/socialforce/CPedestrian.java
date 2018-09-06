@@ -50,6 +50,11 @@ public class CPedestrian implements IPedestrian{
     {
         this.m_goal = p_position;
         this.m_goals.add(p_position);
+        System.out.print("[ ");
+        for (Vector2f mGoal : m_goals) {
+            System.out.print(mGoal);
+        }
+        System.out.println(" ]");
         return this;
     }
 
@@ -129,9 +134,9 @@ public class CPedestrian implements IPedestrian{
 
         //ルール
         //出口はあるか
-        this.setTargetExit();
-        this.setSubGoal();
         if(this.getisExitInfo()==false) {
+            //出口はあるか?
+            this.setTargetExit();
             //出口を知っている人が周りにいるか
             getTargetPedestrian_turn(l_env.m_pedestrian);
             getTargetPedestrian(l_env.m_pedestrian);
@@ -143,8 +148,10 @@ public class CPedestrian implements IPedestrian{
             }
         }
 
+        this.setSubGoal();
+        System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
         final float l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length();
-
+        System.out.println("l_check = " + l_check);
         //if ( this.m_goals.isEmpty() ) { m_controlossilation ++; }
 
         if ( l_check <= this.getM_radius() * 0.5 )
@@ -153,6 +160,7 @@ public class CPedestrian implements IPedestrian{
             if ( this.m_goals.size() > 0 )
             {
                 this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
+                System.out.println("kita");
                 this.m_velocity = CVector.scale( m_maxspeed, CVector.normalize( CVector.add( this.m_velocity, this.accelaration())));
                 this.m_position = CVector.add( m_position, m_velocity );
                 sprite.setPosition(m_position.x-16,m_position.y-16);
@@ -229,6 +237,8 @@ public class CPedestrian implements IPedestrian{
                     - getDegree(m_position.x,m_position.y,m_goal.x,m_goal.y);
             if(delta_x < 0) delta_x *= -1;
             if(parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ){
+                this.m_goals.clear();
+                System.out.println("clear");
                 this.setGoalposition(vec);
                 this.setExitInfo(true);
             }
@@ -240,28 +250,8 @@ public class CPedestrian implements IPedestrian{
         float tc = (ax - bx) * (cy - ay) + (ay - by) * (ax - cx);
         float td = (ax - bx) * (dy - ay) + (ay - by) * (ax - dx);
         return tc * td < 0 && ta * tb < 0;
-        // return tc * td <= 0 && ta * tb <= 0; // 端点を含む場合
     }
 
-//    public boolean judgeIntersectedRect(CPedestrian ped,Rect rect){
-//        if(judgeIntersected(ped.getPosition().x,ped.getPosition().y,
-//                ped.getGoalposition().x,ped.getGoalposition().y,
-//                rect.x,rect.y,rect.leftButtom.x,rect.leftButtom.y))
-//            return true;
-//        else if(judgeIntersected(ped.getPosition().x,ped.getPosition().y,
-//                ped.getGoalposition().x,ped.getGoalposition().y,
-//                rect.x,rect.y,rect.leftTop.x,rect.leftTop.y))
-//            return true;
-//        else if(judgeIntersected(ped.getPosition().x,ped.getPosition().y,
-//                ped.getGoalposition().x,ped.getGoalposition().y,
-//                rect.x,rect.y,rect.rightButtom.x,rect.rightButtom.y))
-//            return true;
-//        else if(judgeIntersected(ped.getPosition().x,ped.getPosition().y,
-//                ped.getGoalposition().x,ped.getGoalposition().y,
-//                rect.x,rect.y,rect.rightTop.x,rect.rightTop.y))
-//            return true;
-//        else return false;
-//    }
     public boolean judgeIntersectedRect(Rect rect){
         if(judgeIntersected(m_position.x,m_position.y,
                 m_goal.x,m_goal.y, rect.x,rect.y,rect.leftButtom.x,rect.leftButtom.y))
@@ -298,13 +288,13 @@ public class CPedestrian implements IPedestrian{
                 //最もゴールから近い2点を選ぶ
                 //そのうち最も歩行者に近い点をゴールとする
                 int tmpGoal1 = getDistance(m_position.x,m_position.y, list_entries.get(1).getKey().x, list_entries.get(0).getKey().y);
-                int tmpGoal2 = getDistance(m_position.x,m_position.y, list_entries.get(2).getKey().x, list_entries.get(1).getKey().y);
+                int tmpGoal2 = getDistance(m_position.x,m_position.y, list_entries.get(0).getKey().x, list_entries.get(1).getKey().y);
                 //if (tmpGoal1 < tmpGoal2) goalVec = list_entries.get(1).getKey();
                 //else goalVec = list_entries.get(2).getKey();
                 //if (tmpGoal1 < tmpGoal2) this.setGoalposition(list_entries.get(0).getKey());
-                if(tmpGoal1<tmpGoal2) this.setGoalposition(new Vector2f(list_entries.get(0).getKey().x+50, list_entries.get(0).getKey().y));
+                if(tmpGoal1>tmpGoal2) this.setGoalposition(new Vector2f(list_entries.get(0).getKey().x-50, list_entries.get(0).getKey().y));
                 //else this.setGoalposition(list_entries.get(1).getKey());
-                else this.setGoalposition(new Vector2f(list_entries.get(1).getKey().x+50, list_entries.get(1).getKey().y));
+                else this.setGoalposition(new Vector2f(list_entries.get(1).getKey().x-50, list_entries.get(1).getKey().y));
                 //ped.setSubGoalposition(new Vector2f(goalVec.x+50,goalVec.y));
                 //ゴールベクトルが重なっていたら
                 //if (judgeIntersectedRect(ped,rect) setSubGoal(ped);
@@ -312,18 +302,7 @@ public class CPedestrian implements IPedestrian{
             }
         }
     }
-//    public void setSubGoal2(){
-//        //交差判定
-//        for(Rect rect : parameter.arrayRect){
-//            if(judgeIntersectedRect(rect)){
-//                float candidate1 = getDistance(m_position.x,m_position.y,rect.leftButtom.x, rect.leftButtom.y);
-//                float candidate2 = getDistance(m_position.x,m_position.y,rect.leftTop.x,rect.leftTop.y);
-//                float candidate3 = getDistance(m_position.x,m_position.y,rect.rightButtom.x,rect.rightButtom.y);
-//                float candidate4 = getDistance(m_position.x,m_position.y,rect.rightTop.x,rect.rightTop.y);
-//                ArrayList<Float> Candidate = new ArrayList<>(Arrays.asList(candidate1,candidate2,candidate3,candidate4));
-//            }
-//        }
-//    }
+
 
     public void changeGoal(CPedestrian ped){
         float distance = getDistance(ped.getPosition().x,ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
