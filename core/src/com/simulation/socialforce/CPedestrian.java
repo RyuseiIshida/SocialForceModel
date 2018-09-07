@@ -151,9 +151,11 @@ public class CPedestrian implements IPedestrian{
         }
 
         this.setSubGoal();
-        System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
+        if(this.aisExitInfo==false) {
+            System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
+        }
         final float l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length();
-        System.out.println("l_check = " + l_check);
+        //fSystem.out.println("l_check = " + l_check);
         //if ( this.m_goals.isEmpty() ) { m_controlossilation ++; }
 
         if ( l_check <= this.getM_radius() * 0.5 )
@@ -227,6 +229,19 @@ public class CPedestrian implements IPedestrian{
                     - getDegree(m_position.x,m_position.y,m_position.x,m_position.y);
             if(delta_x < 0) delta_x *= -1;
             if(mvec.getisExitInfo() && parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ) this.setGoalposition(new Vector2f(mvec.getPosition().x,mvec.getPosition().y));
+        }
+    }
+
+    public void multi_people_following(ArrayList<CPedestrian> m_pedestrian){
+        for (CPedestrian mvec : m_pedestrian) {
+            int distance = getDistance(m_position.x,m_position.y,mvec.getPosition().x,mvec.getPosition().y);
+            //対象 - 向かっている方向 = delta_x
+            //view_phi-theta/2 - delta_x > 0 -> 重なっている
+            float delta_x = getDegree(m_position.x,m_position.y,mvec.getPosition().x,mvec.getPosition().y)
+                    - getDegree(m_position.x,m_position.y,m_position.x,m_position.y);
+            if(delta_x < 0) delta_x *= -1;
+
+
         }
     }
 
@@ -311,5 +326,8 @@ public class CPedestrian implements IPedestrian{
             // next();
         }
     }
+
+
+
 
 }

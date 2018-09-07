@@ -74,7 +74,9 @@ public class SocialForceModel extends ApplicationAdapter {
 //                    m_pedestrian.remove(j);
 //            }
 //        }
-        m_pedestrian.add(new CPedestrian(this,false,new Vector2f(560,250),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
+        m_pedestrian.add(new CPedestrian(this,true,new Vector2f(850,400),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
+        m_pedestrian.add(new CPedestrian(this,false,new Vector2f(250,200),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
+        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f()))
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(600,450),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
 
     }
@@ -176,7 +178,7 @@ public class SocialForceModel extends ApplicationAdapter {
             float goaltheta = agent.getPedestrianDegree();
             goaltheta -= parameter.view_phi_theta/2;
             shapeRenderer.setColor(new Color(0, 1, 0, 0.1f));
-            //shapeRenderer.arc((float)agent.getPosition().x,(float)agent.getPosition().y,parameter.view_dmax,goaltheta,parameter.view_phi_theta);
+            shapeRenderer.arc((float)agent.getPosition().x,(float)agent.getPosition().y,parameter.view_dmax,goaltheta,parameter.view_phi_theta);
         }
 
         //障害物の描画
