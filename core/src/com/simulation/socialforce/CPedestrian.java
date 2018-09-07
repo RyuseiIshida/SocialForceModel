@@ -306,7 +306,7 @@ public class CPedestrian implements IPedestrian{
     public void changeGoal(CPedestrian ped){
         float distance = getDistance(ped.getPosition().x,ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
         if (distance > 30) {
-            //   next();
+            // next();
         }
     }
 
