@@ -137,14 +137,16 @@ public class CPedestrian implements IPedestrian{
         if(this.getisExitInfo()==false) {
             //出口はあるか?
             this.setTargetExit();
-            //出口を知っている人が周りにいるか
-            getTargetPedestrian_turn(l_env.m_pedestrian);
-            getTargetPedestrian(l_env.m_pedestrian);
-            //ランダムに歩く
-            if (l_env.step % 50 == 0) {
-                int randomx = MathUtils.random(-200, 200);
-                int randomy = MathUtils.random(-200, 200);
-                this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
+            if(this.getisExitInfo()==false) {
+                //出口を知っている人が周りにいるか
+                getTargetPedestrian_turn(l_env.m_pedestrian);
+                getTargetPedestrian(l_env.m_pedestrian);
+                //ランダムに歩く
+                if (l_env.step % 50 == 0) {
+                    int randomx = MathUtils.random(-200, 200);
+                    int randomy = MathUtils.random(-200, 200);
+                    this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
+                }
             }
         }
 
