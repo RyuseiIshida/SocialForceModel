@@ -22,6 +22,8 @@ public class CPedestrian implements IPedestrian{
     private Sprite sprite;
     private boolean aisExitInfo;
 
+    private String stateTag;
+
     public CPedestrian(SocialForceModel p_env,boolean isExitInfo,final Vector2f p_position, final float p_speed, Vector2f p_goal,Sprite sprites) {
         l_env = p_env;
         m_goals = new ArrayList<>(Arrays.asList(p_goal));
@@ -32,8 +34,11 @@ public class CPedestrian implements IPedestrian{
         m_maxspeed = p_speed * m_maxspeedfactor;
         m_controlossilation = 0;
         aisExitInfo = isExitInfo;
+        if(aisExitInfo) stateTag = "GoExit";
+        stateTag = "";
         sprite = sprites;
         sprite.setPosition(m_position.x-32/2,m_position.y-32/2);
+        stateTag = "";
     }
 
 
@@ -147,7 +152,7 @@ public class CPedestrian implements IPedestrian{
                     getTargetPedestrian_turn(l_env.m_pedestrian);
                     getTargetPedestrian(l_env.m_pedestrian);
                     //ランダムに歩く
-                    if (this.m_goals.isEmpty() && l_env.step % 50 == 0) {
+                    if (this.stateTag.isEmpty() && l_env.step % 50 == 0) {
                         this.m_goals.clear();
                         int randomx = MathUtils.random(-200, 200);
                         int randomy = MathUtils.random(-200, 200);
@@ -251,6 +256,7 @@ public class CPedestrian implements IPedestrian{
             if(mvec.getisExitInfo() && parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ) {
                 System.out.println("getTargetPedestrian");
                 this.setGoalposition(new Vector2f(mvec.getPosition().x, mvec.getPosition().y));
+                this.stateTag = "followExitPedestrian";
             }
         }
     }
@@ -281,6 +287,7 @@ public class CPedestrian implements IPedestrian{
                 System.out.println("clear");
                 this.setGoalposition(vec);
                 this.setExitInfo(true);
+                this.stateTag = "GoExit";
             }
         }
     }
@@ -384,7 +391,7 @@ public class CPedestrian implements IPedestrian{
     public void wall_turn2(){
         for (CStatic wall : Parameter.m_wall) {
                 if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
-                System.out.println("wall_turn");
+                //System.out.println("wall_turn");
                 int randomx = MathUtils.random(-200, 200);
                 int randomy = MathUtils.random(-200, 200);
                 this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
