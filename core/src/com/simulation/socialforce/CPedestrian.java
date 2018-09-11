@@ -4,6 +4,7 @@ import javax.vecmath.Vector2f;
 import java.util.*;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 
 public class CPedestrian implements IPedestrian{
     private Parameter parameter = new Parameter();
@@ -132,28 +133,43 @@ public class CPedestrian implements IPedestrian{
     @Override
     public IPedestrian call() throws Exception {
 
+
+        /*-----意思決定書き込み部分-------------------------------------------------------------------------------------*/
+
         //ルール
         //出口はあるか
         if(this.getisExitInfo()==false) {
             //出口はあるか?
             this.setTargetExit();
-            if(this.getisExitInfo()==false) {
-                //出口を知っている人が周りにいるか
-                getTargetPedestrian_turn(l_env.m_pedestrian);
-                getTargetPedestrian(l_env.m_pedestrian);
-                //ランダムに歩く
-                if (l_env.step % 50 == 0) {
-                    int randomx = MathUtils.random(-200, 200);
-                    int randomy = MathUtils.random(-200, 200);
-                    this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
+            if (l_env.step % 50 == 0) {
+                if (this.getisExitInfo() == false) {
+                    //出口を知っている人が周りにいるか
+                    getTargetPedestrian_turn(l_env.m_pedestrian);
+                    getTargetPedestrian(l_env.m_pedestrian);
+                    //ランダムに歩く
+                    if (this.m_goals.isEmpty() && l_env.step % 50 == 0) {
+                        this.m_goals.clear();
+                        int randomx = MathUtils.random(-200, 200);
+                        int randomy = MathUtils.random(-200, 200);
+                        this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
+                        this.wall_turn();
+                    }
                 }
             }
         }
+        this.wall_turn2();
+        /*-----------------------------------------------------------------------------------------------------------*/
+
+        //もし初期目標地点がスケール外は全て削除
+        if(this.m_goal.x < 0 || this.m_goal.x > Parameter.scale.x || this.m_goal.y < 0 || this.m_goal.y > Parameter.scale.y){
+            System.out.println("allClear");
+            this.m_goals.clear();
+        }
 
         this.setSubGoal();
-        if(this.aisExitInfo==false) {
-            System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
-        }
+//        if(this.aisExitInfo==false) {
+//            System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
+//        }
         final float l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length();
         //fSystem.out.println("l_check = " + l_check);
         //if ( this.m_goals.isEmpty() ) { m_controlossilation ++; }
@@ -164,7 +180,6 @@ public class CPedestrian implements IPedestrian{
             if ( this.m_goals.size() > 0 )
             {
                 this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
-                System.out.println("kita");
                 this.m_velocity = CVector.scale( m_maxspeed, CVector.normalize( CVector.add( this.m_velocity, this.accelaration())));
                 this.m_position = CVector.add( m_position, m_velocity );
                 sprite.setPosition(m_position.x-16,m_position.y-16);
@@ -199,9 +214,13 @@ public class CPedestrian implements IPedestrian{
         return degree;
     }
 
+
+
     public float getPedestrianDegree(){
         return getDegree(this.m_position.x,this.m_position.y,this.m_goal.x,this.m_goal.y);
     }
+
+
 
     public void getTargetPedestrian_turn(ArrayList<CPedestrian> m_pedestrian){
         for (CPedestrian mvec : m_pedestrian) {
@@ -215,6 +234,7 @@ public class CPedestrian implements IPedestrian{
                 float d = getDistance(mvec.getPosition().x,mvec.getPosition().y,mvec.getGoalposition().x,mvec.getGoalposition().y);
                 float tmpx = mvec.getGoalposition().x / d;
                 float tmpy = mvec.getGoalposition().y / d;
+                System.out.println("Pedestrian_turn");
                 this.setGoalposition(new Vector2f(this.m_goal.x+tmpx,this.m_goal.y+tmpy));
             }
         }
@@ -228,7 +248,10 @@ public class CPedestrian implements IPedestrian{
             float delta_x = getDegree(m_position.x,m_position.y,mvec.getPosition().x,mvec.getPosition().y)
                     - getDegree(m_position.x,m_position.y,m_position.x,m_position.y);
             if(delta_x < 0) delta_x *= -1;
-            if(mvec.getisExitInfo() && parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ) this.setGoalposition(new Vector2f(mvec.getPosition().x,mvec.getPosition().y));
+            if(mvec.getisExitInfo() && parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ) {
+                System.out.println("getTargetPedestrian");
+                this.setGoalposition(new Vector2f(mvec.getPosition().x, mvec.getPosition().y));
+            }
         }
     }
 
@@ -262,10 +285,12 @@ public class CPedestrian implements IPedestrian{
         }
     }
     public boolean judgeIntersected(float ax,float ay,float bx,float by,float cx,float cy,float dx,float dy){
+        //線分交差判定 https://qiita.com/ykob/items/ab7f30c43a0ed52d16f2
         float ta = (cx - dx) * (ay - cy) + (cy - dy) * (cx - ax);
         float tb = (cx - dx) * (by - cy) + (cy - dy) * (cx - bx);
         float tc = (ax - bx) * (cy - ay) + (ay - by) * (ax - cx);
         float td = (ax - bx) * (dy - ay) + (ay - by) * (ax - dx);
+        //return 線分が交差 -> true, 交差していない -> false
         return tc * td < 0 && ta * tb < 0;
     }
 
@@ -309,7 +334,10 @@ public class CPedestrian implements IPedestrian{
                 //if (tmpGoal1 < tmpGoal2) goalVec = list_entries.get(1).getKey();
                 //else goalVec = list_entries.get(2).getKey();
                 //if (tmpGoal1 < tmpGoal2) this.setGoalposition(list_entries.get(0).getKey());
-                if(tmpGoal1>tmpGoal2) this.setGoalposition(new Vector2f(list_entries.get(0).getKey().x-50, list_entries.get(0).getKey().y));
+                if(tmpGoal1>tmpGoal2) {
+                    System.out.println("tmpGoal");
+                    this.setGoalposition(new Vector2f(list_entries.get(0).getKey().x - 50, list_entries.get(0).getKey().y));
+                }
                 //else this.setGoalposition(list_entries.get(1).getKey());
                 else this.setGoalposition(new Vector2f(list_entries.get(1).getKey().x-50, list_entries.get(1).getKey().y));
                 //ped.setSubGoalposition(new Vector2f(goalVec.x+50,goalVec.y));
@@ -327,7 +355,74 @@ public class CPedestrian implements IPedestrian{
         }
     }
 
+    //視野最大方向に壁があった場合に
+    public void wall_turn(){
+        for (CStatic wall : Parameter.m_wall) {
+            if(judgeIntersected(m_position.x,m_position.y, viewDegreeVec().x, viewDegreeVec().y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+            //if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+                    System.out.println("wall_turn");
+                int randomx = MathUtils.random(-200, 200);
+                int randomy = MathUtils.random(-200, 200);
+                this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
 
+//                float delta_x = this.m_position.x - this.m_goal.x;
+//                if(delta_x < 0) delta_x *= -1;
+//                float delta_y = this.m_position.y - this.m_goal.y;
+//                if(delta_y < 0) delta_y *= -1;
+//
+//                if(this.getPedestrianDegree() > 0) //向いている方向がプラスなら
+//                    this.m_goal = new Vector2f(this.m_goal.x-delta_x,this.m_goal.y-delta_y);
+//                else //マイナスなら
+//                    this.m_goal = new Vector2f(this.m_goal.y+delta_x,this.m_goal.y+delta_y);
+//                this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
 
+            }
+        }
+    }
+
+    //視野最大方向に壁があった場合に
+    public void wall_turn2(){
+        for (CStatic wall : Parameter.m_wall) {
+                if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+                System.out.println("wall_turn");
+                int randomx = MathUtils.random(-200, 200);
+                int randomy = MathUtils.random(-200, 200);
+                this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
+
+//                float delta_x = this.m_position.x - this.m_goal.x;
+//                if(delta_x < 0) delta_x *= -1;
+//                float delta_y = this.m_position.y - this.m_goal.y;
+//                if(delta_y < 0) delta_y *= -1;
+//
+//                if(this.getPedestrianDegree() > 0) //向いている方向がプラスなら
+//                    this.m_goal = new Vector2f(this.m_goal.x-delta_x,this.m_goal.y-delta_y);
+//                else //マイナスなら
+//                    this.m_goal = new Vector2f(this.m_goal.y+delta_x,this.m_goal.y+delta_y);
+//                this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
+
+            }
+        }
+    }
+
+    public float getGoalRadian(){
+        double degree = this.getPedestrianDegree();
+        double rad = (degree * Math.PI) / 180;
+        return (float)rad;
+    }
+
+    //視野最大方向のベクトルを返す
+    public Vector2f viewDegreeVec(){
+        //底辺a = 斜辺c * cos
+        float c = Parameter.view_dmax;
+        float cos = (float)Math.cos(Math.toRadians(this.getPedestrianDegree()));
+        float a = c*cos;
+        //対辺b = 斜辺c * sin
+        float sin = (float)Math.sin(Math.toRadians(this.getPedestrianDegree()));
+        float b = c*sin;
+        float result_x =a+this.m_position.x;
+        float result_y =b+this.m_position.y;
+        return new Vector2f(result_x,result_y);
+    }
 
 }
+
