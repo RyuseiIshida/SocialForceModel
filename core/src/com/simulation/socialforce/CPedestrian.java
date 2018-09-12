@@ -10,7 +10,7 @@ public class CPedestrian implements IPedestrian{
     private Parameter parameter = new Parameter();
     private static final float m_maxspeedfactor = 2.5f;
     private static final float m_maxforce = 0.1f;
-    private static final float m_radius = 20f;
+    private static final float m_radius = 23f;
     private Vector2f m_position;
     private Vector2f m_goal;
     private ArrayList<Vector2f> m_goals;

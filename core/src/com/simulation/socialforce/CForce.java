@@ -10,7 +10,7 @@ public class CForce {
     private static final float m_lamda = 0.2f;
     private static final float m_repulsefactortoped = 2.1f;
     private static final float m_sigma = 0.3f;
-    private static final float m_repulsefactortowall = 1f;
+    private static final float m_repulsefactortowall = 1f; //元5
     private static final float m_R = 0.2f;
 
 
