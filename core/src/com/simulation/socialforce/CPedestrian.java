@@ -149,14 +149,15 @@ public class CPedestrian implements IPedestrian{
             if (l_env.step % 50 == 0) {
                 if (this.getisExitInfo() == false) {
                     //出口を知っている人が周りにいるか
-                    getTargetPedestrian_turn(l_env.m_pedestrian);
-                    getTargetPedestrian(l_env.m_pedestrian);
+                    //getTargetPedestrian_turn(l_env.m_pedestrian);
+                    //getTargetPedestrian(l_env.m_pedestrian);
+                    multi_people_following(l_env.m_pedestrian);
                     //ランダムに歩く
                     if (this.stateTag.isEmpty() && l_env.step % 50 == 0) {
                         this.m_goals.clear();
                         int randomx = MathUtils.random(-200, 200);
                         int randomy = MathUtils.random(-200, 200);
-                        this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
+                        //this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
                         this.wall_turn();
                     }
                 }
@@ -262,6 +263,7 @@ public class CPedestrian implements IPedestrian{
     }
 
     public void multi_people_following(ArrayList<CPedestrian> m_pedestrian){
+        int count = 0;
         for (CPedestrian mvec : m_pedestrian) {
             int distance = getDistance(m_position.x,m_position.y,mvec.getPosition().x,mvec.getPosition().y);
             //対象 - 向かっている方向 = delta_x
@@ -269,9 +271,18 @@ public class CPedestrian implements IPedestrian{
             float delta_x = getDegree(m_position.x,m_position.y,mvec.getPosition().x,mvec.getPosition().y)
                     - getDegree(m_position.x,m_position.y,m_position.x,m_position.y);
             if(delta_x < 0) delta_x *= -1;
-
-
+            if(parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ) {
+                count++;
+                if(count>=3){
+                    this.setGoalposition(new Vector2f(mvec.getPosition().x, mvec.getPosition().y));
+                    this.stateTag = "followMultiPedestrian";
+                    System.out.println("Multi_Follow = " + count);
+                } else {
+                    System.out.println("数が足りん!");
+                }
+            }
         }
+        count = 0;
     }
 
     public void setTargetExit(){
