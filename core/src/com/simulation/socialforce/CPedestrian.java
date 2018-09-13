@@ -262,6 +262,7 @@ public class CPedestrian implements IPedestrian{
         }
     }
 
+
     public void multi_people_following(ArrayList<CPedestrian> m_pedestrian){
         int count = 0;
         for (CPedestrian mvec : m_pedestrian) {
