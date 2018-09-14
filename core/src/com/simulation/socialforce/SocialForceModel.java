@@ -74,12 +74,18 @@ public class SocialForceModel extends ApplicationAdapter {
     private void spawnInitAgent(){
         float tmpX=0;
         float tmpY=0;
+        CPedestrian ped;
         for (int i = 0; i < Parameter.initPedNum; i++) {
             //ランダムな方向を向いた歩行者を追加
             Vector2f initPos = new Vector2f(MathUtils.random(180, 1400), MathUtils.random(100, 800));
             float initDirectionX = MathUtils.random(initPos.x - 1, initPos.x + 1);
             float initDirectionY = MathUtils.random(initPos.y - 1, initPos.y + 1);
-            CPedestrian ped = new CPedestrian(this, false, initPos, 1, new Vector2f(initDirectionX, initDirectionY), new Sprite(personImage));
+            if(i < Parameter.goalPed) {
+                ped = new CPedestrian(this, true, initPos, 1, Parameter.exitVec.get(0), new Sprite(personImage));
+            }else{
+                ped = new CPedestrian(this, false, initPos, 1, new Vector2f(initDirectionX, initDirectionY), new Sprite(personImage));
+            }
+
             float deltaX = initPos.x - tmpX;
             if(deltaX<0){
                 deltaX *= -1;
@@ -88,10 +94,11 @@ public class SocialForceModel extends ApplicationAdapter {
             if(deltaY<0){
                 deltaY *= -1;
             }
-            if(deltaX > 30 && deltaY > 30) {
+            if(deltaX > 50 && deltaY > 50) {
                 m_pedestrian.add(ped);
             }else{
                 i--;
+                System.out.println("i--");
             }
             tmpX = ped.getPosition().x;
             tmpY = ped.getPosition().y;

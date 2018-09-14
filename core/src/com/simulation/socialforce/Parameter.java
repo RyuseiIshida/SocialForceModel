@@ -14,7 +14,8 @@ public class Parameter {
     public static boolean view_Renderer = false;
     public static final float view_phi_theta = 120;
     public static final float view_dmax = 400;
-    public final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(50, 40)));
+    public static final int goalPed = 10;
+    public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
     public final ArrayList<Rect> arrayRect = new ArrayList<>();
 //    public final ArrayList<Rect> arrayRect = new ArrayList<>(Arrays.asList(wakumigi,wakuhidari,wakuue,wakushita,wakuuehidari,wakuuemigi,aida1,aida2,aida3,aida4));
 

@@ -148,7 +148,7 @@ public class CPedestrian implements IPedestrian{
             //出口はあるか?
             this.setTargetExit();
             //step60 ＝ 1second
-            if (l_env.step % 180 == 0) {
+            if (l_env.step % 60 == 0) {
                 if (this.getisExitInfo() == false) {
                     switch (MathUtils.random(0, 2)) {
                         //出口を知っている人が周りにいるか
