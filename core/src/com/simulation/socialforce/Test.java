@@ -2,23 +2,19 @@ package com.simulation.socialforce;
 
 import com.badlogic.gdx.math.MathUtils;
 
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 
 public class Test {
 
     public static void main(String[] args) {
-        System.out.println(MathUtils.random(3));
-        System.out.println(MathUtils.random(3));
-        System.out.println(MathUtils.random(3));
-        System.out.println(MathUtils.random(3));
-        System.out.println(MathUtils.random(3));
-
+        List<Integer> list = new LinkedList<>(Arrays.asList(0, 3, 1, 4, 1, 5, 9, 2, 6));
+        Iterator<Integer> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            System.out.println(iterator);
+            int num = iterator.next();
+            System.out.println(num);
+        }
     }
 }

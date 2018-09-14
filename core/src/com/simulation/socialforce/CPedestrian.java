@@ -145,19 +145,26 @@ public class CPedestrian implements IPedestrian{
         if(this.getisExitInfo()==false) {
             //出口はあるか?
             this.setTargetExit();
-            if (l_env.step % 50 == 0) {
+            //step60 ＝ 1second
+            if (l_env.step % 60 == 0) {
                 if (this.getisExitInfo() == false) {
-                    //出口を知っている人が周りにいるか
-                    //getTargetPedestrian_turn(l_env.m_pedestrian);
-                    //getTargetPedestrian(l_env.m_pedestrian);
-                    multi_people_following(l_env.m_pedestrian);
-                    //ランダムに歩く
-                    if (this.stateTag.isEmpty() && l_env.step % 50 == 0) {
-                        this.m_goals.clear();
-                        int randomx = MathUtils.random(-200, 200);
-                        int randomy = MathUtils.random(-200, 200);
-                        this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
-                        this.wall_turn();
+                    //multi_people_following(l_env.m_pedestrian);
+                    switch (MathUtils.random(1, 2)) {
+                        //出口を知っている人が周りにいるか
+                        //getTargetPedestrian_turn(l_env.m_pedestrian);
+                        //getTargetPedestrian(l_env.m_pedestrian);
+                        case 0:
+                            multi_people_following(l_env.m_pedestrian);
+                            break;
+                        case 1:
+                            //ランダムに歩く
+                            System.out.println("ランダム");
+                            randomWalk2();
+                            break;
+                        case 3:
+                            //何もしない
+                            System.out.println("何もしない");
+                            break;
                     }
                 }
             }
@@ -277,7 +284,8 @@ public class CPedestrian implements IPedestrian{
                 multiPed.add(mvec);
                 if(count>=3){
                     //this.setGoalposition(multiPed.get(MathUtils.random(multiPed.size())).getPosition());
-                    this.setGoalposition(new Vector2f(mvec.getPosition().x, mvec.getPosition().y));
+                    //this.setGoalposition(new Vector2f(mvec.getPosition().x, mvec.getPosition().y));
+                    this.m_goal = new Vector2f(mvec.getPosition().x, mvec.getPosition().y);
                     this.stateTag = "followMultiPedestrian";
                     //System.out.println("Multi_Follow = " + count);
                 }
@@ -441,6 +449,23 @@ public class CPedestrian implements IPedestrian{
         float result_x =a+this.m_position.x;
         float result_y =b+this.m_position.y;
         return new Vector2f(result_x,result_y);
+    }
+
+    //ランダムウォーク1 周りをランダムに
+    public void randomWalk1(){
+        int randomx = MathUtils.random(-200, 200);
+        int randomy = MathUtils.random(-200, 200);
+        this.m_goal = new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy);
+        //this.m_goals.clear();
+        //this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
+        this.wall_turn();
+    }
+    //ランダムウォーク2 完全なランダム
+    public void randomWalk2(){
+        this.m_goal = new Vector2f(MathUtils.random(Parameter.scale.x),MathUtils.random(Parameter.scale.y));
+        //this.m_goals.clear();
+        //this.setGoalposition(new Vector2f(MathUtils.random(Parameter.scale.x),MathUtils.random(Parameter.scale.y)));
+        this.wall_turn();
     }
 
 }

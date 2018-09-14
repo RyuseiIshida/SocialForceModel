@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.CpuSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -49,7 +50,9 @@ public class SocialForceModel extends ApplicationAdapter {
         spawnWall();
         spawnRect();
         spawnInitAgent();
+
     }
+
 
     private void getIfc() throws Exception{
         try{
@@ -60,18 +63,20 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnInitAgent(){
+        float tmpX=0;
+        float tmpY=0;
         for (int i = 0; i < 50; i++) {
             //ランダムな方向を向いた歩行者を追加
-            Vector2f initPos = new Vector2f(MathUtils.random(50,1500),MathUtils.random(50,900));
+            Vector2f initPos = new Vector2f(MathUtils.random(50, 1500), MathUtils.random(50, 900));
             float initDirectionX = MathUtils.random(initPos.x - 1, initPos.x + 1);
             float initDirectionY = MathUtils.random(initPos.y - 1, initPos.y + 1);
-            m_pedestrian.add(new CPedestrian(this,false, initPos,
-                    1, new Vector2f(initDirectionX, initDirectionY),new Sprite(personImage)));
+            CPedestrian ped = new CPedestrian(this, false, initPos, 1, new Vector2f(initDirectionX, initDirectionY), new Sprite(personImage));
+            m_pedestrian.add(ped);
         }
-//        for (int i = 0; i < m_pedestrian.size(); i++) {
-//            for (int j = 0; j < m_pedestrian.size(); j++) {
-//                if(m_pedestrian.get(j).getSprite().getBoundingRectangle().overlaps(m_pedestrian.get(i).getSprite().getBoundingRectangle()))
-//                    m_pedestrian.remove(j);
+
+//        for (int i = 0; i < m_pedestrian.size()-1; i++) {
+//            if(m_pedestrian.get(i).getSprite().getBoundingRectangle().overlaps(m_pedestrian.get(i+1).getSprite().getBoundingRectangle())){
+//                m_pedestrian.remove(i);
 //            }
 //        }
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(850,400),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
@@ -85,8 +90,6 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnAgent(Vector3 pos){
-        //m_pedestrian.add( new CPedestrian( new Vector2f(pos.x, pos.y),
-        //        1, new CGoal( 0, 0, 0, 0).get_goals(), this, new Sprite(personImage)) );
         //ゴール情報あり
         if(isGoalInfo){
             m_pedestrian.add(new CPedestrian(this,true,new Vector2f(pos.x, pos.y),
@@ -94,9 +97,6 @@ public class SocialForceModel extends ApplicationAdapter {
         }
         //ゴール情報なし
         else {
-            //m_pedestrian.add(new CPedestrian(false,new Vector2f(pos.x, pos.y),
-            //        1, new CGoal( pos.x+initVec.getX(), pos.y+initVec.getY(), pos.x+initVec.getX(), pos.y+initVec.getY()).get_goals(), this, new Sprite(personImage)) );
-
             //ランダムな方向を向いた歩行者を追加
             float initDirectionX = MathUtils.random(pos.x - 1, pos.x + 1);
             float initDirectionY = MathUtils.random(pos.y - 1, pos.y + 1);
