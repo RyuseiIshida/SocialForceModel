@@ -56,11 +56,11 @@ public class CPedestrian implements IPedestrian{
     {
         this.m_goal = p_position;
         this.m_goals.add(p_position);
-        System.out.print("[ ");
-        for (Vector2f mGoal : m_goals) {
-            System.out.print(mGoal);
-        }
-        System.out.println(" ]");
+//        System.out.print("[ ");
+//        for (Vector2f mGoal : m_goals) {
+//            System.out.print(mGoal);
+//        }
+//        System.out.println(" ]");
         return this;
     }
 
@@ -146,7 +146,7 @@ public class CPedestrian implements IPedestrian{
             //出口はあるか?
             this.setTargetExit();
             //step60 ＝ 1second
-            if (l_env.step % 60 == 0) {
+            if (l_env.step % 120 == 0) {
                 if (this.getisExitInfo() == false) {
                     switch (MathUtils.random(0, 4)) {
                         //出口を知っている人が周りにいるか
@@ -166,20 +166,20 @@ public class CPedestrian implements IPedestrian{
                             break;
                         case 4:
                             //周りを見渡す
-                            System.out.println("lookaround");
+                            //System.out.println("lookaround");
                             lookAround();
 
                     }
                     //multi_people_following(l_env.m_pedestrian);
                 }
+                this.wall_turn2();
             }
         }
-        this.wall_turn2();
         /*-----------------------------------------------------------------------------------------------------------*/
 
         //もし初期目標地点がスケール外は全て削除
         if(this.m_goal.x < 0 || this.m_goal.x > Parameter.scale.x || this.m_goal.y < 0 || this.m_goal.y > Parameter.scale.y){
-            System.out.println("allClear");
+            //System.out.println("allClear");
             this.m_goals.clear();
         }
 
@@ -388,10 +388,9 @@ public class CPedestrian implements IPedestrian{
 
     //視野最大方向に壁があった場合に
     public void wall_turn(){
-        for (CStatic wall : Parameter.m_wall) {
             if(judgeIntersected(m_position.x,m_position.y, viewDegreeVec().x, viewDegreeVec().y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
             //if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
-                    System.out.println("wall_turn");
+                    //System.out.println("wall_turn");
                 int randomx = MathUtils.random(-200, 200);
                 int randomy = MathUtils.random(-200, 200);
                 this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
@@ -407,14 +406,38 @@ public class CPedestrian implements IPedestrian{
 //                    this.m_goal = new Vector2f(this.m_goal.y+delta_x,this.m_goal.y+delta_y);
 //                this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
 
-            }
         }
     }
 
+//    //視野最大方向に壁があった場合に
+//    public void wall_turn2(){
+//        System.out.println("wall_turn2d");
+//        for (CStatic wall : Parameter.m_wall) {
+//                if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+//                //System.out.println("wall_turn");
+//                int randomx = MathUtils.random(-200, 200);
+//                int randomy = MathUtils.random(-200, 200);
+//                this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
+//
+////                float delta_x = this.m_position.x - this.m_goal.x;
+////                if(delta_x < 0) delta_x *= -1;
+////                float delta_y = this.m_position.y - this.m_goal.y;
+////                if(delta_y < 0) delta_y *= -1;
+////
+////                if(this.getPedestrianDegree() > 0) //向いている方向がプラスなら
+////                    this.m_goal = new Vector2f(this.m_goal.x-delta_x,this.m_goal.y-delta_y);
+////                else //マイナスなら
+////                    this.m_goal = new Vector2f(this.m_goal.y+delta_x,this.m_goal.y+delta_y);
+////                this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
+//
+//            }
+//        }
+//    }
     //視野最大方向に壁があった場合に
     public void wall_turn2(){
+        System.out.println("wall_turn2d");
         for (CStatic wall : Parameter.m_wall) {
-                if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+            if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
                 //System.out.println("wall_turn");
                 int randomx = MathUtils.random(-200, 200);
                 int randomy = MathUtils.random(-200, 200);

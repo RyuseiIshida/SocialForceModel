@@ -4,13 +4,13 @@ package com.simulation.socialforce;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.CpuSpriteBatch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -37,6 +37,12 @@ public class SocialForceModel extends ApplicationAdapter {
     public ArrayList<COutput> test = new ArrayList<>();
     public ArrayList<Double> GoalTime = new ArrayList<>();
     public static double step = 0;
+
+
+    FreeTypeFontGenerator fontGenerator;
+    BitmapFont bitmapFont;
+
+
     @Override
     public void create () {
         personImage = new Texture(Gdx.files.internal("person.png"));
@@ -50,6 +56,10 @@ public class SocialForceModel extends ApplicationAdapter {
         spawnWall();
         spawnRect();
         spawnInitAgent();
+
+        bitmapFont = new BitmapFont();
+        bitmapFont.setColor(Color.BLACK);
+        bitmapFont.getData().setScale(2);
     }
 
 
@@ -66,7 +76,7 @@ public class SocialForceModel extends ApplicationAdapter {
         float tmpY=0;
         for (int i = 0; i < Parameter.initPedNum; i++) {
             //ランダムな方向を向いた歩行者を追加
-            Vector2f initPos = new Vector2f(MathUtils.random(50, 1500), MathUtils.random(50, 900));
+            Vector2f initPos = new Vector2f(MathUtils.random(180, 1400), MathUtils.random(100, 800));
             float initDirectionX = MathUtils.random(initPos.x - 1, initPos.x + 1);
             float initDirectionY = MathUtils.random(initPos.y - 1, initPos.y + 1);
             CPedestrian ped = new CPedestrian(this, false, initPos, 1, new Vector2f(initDirectionX, initDirectionY), new Sprite(personImage));
@@ -157,6 +167,7 @@ public class SocialForceModel extends ApplicationAdapter {
 
         //描画
         batch.begin();
+        bitmapFont.draw(batch,"time " + String.format("%.2f",step/60),Parameter.scale.x -200,Parameter.scale.y-10);
         for(CPedestrian agent: m_pedestrian) agent.getSprite().draw(batch);
         for (Sprite spexit: exit) {
             spexit.draw(batch);
@@ -225,10 +236,14 @@ public class SocialForceModel extends ApplicationAdapter {
             if(isGoalInfo) isGoalInfo = false;
             else  isGoalInfo = true;
         }
-        else if(Gdx.input.isKeyJustPressed(Input.Keys.P))
-            for(int i =0; i<100; i++) spawnAgent(new Vector3(400, 240, 0));
-        else if(Gdx.input.isKeyJustPressed(Input.Keys.D))
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            spawnInitAgent();
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.D)) {
             m_pedestrian.removeAll(m_pedestrian);
+            step = 0;
+            GoalTime.clear();
+        }
         else if(Gdx.input.isKeyJustPressed(Input.Keys.UP))
             initVec.set(0,1);
         else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN))
@@ -237,6 +252,13 @@ public class SocialForceModel extends ApplicationAdapter {
             initVec.set(1,0);
         else if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
             initVec.set(-1,0);
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.V)){
+            if(Parameter.view_Renderer){
+                Parameter.view_Renderer = false;
+            } else {
+                Parameter.view_Renderer = true;
+            }
+        }
 
 
 
@@ -256,7 +278,7 @@ public class SocialForceModel extends ApplicationAdapter {
         if(isStart){
             update();
         }
-        if(m_pedestrian.isEmpty()){
+        if(m_pedestrian.isEmpty() && isStart){
             //System.out.println("総避難完了時間 = " + GoalTime.get(GoalTime.size()-1));
             System.out.println(GoalTime);
         }

@@ -4,7 +4,7 @@ import javax.vecmath.Vector2f;
 
 final class CVector {
 
-    static Vector2f direction( final Vector2f p_v1, final Vector2f p_v2 )
+     static Vector2f direction( final Vector2f p_v1, final Vector2f p_v2 )
     {
         return normalize( sub( p_v1, p_v2 ) );
     }
