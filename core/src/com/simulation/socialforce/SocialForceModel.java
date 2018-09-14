@@ -99,7 +99,6 @@ public class SocialForceModel extends ApplicationAdapter {
         //m_pedestrian.add(new CPedestrian(this,false,new Vector2f(200,500),1,new Vector2f(1200,500),new Sprite(personImage)));
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f()))
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(600,450),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
-
     }
 
     private void spawnAgent(Vector3 pos){
