@@ -24,6 +24,8 @@ public class CPedestrian implements IPedestrian{
 
     private String stateTag;
 
+
+
     public CPedestrian(SocialForceModel p_env,boolean isExitInfo,final Vector2f p_position, final float p_speed, Vector2f p_goal,Sprite sprites) {
         l_env = p_env;
         m_goals = new ArrayList<>(Arrays.asList(p_goal));
@@ -146,9 +148,9 @@ public class CPedestrian implements IPedestrian{
             //出口はあるか?
             this.setTargetExit();
             //step60 ＝ 1second
-            if (l_env.step % 120 == 0) {
+            if (l_env.step % 180 == 0) {
                 if (this.getisExitInfo() == false) {
-                    switch (MathUtils.random(0, 4)) {
+                    switch (MathUtils.random(0, 2)) {
                         //出口を知っている人が周りにいるか
                         //getTargetPedestrian_turn(l_env.m_pedestrian);
                         //getTargetPedestrian(l_env.m_pedestrian);
@@ -172,10 +174,16 @@ public class CPedestrian implements IPedestrian{
                     }
                     //multi_people_following(l_env.m_pedestrian);
                 }
-                this.wall_turn2();
+
             }
         }
         /*-----------------------------------------------------------------------------------------------------------*/
+
+        if(!(stateTag=="GoExit")){
+            //this.wall_turn();
+            //this.wall_turn2();
+            this.wall_turn3();
+        }
 
         //もし初期目標地点がスケール外は全て削除
         if(this.m_goal.x < 0 || this.m_goal.x > Parameter.scale.x || this.m_goal.y < 0 || this.m_goal.y > Parameter.scale.y){
@@ -388,9 +396,10 @@ public class CPedestrian implements IPedestrian{
 
     //視野最大方向に壁があった場合に
     public void wall_turn(){
+        for (CStatic wall : Parameter.m_wall) {
             if(judgeIntersected(m_position.x,m_position.y, viewDegreeVec().x, viewDegreeVec().y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
-            //if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
-                    //System.out.println("wall_turn");
+                //if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+                System.out.println("wall_turn");
                 int randomx = MathUtils.random(-200, 200);
                 int randomy = MathUtils.random(-200, 200);
                 this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
@@ -406,39 +415,15 @@ public class CPedestrian implements IPedestrian{
 //                    this.m_goal = new Vector2f(this.m_goal.y+delta_x,this.m_goal.y+delta_y);
 //                this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
 
+            }
         }
     }
 
-//    //視野最大方向に壁があった場合に
-//    public void wall_turn2(){
-//        System.out.println("wall_turn2d");
-//        for (CStatic wall : Parameter.m_wall) {
-//                if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
-//                //System.out.println("wall_turn");
-//                int randomx = MathUtils.random(-200, 200);
-//                int randomy = MathUtils.random(-200, 200);
-//                this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
-//
-////                float delta_x = this.m_position.x - this.m_goal.x;
-////                if(delta_x < 0) delta_x *= -1;
-////                float delta_y = this.m_position.y - this.m_goal.y;
-////                if(delta_y < 0) delta_y *= -1;
-////
-////                if(this.getPedestrianDegree() > 0) //向いている方向がプラスなら
-////                    this.m_goal = new Vector2f(this.m_goal.x-delta_x,this.m_goal.y-delta_y);
-////                else //マイナスなら
-////                    this.m_goal = new Vector2f(this.m_goal.y+delta_x,this.m_goal.y+delta_y);
-////                this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
-//
-//            }
-//        }
-//    }
-    //視野最大方向に壁があった場合に
+    //移動経路先に壁があった場合に
     public void wall_turn2(){
-        System.out.println("wall_turn2d");
         for (CStatic wall : Parameter.m_wall) {
             if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
-                //System.out.println("wall_turn");
+                System.out.println("wall_turn2");
                 int randomx = MathUtils.random(-200, 200);
                 int randomy = MathUtils.random(-200, 200);
                 this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
@@ -454,6 +439,15 @@ public class CPedestrian implements IPedestrian{
 //                    this.m_goal = new Vector2f(this.m_goal.y+delta_x,this.m_goal.y+delta_y);
 //                this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
 
+            }
+        }
+    }
+    public void wall_turn3(){
+        for (CStatic wall : Parameter.m_wall) {
+            if(judgeIntersected(m_position.x,m_position.y, viewDegreeVec2().x, viewDegreeVec2().y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+                int randomx = MathUtils.random(-200, 200);
+                int randomy = MathUtils.random(-200, 200);
+                this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
             }
         }
     }
@@ -478,6 +472,20 @@ public class CPedestrian implements IPedestrian{
         return new Vector2f(result_x,result_y);
     }
 
+    //視野
+    public Vector2f viewDegreeVec2(){
+        //底辺a = 斜辺c * cos
+        float c = 100;
+        float cos = (float)Math.cos(Math.toRadians(this.getPedestrianDegree()));
+        float a = c*cos;
+        //対辺b = 斜辺c * sin
+        float sin = (float)Math.sin(Math.toRadians(this.getPedestrianDegree()));
+        float b = c*sin;
+        float result_x =a+this.m_position.x;
+        float result_y =b+this.m_position.y;
+        return new Vector2f(result_x,result_y);
+    }
+
     //ランダムウォーク1 周りをランダムに
     public void randomWalk1(){
         int randomx = MathUtils.random(-200, 200);
@@ -485,14 +493,12 @@ public class CPedestrian implements IPedestrian{
         this.m_goal = new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy);
         //this.m_goals.clear();
         //this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
-        this.wall_turn();
     }
     //ランダムウォーク2 完全なランダム
     public void randomWalk2(){
         this.m_goal = new Vector2f(MathUtils.random(Parameter.scale.x),MathUtils.random(Parameter.scale.y));
         //this.m_goals.clear();
         //this.setGoalposition(new Vector2f(MathUtils.random(Parameter.scale.x),MathUtils.random(Parameter.scale.y)));
-        this.wall_turn();
     }
     public void lookAround(){
         this.m_goals.clear();
