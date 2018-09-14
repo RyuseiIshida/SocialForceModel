@@ -35,8 +35,8 @@ public class SocialForceModel extends ApplicationAdapter {
     private boolean isGoalInfo = false; //Fボタン
     private Vector2f initVec = new Vector2f(0,0);
     public ArrayList<COutput> test = new ArrayList<>();
+    public ArrayList<Double> GoalTime = new ArrayList<>();
     public static double step = 0;
-
     @Override
     public void create () {
         personImage = new Texture(Gdx.files.internal("person.png"));
@@ -50,7 +50,6 @@ public class SocialForceModel extends ApplicationAdapter {
         spawnWall();
         spawnRect();
         spawnInitAgent();
-
     }
 
 
@@ -65,13 +64,27 @@ public class SocialForceModel extends ApplicationAdapter {
     private void spawnInitAgent(){
         float tmpX=0;
         float tmpY=0;
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < Parameter.initPedNum; i++) {
             //ランダムな方向を向いた歩行者を追加
             Vector2f initPos = new Vector2f(MathUtils.random(50, 1500), MathUtils.random(50, 900));
             float initDirectionX = MathUtils.random(initPos.x - 1, initPos.x + 1);
             float initDirectionY = MathUtils.random(initPos.y - 1, initPos.y + 1);
             CPedestrian ped = new CPedestrian(this, false, initPos, 1, new Vector2f(initDirectionX, initDirectionY), new Sprite(personImage));
-            m_pedestrian.add(ped);
+            float deltaX = initPos.x - tmpX;
+            if(deltaX<0){
+                deltaX *= -1;
+            }
+            float deltaY = initPos.y - tmpY;
+            if(deltaY<0){
+                deltaY *= -1;
+            }
+            if(deltaX > 30 && deltaY > 30) {
+                m_pedestrian.add(ped);
+            }else{
+                i--;
+            }
+            tmpX = ped.getPosition().x;
+            tmpY = ped.getPosition().y;
         }
 
 //        for (int i = 0; i < m_pedestrian.size()-1; i++) {
@@ -133,8 +146,9 @@ public class SocialForceModel extends ApplicationAdapter {
 
     @Override
     public void render () {
-        step++;
-
+        if(isStart){
+            step++;
+        }
         Gdx.gl.glClearColor(255, 255, 255, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -176,12 +190,14 @@ public class SocialForceModel extends ApplicationAdapter {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(new Color(0, 1, 0, 0.1f));
-        for(CPedestrian agent: m_pedestrian){
-            // 視野範囲の描写
-            float goaltheta = agent.getPedestrianDegree();
-            goaltheta -= parameter.view_phi_theta/2;
-            shapeRenderer.setColor(new Color(0, 1, 0, 0.1f));
-            shapeRenderer.arc((float)agent.getPosition().x,(float)agent.getPosition().y,parameter.view_dmax,goaltheta,parameter.view_phi_theta);
+        if(Parameter.view_Renderer) {
+            for (CPedestrian agent : m_pedestrian) {
+                // 視野範囲の描写
+                float goaltheta = agent.getPedestrianDegree();
+                goaltheta -= parameter.view_phi_theta / 2;
+                shapeRenderer.setColor(new Color(0, 1, 0, 0.1f));
+                shapeRenderer.arc((float) agent.getPosition().x, (float) agent.getPosition().y, parameter.view_dmax, goaltheta, parameter.view_phi_theta);
+            }
         }
 
         //障害物の描画
@@ -229,30 +245,20 @@ public class SocialForceModel extends ApplicationAdapter {
         while (cPedestrianIterator.hasNext()) {
             CPedestrian next =  cPedestrianIterator.next();
             for (Sprite sprite : exit) {
-                if(next.getSprite().getBoundingRectangle().overlaps(sprite.getBoundingRectangle()))
+                if(next.getSprite().getBoundingRectangle().overlaps(sprite.getBoundingRectangle())){
+                    GoalTime.add(step/60);
+                    System.out.println("goal time = " + step/60);
                     cPedestrianIterator.remove();
+                }
             }
         }
 
         if(isStart){
             update();
-//            //ステップ毎のエージェントの行動
-//            for (CPedestrian cPedestrian : m_pedestrian) {
-//                //ゴールが視界に入っているか
-//                cPedestrian.setGoalposition(getTargetExit(cPedestrian));
-//                //ゴールを知っていない場合,視界内にいるゴールを目指すエージェントに向かう
-//                if(cPedestrian.getisExitInfo()==false){
-//                    cPedestrian.setGoalposition(getTargetPedestrian_turn(cPedestrian));
-//                    cPedestrian.setGoalposition(getTargetPedestrian(cPedestrian));
-//                    if (step % 50 == 0) {
-//                        int randomx = MathUtils.random(-200,200);
-//                        int randomy = MathUtils.random(-200,200);
-//                        cPedestrian.setGoalposition(new Vector2f(cPedestrian.getPosition().x+randomx,cPedestrian.getPosition().y+randomy));
-//                    }
-//                }
-//                //getSubGoal(cPedestrian);
-//                setSubGoal(cPedestrian);
-//            }
+        }
+        if(m_pedestrian.isEmpty()){
+            //System.out.println("総避難完了時間 = " + GoalTime.get(GoalTime.size()-1));
+            System.out.println(GoalTime);
         }
     }
 

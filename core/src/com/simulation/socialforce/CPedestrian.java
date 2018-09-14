@@ -148,8 +148,7 @@ public class CPedestrian implements IPedestrian{
             //step60 ＝ 1second
             if (l_env.step % 60 == 0) {
                 if (this.getisExitInfo() == false) {
-                    //multi_people_following(l_env.m_pedestrian);
-                    switch (MathUtils.random(1, 2)) {
+                    switch (MathUtils.random(0, 4)) {
                         //出口を知っている人が周りにいるか
                         //getTargetPedestrian_turn(l_env.m_pedestrian);
                         //getTargetPedestrian(l_env.m_pedestrian);
@@ -158,14 +157,20 @@ public class CPedestrian implements IPedestrian{
                             break;
                         case 1:
                             //ランダムに歩く
-                            System.out.println("ランダム");
+                            //System.out.println("random");
                             randomWalk2();
                             break;
                         case 3:
                             //何もしない
-                            System.out.println("何もしない");
+                            //System.out.println("non_walk");
                             break;
+                        case 4:
+                            //周りを見渡す
+                            System.out.println("lookaround");
+                            lookAround();
+
                     }
+                    //multi_people_following(l_env.m_pedestrian);
                 }
             }
         }
@@ -304,7 +309,6 @@ public class CPedestrian implements IPedestrian{
             if(delta_x < 0) delta_x *= -1;
             if(parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ){
                 this.m_goals.clear();
-                System.out.println("clear");
                 this.setGoalposition(vec);
                 this.setExitInfo(true);
                 this.stateTag = "GoExit";
@@ -466,6 +470,21 @@ public class CPedestrian implements IPedestrian{
         //this.m_goals.clear();
         //this.setGoalposition(new Vector2f(MathUtils.random(Parameter.scale.x),MathUtils.random(Parameter.scale.y)));
         this.wall_turn();
+    }
+    public void lookAround(){
+        this.m_goals.clear();
+        ArrayList<Vector2f> directions = new ArrayList<>(Arrays.asList(
+                new Vector2f(this.m_position.x+1, this.m_position.y+1),
+                new Vector2f(this.m_position.x+1, this.m_position.y-1),
+                new Vector2f(this.m_position.x-1, this.m_position.y+1),
+                new Vector2f(this.m_position.x-1, this.m_position.y-1)
+
+                ));
+        for (int i = 4; i >= 0; i--) {
+            int random = MathUtils.random(i);
+            this.setGoalposition(new Vector2f(directions.get(random)));
+            directions.remove(random);
+        }
     }
 
 }
