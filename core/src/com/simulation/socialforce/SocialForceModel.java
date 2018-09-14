@@ -60,7 +60,7 @@ public class SocialForceModel extends ApplicationAdapter {
     }
 
     private void spawnInitAgent(){
-        for (int i = 0; i < 0; i++) {
+        for (int i = 0; i < 50; i++) {
             //ランダムな方向を向いた歩行者を追加
             Vector2f initPos = new Vector2f(MathUtils.random(50,1500),MathUtils.random(50,900));
             float initDirectionX = MathUtils.random(initPos.x - 1, initPos.x + 1);
@@ -75,10 +75,10 @@ public class SocialForceModel extends ApplicationAdapter {
 //            }
 //        }
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(850,400),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
-        m_pedestrian.add(new CPedestrian(this,true,new Vector2f(450,500),1,new Vector2f(1500,810),new Sprite(personImage)));
-        m_pedestrian.add(new CPedestrian(this,true,new Vector2f(400,500),1,new Vector2f(1500,810),new Sprite(personImage)));
-        m_pedestrian.add(new CPedestrian(this,true,new Vector2f(500,500),1,new Vector2f(1500,810),new Sprite(personImage)));
-        m_pedestrian.add(new CPedestrian(this,false,new Vector2f(200,500),1,new Vector2f(1200,500),new Sprite(personImage)));
+        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(450,500),1,new Vector2f(1500,810),new Sprite(personImage)));
+        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(400,500),1,new Vector2f(1500,810),new Sprite(personImage)));
+        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(500,500),1,new Vector2f(1500,810),new Sprite(personImage)));
+        //m_pedestrian.add(new CPedestrian(this,false,new Vector2f(200,500),1,new Vector2f(1200,500),new Sprite(personImage)));
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f()))
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(600,450),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
 

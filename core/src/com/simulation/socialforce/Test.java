@@ -1,5 +1,7 @@
 package com.simulation.socialforce;
 
+import com.badlogic.gdx.math.MathUtils;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
@@ -8,12 +10,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+
 public class Test {
 
     public static void main(String[] args) {
-        String test = " ";
-        if(test.isEmpty()) System.out.println("True1");
-        if(test.isEmpty()) System.out.println("True2");
+        System.out.println(MathUtils.random(3));
+        System.out.println(MathUtils.random(3));
+        System.out.println(MathUtils.random(3));
+        System.out.println(MathUtils.random(3));
+        System.out.println(MathUtils.random(3));
 
     }
 }
