@@ -148,12 +148,12 @@ public class CPedestrian implements IPedestrian{
             //出口はあるか?
             this.setTargetExit();
             //step60 ＝ 1second
-            if (l_env.step % 60 == 0) {
+            if (l_env.step % 180 == 0) {
                 if (this.getisExitInfo() == false) {
-                    switch (MathUtils.random(0, 2)) {
-                        //出口を知っている人が周りにいるか
-                        //getTargetPedestrian_turn(l_env.m_pedestrian);
-                        //getTargetPedestrian(l_env.m_pedestrian);
+
+                    //getTargetPedestrian_turn(l_env.m_pedestrian);
+                    //getTargetPedestrian(l_env.m_pedestrian);
+                    switch (MathUtils.random(0, 4)) {
                         case 0:
                             multi_people_following(l_env.m_pedestrian);
                             break;
@@ -172,14 +172,14 @@ public class CPedestrian implements IPedestrian{
                             lookAround();
 
                     }
-                    //multi_people_following(l_env.m_pedestrian);
+                    multi_people_following(l_env.m_pedestrian);
                 }
 
             }
         }
         /*-----------------------------------------------------------------------------------------------------------*/
 
-        if(!(stateTag=="GoExit")){
+        if(!(stateTag=="GoExit") && !this.aisExitInfo){
             //this.wall_turn();
             //this.wall_turn2();
             this.wall_turn3();
@@ -199,7 +199,7 @@ public class CPedestrian implements IPedestrian{
         //fSystem.out.println("l_check = " + l_check);
         //if ( this.m_goals.isEmpty() ) { m_controlossilation ++; }
 
-        if ( l_check <= this.getM_radius() * 0.5 )
+        if ( l_check <= this.getM_radius() * 0.2 )
         {
             this.m_velocity = new Vector2f(0, 0);
             if ( this.m_goals.size() > 0 )
@@ -295,7 +295,7 @@ public class CPedestrian implements IPedestrian{
             if(parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ) {
                 count++;
                 multiPed.add(mvec);
-                if(count>=3){
+                if(count>=5){
                     //this.setGoalposition(multiPed.get(MathUtils.random(multiPed.size())).getPosition());
                     //this.setGoalposition(new Vector2f(mvec.getPosition().x, mvec.getPosition().y));
                     this.m_goal = new Vector2f(mvec.getPosition().x, mvec.getPosition().y);
@@ -304,7 +304,7 @@ public class CPedestrian implements IPedestrian{
                 }
             }
         }
-        //count = 0;多分いらない
+        count = 0;
     }
 
     public void setTargetExit(){
