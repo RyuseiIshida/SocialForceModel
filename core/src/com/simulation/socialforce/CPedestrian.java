@@ -8,7 +8,7 @@ import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 
 public class CPedestrian implements IPedestrian{
     private Parameter parameter = new Parameter();
-    private static final float m_maxspeedfactor = 2.5f;
+    private static final float m_maxspeedfactor = 2.5f;//最高速度
     private static final float m_maxforce = 0.1f;
     private static final float m_radius = 23f;
     private Vector2f m_position;
@@ -18,7 +18,6 @@ public class CPedestrian implements IPedestrian{
     private float m_speed;
     private SocialForceModel l_env;
     private float m_maxspeed;
-    private int m_controlossilation;
     private Sprite sprite;
     private boolean aisExitInfo;
 
@@ -34,7 +33,6 @@ public class CPedestrian implements IPedestrian{
         m_speed = p_speed;
         m_velocity = CVector.scale( p_speed, CVector.direction( m_goal, m_position ) );
         m_maxspeed = p_speed * m_maxspeedfactor;
-        m_controlossilation = 0;
         aisExitInfo = isExitInfo;
         if(aisExitInfo) stateTag = "GoExit";
         stateTag = "";
@@ -104,7 +102,7 @@ public class CPedestrian implements IPedestrian{
     }
 
     @Override
-    public Vector2f accelaration()
+    public Vector2f accelaration() //加速度ベクトル
     {
         Vector2f l_repulsetoWall = new Vector2f( 0, 0 );
         Vector2f l_repulsetoOthers = new Vector2f( 0, 0 );
@@ -112,7 +110,7 @@ public class CPedestrian implements IPedestrian{
 
         for ( int i = 0; i < l_env.getWallinfo().size(); i++ )
         {
-            l_repulsetoWall = CVector.add( l_repulsetoWall, CForce.repulsewall( this, l_env.getWallinfo().get( i ), l_env.test ) );
+            l_repulsetoWall = CVector.add( l_repulsetoWall, CForce.repulsewall( this, l_env.getWallinfo().get( i )) );
         }
 
 
@@ -120,7 +118,7 @@ public class CPedestrian implements IPedestrian{
         {
             if( !l_env.getPedestrianinfo().get(i).equals( this ) )
             {
-                l_repulsetoOthers = CVector.add( l_repulsetoOthers, CForce.repulseotherPed( this, l_env.getPedestrianinfo().get( i ), l_env.test ) );
+                l_repulsetoOthers = CVector.add( l_repulsetoOthers, CForce.repulseotherPed( this, l_env.getPedestrianinfo().get( i )) );
             }
         }
 
@@ -155,7 +153,7 @@ public class CPedestrian implements IPedestrian{
                     //getTargetPedestrian(l_env.m_pedestrian);
                     switch (MathUtils.random(0, 4)) {
                         case 0:
-                            multi_people_following(l_env.m_pedestrian);
+                            multi_people_following();
                             break;
                         case 1:
                             //ランダムに歩く
@@ -172,7 +170,7 @@ public class CPedestrian implements IPedestrian{
                             lookAround();
 
                     }
-                    multi_people_following(l_env.m_pedestrian);
+                    multi_people_following();
                 }
 
             }
@@ -195,37 +193,28 @@ public class CPedestrian implements IPedestrian{
 //        if(this.aisExitInfo==false) {
 //            System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
 //        }
-        final float l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length();
-        //fSystem.out.println("l_check = " + l_check);
-        //if ( this.m_goals.isEmpty() ) { m_controlossilation ++; }
 
-        if ( l_check <= this.getM_radius() * 0.2 )
+        final float l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length(); //ゴールとの距離
+        //System.out.println("l_check = " + l_check);
+
+        if ( l_check <= this.getM_radius() * 0.2 ) //ゴールについたかの判断
         {
-            this.m_velocity = new Vector2f(0, 0);
-            if ( this.m_goals.size() > 0 )
+            this.m_velocity = new Vector2f(0, 0); //スピードベクトルを0にする
+            if ( this.m_goals.size() > 0 ) //もしゴール集合が残っているなら
             {
-                this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
-                this.m_velocity = CVector.scale( m_maxspeed, CVector.normalize( CVector.add( this.m_velocity, this.accelaration())));
-                this.m_position = CVector.add( m_position, m_velocity );
+                this.m_goal = this.m_goals.remove(this.m_goals.size()-1); //ゴール集合を一つ削除した新しいゴールを追加する
+                this.m_velocity = CVector.scale( m_maxspeed, CVector.normalize( CVector.add( this.m_velocity, this.accelaration()))); //正規化された速度ベクトルをスケールにより調整して速度ベクトル代入
+                this.m_position = CVector.add( m_position, m_velocity ); //現在の場所
                 sprite.setPosition(m_position.x-16,m_position.y-16);
             }
+        } else { //ゴールについてない場合
+            this.m_velocity = CVector.scale(m_maxspeed, CVector.normalize(CVector.add(this.m_velocity, this.accelaration())));
+            this.m_position = CVector.add(m_position, m_velocity);
+            sprite.setPosition(m_position.x - 16, m_position.y - 16);
         }
-        else
-        {
-            if( m_controlossilation >= 1000 )
-            {
-                this.m_velocity = new Vector2f( 0, 0 );
-            }
-            else
-            {
-                this.m_velocity = CVector.scale( m_maxspeed, CVector.normalize( CVector.add( this.m_velocity, this.accelaration() ) ) );
-                this.m_position = CVector.add( m_position, m_velocity );
-                sprite.setPosition(m_position.x-16,m_position.y-16);
-            }
-        }
-
         return this;
     }
+
 
     public int getDistance(float x1, float y1, float x2, float y2) {
         float distance = (float)Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
@@ -282,10 +271,10 @@ public class CPedestrian implements IPedestrian{
     }
 
 
-    public void multi_people_following(ArrayList<CPedestrian> m_pedestrian){
+    public void multi_people_following(){
         int count = 0;
         ArrayList<CPedestrian> multiPed = new ArrayList<>();
-        for (CPedestrian mvec : m_pedestrian) {
+        for (CPedestrian mvec : l_env.getPedestrianinfo()) {
             int distance = getDistance(m_position.x,m_position.y,mvec.getPosition().x,mvec.getPosition().y);
             //対象 - 向かっている方向 = delta_x
             //view_phi-theta/2 - delta_x > 0 -> 重なっている

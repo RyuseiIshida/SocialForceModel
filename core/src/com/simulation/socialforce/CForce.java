@@ -9,7 +9,7 @@ public class CForce {
     private static final float m_detta = 2f;
     private static final float m_lamda = 0.2f;
     private static final float m_repulsefactortoped = 2.1f;
-    private static final float m_sigma = 0.3f;
+    private static final float m_sigma = 0.3f;//0.3
     private static final float m_repulsefactortowall = 1f; //元5
     private static final float m_R = 0.2f;
 
@@ -38,24 +38,16 @@ public class CForce {
         return CVector.scale( m_repulsefactortoped * (float)Math.exp( l_temp ), l_normvector );
     }
 
-    static Vector2f repulseotherPed( final CPedestrian p_self, final CPedestrian p_other, ArrayList<COutput> test )
+    static Vector2f repulseotherPed( final CPedestrian p_self, final CPedestrian p_other)
     {
         final float l_radious = p_self.getM_radius() * 0.5f + p_other.getM_radius() * 0.5f ;
         final float l_temp = l_radious - CVector.distance( p_self.getPosition(), p_other.getPosition() );
-        //System.out.println( p_self + " dis " + l_temp );
-        //if ( l_temp >= -4 ) {
-        //test.add( new COutput( p_self.getPosition().x,p_self.getPosition().y, m_repulsefactortoped * Math.exp( l_temp / m_sigma ) * anisotropic_character( p_self.getPosition(),
-               // p_other.getPosition() ) ) );
-           // System.out.println( p_self.getPosition()+" self "+m_repulsefactortoped * Math.exp( l_temp / m_sigma )*anisotropic_character( p_self.getPosition(),
-                   // p_other.getPosition() ) +" other "+ p_other.getPosition());
         return CVector.scale( m_repulsefactortoped * (float)Math.exp( l_temp / m_sigma ) * anisotropic_character( p_self.getPosition(),
                     p_other.getPosition() ), CVector.normalize( CVector.sub( p_self.getPosition(), p_other.getPosition() ) ) );
-        //}
-
         //return new Vector2f( 0, 0 );
     }
 
-    static Vector2f repulsewall( final CPedestrian p_self, final CWall p_wall, ArrayList<COutput> test )
+    static Vector2f repulsewall( final CPedestrian p_self, final CWall p_wall) //壁からの斥力
     {
         final Vector2f l_normposition = CVector.perpendicular_derection( p_self.getPosition(), p_wall );
 
@@ -64,9 +56,6 @@ public class CForce {
             final float l_temp = p_self.getM_radius() - CVector.distance( p_self.getPosition(), l_normposition );
             float p = m_repulsefactortowall * (float)Math.exp( l_temp / m_R );
             if ( l_temp >= - 4 ) {
-                //test.add( new COutput( p_self.getPosition().x,p_self.getPosition().y, p ) );
-
-                //System.out.println( p_self.getPosition()+" self "+m_repulsefactortowall * Math.exp( l_temp / m_R )+" wall "+ l_normposition);
                 return CVector.scale( m_repulsefactortowall * (float)Math.exp( l_temp / m_R ), CVector.normalize(
                         CVector.sub( p_self.getPosition(), l_normposition ) ) );
             }

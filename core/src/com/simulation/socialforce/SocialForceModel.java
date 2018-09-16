@@ -28,13 +28,12 @@ public class SocialForceModel extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Parameter parameter = new Parameter();
     private IfcParser ifcParser;
-    public ArrayList<CPedestrian> m_pedestrian = new ArrayList<>();
+    private ArrayList<CPedestrian> m_pedestrian = new ArrayList<>();
     private ArrayList<CWall> m_walledge = new ArrayList<>();
     private ArrayList<Sprite> exit = new ArrayList<>();
     private boolean isStart = false; //スペースボタン
     private boolean isGoalInfo = false; //Fボタン
     private Vector2f initVec = new Vector2f(0,0);
-    public ArrayList<COutput> test = new ArrayList<>();
     public ArrayList<Double> GoalTime = new ArrayList<>();
     public static double step = 0;
 
