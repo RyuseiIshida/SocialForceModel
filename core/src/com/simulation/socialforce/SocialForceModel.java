@@ -202,6 +202,18 @@ public class SocialForceModel extends ApplicationAdapter {
                 shapeRenderer.setColor(Color.RED);
                 shapeRenderer.circle(agent.getPosition().x,agent.getPosition().y, 10);
             }
+            if(agent.getStateTag() == "follow"){
+                shapeRenderer.setColor(Color.BLUE);
+                shapeRenderer.circle(agent.getPosition().x, agent.getPosition().y, 10);
+            }
+            if(agent.getStateTag() == "leader"){
+                shapeRenderer.setColor(Color.GREEN);
+                shapeRenderer.circle(agent.getPosition().x, agent.getPosition().y, 10);
+            }
+            if(agent.getStateTag() == "random"){
+                shapeRenderer.setColor(Color.BLACK);
+                shapeRenderer.circle(agent.getPosition().x, agent.getPosition().y, 10);
+            }
 
         }
         shapeRenderer.end();
