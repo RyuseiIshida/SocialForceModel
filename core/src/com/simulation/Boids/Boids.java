@@ -80,7 +80,7 @@ class Boid {
 
     Boid(double x, double y) {
         acceleration = new Vec(); //加速
-        velocity = new Vec(r.nextInt(3) + 1, r.nextInt(3) - 1); //速度
+        velocity = new Vec(3, 0); //速度
         location = new Vec(x, y); //場所
         maxSpeed = 3.0; //最大速度
         maxForce = 0.05;
@@ -116,9 +116,9 @@ class Boid {
         rule2.mult(1.5); //パラメータ
         rule3.mult(1.3); //パラメータ
 
-        //applyForce(rule1);
-        //applyForce(rule2);
-        //applyForce(rule3);
+        applyForce(rule1);
+        applyForce(rule2);
+        applyForce(rule3);
         applyForce(migrate);
     }
 

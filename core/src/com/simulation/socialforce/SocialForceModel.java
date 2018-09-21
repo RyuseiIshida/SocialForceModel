@@ -4,7 +4,6 @@ package com.simulation.socialforce;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -18,7 +17,6 @@ import com.simulation.ifcparser.IfcParser;
 
 import javax.vecmath.Vector2f;
 import java.util.*;
-
 
 public class SocialForceModel extends ApplicationAdapter {
     private Texture personImage;
@@ -74,40 +72,59 @@ public class SocialForceModel extends ApplicationAdapter {
         float tmpX=0;
         float tmpY=0;
         CPedestrian ped;
-        for (int i = 0; i < Parameter.initPedNum; i++) {
-            //ランダムな方向を向いた歩行者を追加
-            Vector2f initPos = new Vector2f(MathUtils.random(180, 1400), MathUtils.random(100, 800));
-            float initDirectionX = MathUtils.random(initPos.x - 1, initPos.x + 1);
-            float initDirectionY = MathUtils.random(initPos.y - 1, initPos.y + 1);
-            if(i < Parameter.goalPed) {
-                ped = new CPedestrian(this, true, initPos, 1, Parameter.exitVec.get(0), new Sprite(personImage));
-            }else{
-                ped = new CPedestrian(this, false, initPos, 1, new Vector2f(initDirectionX, initDirectionY), new Sprite(personImage));
-            }
+//        for (int i = 0; i < Parameter.initPedNum; i++) {
+//            //ランダムな方向を向いた歩行者を追加
+//            Vector2f initPos = new Vector2f(MathUtils.random(180, 1400), MathUtils.random(100, 800));
+//            float initDirectionX = MathUtils.random(initPos.x - 1, initPos.x + 1);
+//            float initDirectionY = MathUtils.random(initPos.y - 1, initPos.y + 1);
+//            if(i < Parameter.goalPed) {
+//                ped = new CPedestrian(this, true, initPos, 1, Parameter.exitVec.get(0), new Sprite(personImage));
+//            }else{
+//                ped = new CPedestrian(this, false, initPos, 1, new Vector2f(initDirectionX, initDirectionY), new Sprite(personImage));
+//            }
+//
+//            float deltaX = initPos.x - tmpX;
+//            if(deltaX<0){
+//                deltaX *= -1;
+//            }
+//            float deltaY = initPos.y - tmpY;
+//            if(deltaY<0){
+//                deltaY *= -1;
+//            }
+//            if(deltaX > 50 && deltaY > 50) {
+//                m_pedestrian.add(ped);
+//            }else{
+//                i--;
+//                System.out.println("i--");
+//            }
+//            tmpX = ped.getPosition().x;
+//            tmpY = ped.getPosition().y;
+//        }
+//
+//        for(int i = 0; i<10; i++){
+//            Vector2f initPos = new Vector2f(MathUtils.random(Parameter.scale.x+50,Parameter.scale.x+30), MathUtils.random(Parameter.scale.y/2-500,Parameter.scale.y/2+500));
+//            CPedestrian p = new CPedestrian(this, false,initPos, 1, new Vector2f(0,Parameter.scale.y/2),new Sprite(personImage));
+//            m_pedestrian.add(p);
+//        }
+//
+//
+//        for(int i = 0; i<10; i++){
+//            Vector2f initPos = new Vector2f(0, MathUtils.random(Parameter.scale.y/2-200,Parameter.scale.y/2+200));
+//            CPedestrian p = new CPedestrian(this, false,initPos, 1, new Vector2f(Parameter.scale.x,Parameter.scale.y/2),new Sprite(personImage));
+//            m_pedestrian.add(p);
+//        }
 
-            float deltaX = initPos.x - tmpX;
-            if(deltaX<0){
-                deltaX *= -1;
-            }
-            float deltaY = initPos.y - tmpY;
-            if(deltaY<0){
-                deltaY *= -1;
-            }
-            if(deltaX > 50 && deltaY > 50) {
-                m_pedestrian.add(ped);
-            }else{
-                i--;
-                System.out.println("i--");
-            }
-            tmpX = ped.getPosition().x;
-            tmpY = ped.getPosition().y;
-        }
+
+
 
 //        for (int i = 0; i < m_pedestrian.size()-1; i++) {
 //            if(m_pedestrian.get(i).getSprite().getBoundingRectangle().overlaps(m_pedestrian.get(i+1).getSprite().getBoundingRectangle())){
 //                m_pedestrian.remove(i);
 //            }
 //        }
+
+        m_pedestrian.add(new CPedestrian(this, false, new Vector2f(0,500),1,new Vector2f(1000,500), new Sprite(personImage)));
+        m_pedestrian.add(new CPedestrian(this, false, new Vector2f(1000,500),1,new Vector2f(0,500), new Sprite(personImage)));
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(850,400),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(450,500),1,new Vector2f(1500,810),new Sprite(personImage)));
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(400,500),1,new Vector2f(1500,810),new Sprite(personImage)));
@@ -115,6 +132,7 @@ public class SocialForceModel extends ApplicationAdapter {
         //m_pedestrian.add(new CPedestrian(this,false,new Vector2f(200,500),1,new Vector2f(1200,500),new Sprite(personImage)));
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f()))
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(600,450),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
+
 
     }
 
@@ -324,3 +342,7 @@ public class SocialForceModel extends ApplicationAdapter {
 
 
 }
+
+
+
+
