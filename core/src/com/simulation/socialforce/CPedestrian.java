@@ -139,7 +139,7 @@ public class CPedestrian implements IPedestrian{
         Vec rule1 = separation();
         Vec rule2 = alignment();
         Vec rule3 = cohesion();
-        rule1.mult(2.5); //パラメータ2.5
+        rule1.mult(0.5); //パラメータ2.5
         rule2.mult(1.5); //パラメータ1.5
         rule3.mult(1.3); //パラメータ1.3
         Vector2f rule1f = new Vector2f((float)rule1.x,(float)rule1.y);
@@ -150,7 +150,7 @@ public class CPedestrian implements IPedestrian{
         boidVector.add(rule1f,rule2f);
         boidVector.add(boidVector,rule3f);
 
-        l_temp.add(l_temp, boidVector);
+        //l_temp.add(l_temp, boidVector);
 
         return CVector.truncate( CVector.add( l_temp, l_repulsetoWall ), m_maxforce );
     }
@@ -167,18 +167,19 @@ public class CPedestrian implements IPedestrian{
 
 
         /*-----意思決定書き込み部分-------------------------------------------------------------------------------------*/
-//        //ルール
-//        //出口はあるか
-//        if(this.getisExitInfo()==false) {
-//            //出口はあるか?
-//            this.setTargetExit();
-//            //step60 ＝ 1second
-//            if (l_env.step % 180 == 0) {
-//                if (this.getisExitInfo() == false) {
-//
-//                    //getTargetPedestrian_turn(l_env.m_pedestrian);
-//                    //getTargetPedestrian(l_env.m_pedestrian);
-//                    switch (MathUtils.random(0, 4)) {
+        //ルール
+        //出口はあるか
+        if(this.getisExitInfo()==false) {
+            //出口はあるか?
+            this.setTargetExit();
+            //step60 ＝ 1second
+            getTargetPedestrian_turn();
+            getTargetPedestrian();
+            if (l_env.step % 180 == 0) {
+                if (this.getisExitInfo() == false) {
+                    //getTargetPedestrian_turn();
+                    //getTargetPedestrian();
+//                    switch (MathUtils.random(0, 1)) {
 //                        case 0:
 //                            multi_people_following();
 //                            break;
@@ -198,33 +199,33 @@ public class CPedestrian implements IPedestrian{
 //
 //                    }
 //                    multi_people_following();
-//                }
-//
-//            }
+                }
+
+            }
+        }
+        /*-----------------------------------------------------------------------------------------------------------*/
+
+        if(!(stateTag=="GoExit") && !this.aisExitInfo){
+            //this.wall_turn();
+            //this.wall_turn2();
+            this.wall_turn3();
+        }
+
+        //もし初期目標地点がスケール外は全て削除
+        if(this.m_goal.x < 0 || this.m_goal.x > Parameter.scale.x || this.m_goal.y < 0 || this.m_goal.y > Parameter.scale.y){
+            //System.out.println("allClear");
+            this.m_goals.clear();
+        }
+
+        this.setSubGoal();
+//        if(this.aisExitInfo==false) {
+//            System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
 //        }
-//        /*-----------------------------------------------------------------------------------------------------------*/
-//
-//        if(!(stateTag=="GoExit") && !this.aisExitInfo){
-//            //this.wall_turn();
-//            //this.wall_turn2();
-//            this.wall_turn3();
-//        }
-//
-//        //もし初期目標地点がスケール外は全て削除
-//        if(this.m_goal.x < 0 || this.m_goal.x > Parameter.scale.x || this.m_goal.y < 0 || this.m_goal.y > Parameter.scale.y){
-//            //System.out.println("allClear");
-//            this.m_goals.clear();
-//        }
-//
-//        this.setSubGoal();
-////        if(this.aisExitInfo==false) {
-////            System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
-////        }
 
         final float l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length(); //ゴールとの距離
         //System.out.println("l_check = " + l_check);
 
-        if ( l_check <= this.getM_radius() * 0.2 ) //ゴールについたかの判断
+        if ( l_check <= this.getM_radius() * 0.5 ) //ゴールについたかの判断
         {
             this.m_velocity = new Vector2f(0, 0); //スピードベクトルを0にする
             if ( this.m_goals.size() > 0 ) //もしゴール集合が残っているなら
@@ -263,8 +264,8 @@ public class CPedestrian implements IPedestrian{
 
 
 
-    public void getTargetPedestrian_turn(ArrayList<CPedestrian> m_pedestrian){
-        for (CPedestrian mvec : m_pedestrian) {
+    public void getTargetPedestrian_turn(){
+        for (CPedestrian mvec : l_env.getPedestrianinfo()) {
             int distance = getDistance(m_position.x,m_position.y,mvec.getPosition().x,mvec.getPosition().y);
             //対象 - 向かっている方向 = delta_x
             //view_phi-theta/2 - delta_x > 0 -> 重なっている
@@ -281,8 +282,8 @@ public class CPedestrian implements IPedestrian{
         }
     }
 
-    public void getTargetPedestrian(ArrayList<CPedestrian> m_pedestrian){
-        for (CPedestrian mvec : m_pedestrian) {
+    public void getTargetPedestrian(){
+        for (CPedestrian mvec : l_env.getPedestrianinfo()) {
             int distance = getDistance(m_position.x,m_position.y,mvec.getPosition().x,mvec.getPosition().y);
             //対象 - 向かっている方向 = delta_x
             //view_phi-theta/2 - delta_x > 0 -> 重なっている
