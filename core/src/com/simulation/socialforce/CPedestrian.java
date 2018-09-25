@@ -180,45 +180,52 @@ public class CPedestrian implements IPedestrian{
 
         /*-----意思決定-----------------------------------------------------------------------------------------------*/
         //出口を知っているか
-        if(this.getisExitInfo()==false) {
+        if(this.getisExitInfo()==false){
             //出口はあるか?
             this.setTargetExit();
+
+
+            if( this.stateTag == "follow") {
+                if (this.getDistance(this.m_position.x, this.m_position.y, this.myleader.getPosition().x, this.myleader.getPosition().y) > 30) {
+                    this.m_goal = this.myleader.getPosition();
+                } else {
+                    this.m_goal = this.getPosition();
+                    this.m_velocity = this.myleader.m_velocity;
+                }
+            }
+
             if (l_env.step % Parameter.STEPINTERVAL == 0) {
                 if (this.getisExitInfo() == false) {
-                    if( this.stateTag == "follow"){
-                        System.out.println("myleader = " + myleader.getVelocity());
-                        //if(!(myleader.getVelocity().x == 0))
-                            this.m_goal = this.myleader.m_velocity;
-                    } else {
-                        multi_people_following();
-                        //int random = MathUtils.random(0,100);
-//                        switch (MathUtils.random(0, 2)) {
-//                            case 0:
-//                                //if(!(this.stateTag == "leader")) multi_people_following();
-//                                this.multi_people_following();
-//                                break;
-//                            case 1:
-//                                //ランダムに歩く
-//                                this.randomWalk2();
-//                                break;
-//                            case 2:
-//                                //何もしない
-//                                this.m_goal = new Vector2f(this.m_position.x, this.m_position.y);
-//                                //this.m_goal = this.m_velocity;
-//                                break;
-//                            case 3:
-//                                //周りを見渡す
-//                                lookAround();
-//                                break;
-//                        }
+                    if( !(this.stateTag == "follow") ) {
+                    //if( !(this.stateTag == "follow") && !(this.stateTag == "leader") ) {
+                            switch (MathUtils.random(0, 2)) {
+                            case 0:
+                                //if(!(this.stateTag == "leader")) multi_people_following();
+                                this.multi_people_following();
+                                break;
+                            case 1:
+                                //ランダムに歩く
+                                this.randomWalk2();
+                                break;
+                            case 2:
+                                //何もしない
+                                this.m_goal = new Vector2f(this.m_position.x, this.m_position.y);
+                                //this.m_goal = this.m_velocity;
+                                break;
+                            case 3:
+                                //周りを見渡す
+                                lookAround();
+                                break;
+                        }
                     }
                 }
-
             }
         }
+
+
         /*-----------------------------------------------------------------------------------------------------------*/
 
-        if(!(stateTag=="GoExit") && !this.aisExitInfo){
+        if(!(stateTag=="GoExit") && !(stateTag=="follow") && !this.aisExitInfo){
             //this.wall_turn();
             //this.wall_turn2();
             this.wall_turn3();
@@ -272,17 +279,15 @@ public class CPedestrian implements IPedestrian{
                 if (parameter.view_dmax >= distance && parameter.view_phi_theta / 2 - delta_x >= 0) {
                     count++;
                     multiPed.add(ped);
-                    if (count >= 1) {
+                    if (count >= 10) {
                         this.m_goal = ped.getPosition();
-                        if (distance < 10) {
+                        if (distance < 150) {
                             this.stateTag = "follow";
                             this.myleader = ped;
                             this.m_goal = myleader.getPosition();
                             ped.setStateTag("leader");
                             break;
                         }
-                    } else {
-                        randomWalk2();
                     }
                 }
             }
