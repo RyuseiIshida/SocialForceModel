@@ -179,10 +179,10 @@ public class CPedestrian implements IPedestrian{
 
         /*-----意思決定書き込み部分-------------------------------------------------------------------------------------*/
         //出口を知っているか
+        this.setTargetExit();
         if(this.getisExitInfo()==false) {
             //出口はあるか?
             this.setTargetExit();
-
             if (l_env.step % Parameter.STEPINTERVAL == 0) {
                 //タグの初期化
                 this.stateTag = "";
