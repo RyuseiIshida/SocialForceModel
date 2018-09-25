@@ -166,6 +166,7 @@ public class CPedestrian implements IPedestrian{
     }
 
     public void setMyleader(CPedestrian ped){
+        System.out.println("leaderセット");
         this.myleader = ped;
     }
     public CPedestrian getMyleader(){
@@ -177,37 +178,40 @@ public class CPedestrian implements IPedestrian{
     public IPedestrian call() throws Exception {
 
 
-        /*-----意思決定書き込み部分-------------------------------------------------------------------------------------*/
+        /*-----意思決定-----------------------------------------------------------------------------------------------*/
         //出口を知っているか
         if(this.getisExitInfo()==false) {
             //出口はあるか?
             this.setTargetExit();
-
             if (l_env.step % Parameter.STEPINTERVAL == 0) {
-                //タグの初期化
-                this.stateTag = "";
                 if (this.getisExitInfo() == false) {
-                    //int random = MathUtils.random(0,100);
-                    switch (MathUtils.random(0, 2)) {
-                        case 0:
-                            //if(!(this.stateTag == "leader")) multi_people_following();
-                            this.multi_people_following();
-                            break;
-                        case 1:
-                            //ランダムに歩く
-                            this.randomWalk2();
-                            break;
-                        case 2:
-                            //何もしない
-                            this.m_goal = new Vector2f(this.m_position.x, this.m_position.y);
-                            //this.m_goal = this.m_velocity;
-                            break;
-                        case 3:
-                            //周りを見渡す
-                            lookAround();
-                            break;
+                    if( this.stateTag == "follow"){
+                        System.out.println("myleader = " + myleader.getVelocity());
+                        //if(!(myleader.getVelocity().x == 0))
+                            this.m_goal = this.myleader.m_velocity;
+                    } else {
+                        multi_people_following();
+                        //int random = MathUtils.random(0,100);
+//                        switch (MathUtils.random(0, 2)) {
+//                            case 0:
+//                                //if(!(this.stateTag == "leader")) multi_people_following();
+//                                this.multi_people_following();
+//                                break;
+//                            case 1:
+//                                //ランダムに歩く
+//                                this.randomWalk2();
+//                                break;
+//                            case 2:
+//                                //何もしない
+//                                this.m_goal = new Vector2f(this.m_position.x, this.m_position.y);
+//                                //this.m_goal = this.m_velocity;
+//                                break;
+//                            case 3:
+//                                //周りを見渡す
+//                                lookAround();
+//                                break;
+//                        }
                     }
-                   //multi_people_following();
                 }
 
             }
@@ -258,31 +262,31 @@ public class CPedestrian implements IPedestrian{
         int count = 0;
         ArrayList<CPedestrian> multiPed = new ArrayList<>();
         for (CPedestrian ped : l_env.getPedestrianinfo()) {
-            int distance = getDistance(m_position.x,m_position.y,ped.getPosition().x,ped.getPosition().y);
-            //対象 - 向かっている方向 = delta_x
-            //view_phi-theta/2 - delta_x > 0 -> 重なっている
-            float delta_x = getDegree(m_position.x,m_position.y,ped.getPosition().x,ped.getPosition().y)
-                    - getDegree(m_position.x,m_position.y,m_position.x,m_position.y);
-            if(delta_x < 0) delta_x *= -1;
-            if(parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ) {
-                count++;
-                multiPed.add(ped);
-                if(count>=10){
-                    this.stateTag = "follow";
-                    this.m_goal = ped.getPosition();
-                    if(distance < 10) {
-                        //this.m_goal = new Vector2f();
-                        this.m_goal = ped.getVelocity();
-                        if(ped.getStateTag() == "follow") {
+            if (!(this.equals(ped))) {
+                int distance = getDistance(m_position.x, m_position.y, ped.getPosition().x, ped.getPosition().y);
+                //対象 - 向かっている方向 = delta_x
+                //view_phi-theta/2 - delta_x > 0 -> 重なっている
+                float delta_x = getDegree(m_position.x, m_position.y, ped.getPosition().x, ped.getPosition().y)
+                        - getDegree(m_position.x, m_position.y, m_position.x, m_position.y);
+                if (delta_x < 0) delta_x *= -1;
+                if (parameter.view_dmax >= distance && parameter.view_phi_theta / 2 - delta_x >= 0) {
+                    count++;
+                    multiPed.add(ped);
+                    if (count >= 1) {
+                        this.m_goal = ped.getPosition();
+                        if (distance < 10) {
+                            this.stateTag = "follow";
+                            this.myleader = ped;
+                            this.m_goal = myleader.getPosition();
                             ped.setStateTag("leader");
+                            break;
                         }
+                    } else {
+                        randomWalk2();
                     }
-                } else {
-                    randomWalk2();
                 }
             }
         }
-        //count = 0;
     }
 
     //ランダムウォーク1 周りをランダムに
@@ -369,7 +373,6 @@ public class CPedestrian implements IPedestrian{
     public float getDegree(float x1, float y1, float x2, float y2){
         float radian = (float)Math.atan2(y2-y1, x2-x1);
         float degree = (float)(radian * 180d / Math.PI);
-        //if(degree<0) degree = 360 + degree;
         return degree;
     }
 

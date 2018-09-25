@@ -185,6 +185,11 @@ public class SocialForceModel extends ApplicationAdapter {
             float goalDegree = agent.getPedestrianDegree();
             shapeRenderer.setColor(Color.BLACK);
             shapeRenderer.arc(agent.getPosition().x,agent.getPosition().y,13,goalDegree,0.8f);
+            if(agent.getStateTag() == "follow") {
+                shapeRenderer.setColor(Color.BLACK);
+                shapeRenderer.line(agent.getPosition().x, agent.getPosition().y,
+                        agent.getMyleader().getPosition().x, agent.getMyleader().getPosition().y);
+            }
             // 出口情報あり
             if(agent.getisExitInfo()){
                 shapeRenderer.setColor(Color.RED);
