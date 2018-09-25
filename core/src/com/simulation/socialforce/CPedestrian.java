@@ -27,6 +27,7 @@ public class CPedestrian implements IPedestrian{
     private String stateTag;
     private boolean included;
     private CPedestrian myleader;
+    private ArrayList<CPedestrian> myfollower;
 
 
     public CPedestrian(SocialForceModel p_env,boolean isExitInfo,final Vector2f p_position, final float p_speed, Vector2f p_goal,Sprite sprites) {
@@ -44,12 +45,16 @@ public class CPedestrian implements IPedestrian{
         sprite.setPosition(m_position.x-32/2,m_position.y-32/2);
         stateTag = "";
         included = false;
+        myfollower = new ArrayList<>();
     }
 
 
     public void setExitInfo(boolean bool) { aisExitInfo = bool;}
     public boolean getisExitInfo(){ return aisExitInfo;}
     public Sprite getSprite(){return sprite;}
+    public void addMyfollower(CPedestrian ped){
+        this.myfollower.add(ped);
+    }
 
     @Override
     public Vector2f getGoalposition() {
@@ -184,6 +189,7 @@ public class CPedestrian implements IPedestrian{
         this.setTargetExit();
         if(this.getisExitInfo()==false){
 
+            //追従者の行動
             if( this.stateTag == "follow") {
                 if (this.getDistance(this.m_position.x, this.m_position.y, this.myleader.getPosition().x, this.myleader.getPosition().y) > 30) {
                     this.m_goal = this.myleader.getPosition();
@@ -192,6 +198,7 @@ public class CPedestrian implements IPedestrian{
                     this.m_velocity = this.myleader.m_velocity;
                 }
             }
+
 
             if (l_env.step % Parameter.STEPINTERVAL == 0) {
                 if (this.getisExitInfo() == false) {
@@ -269,7 +276,7 @@ public class CPedestrian implements IPedestrian{
         ArrayList<CPedestrian> multiPed = new ArrayList<>();
         for (CPedestrian ped : l_env.getPedestrianinfo()) {
             if (!(this.equals(ped))) {
-                int distance = getDistance(m_position.x, m_position.y, ped.getPosition().x, ped.getPosition().y);
+                int distance = getPedDistance(ped);
                 //対象 - 向かっている方向 = delta_x
                 //view_phi-theta/2 - delta_x > 0 -> 重なっている
                 float delta_x = getDegree(m_position.x, m_position.y, ped.getPosition().x, ped.getPosition().y)
@@ -279,14 +286,24 @@ public class CPedestrian implements IPedestrian{
                     count++;
                     multiPed.add(ped);
                     if (count >= 10) {
-                        this.m_goal = ped.getPosition();
-                        if (distance < 150) {
-                            this.stateTag = "follow";
-                            this.myleader = ped;
-                            this.m_goal = myleader.getPosition();
-                            ped.setStateTag("leader");
-                            break;
+
+
+                        for (CPedestrian cPedestrian : myfollower) {
+                            if (!cPedestrian.equals(ped)) {
+                                this.m_goal = ped.getPosition();
+                                if (distance < 150) {
+                                    this.stateTag = "follow";
+                                    this.myleader = ped;
+                                    this.m_goal = myleader.getPosition();
+                                    ped.setStateTag("leader");
+                                    ped.addMyfollower(this);
+                                    break;
+                                }
+
+                            }
                         }
+
+
                     }
                 }
             }
@@ -372,6 +389,14 @@ public class CPedestrian implements IPedestrian{
     public int getDistance(float x1, float y1, float x2, float y2) {
         float distance = (float)Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
         return (int) distance;
+    }
+
+    public int getDistance(Vector2f v1, Vector2f v2){
+        return this.getDistance(v1.x, v1.y, v2.x, v2.y);
+    }
+
+    public int getPedDistance(CPedestrian ped){
+        return this.getDistance(this.m_position, ped.getPosition());
     }
 
     public float getDegree(float x1, float y1, float x2, float y2){
