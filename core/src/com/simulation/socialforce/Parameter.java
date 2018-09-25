@@ -5,18 +5,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Parameter {
-    public String IfcModelPath = "/Users/rys9469/Documents/build_data/10-20room.ifc";
+    public static final String IfcModelPath = "/Users/rys9469/Documents/build_data/10-20room.ifc";
     public static final Vector2f scale = new Vector2f(800*2, 480*2);
     public static final int CELL_INTERVAL = 10;
     public static final int initPedNum = 50;
     public static final double m_GaussianMean = 1.34;
     public static final double m_GaussianStandardDeviation = 0.26;
-    public static boolean view_Renderer = false;
+    public static final boolean view_Renderer = false;
     public static final float view_phi_theta = 120;
     public static final float view_dmax = 400;
     public static final int goalPed = 10;
     public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
-    public final ArrayList<Rect> arrayRect = new ArrayList<>();
     public static final CStatic wallDownLine     = new CStatic(100,10,1500,10);
     public static final CStatic wallUpLine       = new CStatic(100,910,1500,910);
     public static final CStatic wallLeftLine     = new CStatic(100,70,100,910);
