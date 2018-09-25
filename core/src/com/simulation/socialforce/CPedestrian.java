@@ -208,8 +208,9 @@ public class CPedestrian implements IPedestrian{
                             //周りを見渡す
                             //System.out.println("lookaround");
                             lookAround();
-
+                            break;
                     }
+                    multi_people_following();
                 }
 
             }
@@ -324,7 +325,7 @@ public class CPedestrian implements IPedestrian{
             if(parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ) {
                 count++;
                 multiPed.add(ped);
-                if(count>=5){
+                if(count>=10f){
                     //this.setGoalposition(multiPed.get(MathUtils.random(multiPed.size())).getPosition());
                     //this.setGoalposition(new Vector2f(mvec.getPosition().x, mvec.getPosition().y));
                     this.stateTag = "follow";

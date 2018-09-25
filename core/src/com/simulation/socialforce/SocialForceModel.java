@@ -72,6 +72,7 @@ public class SocialForceModel extends ApplicationAdapter {
         float tmpX=0;
         float tmpY=0;
         CPedestrian ped;
+        ArrayList<CPedestrian> tmpPed = new ArrayList<>();
         for (int i = 0; i < Parameter.initPedNum; i++) {
             //ランダムな方向を向いた歩行者を追加
             Vector2f initPos = new Vector2f(MathUtils.random(180, 1400), MathUtils.random(100, 800));
@@ -82,44 +83,27 @@ public class SocialForceModel extends ApplicationAdapter {
             }else{
                 ped = new CPedestrian(this, false, initPos, 1, new Vector2f(initDirectionX, initDirectionY), new Sprite(personImage));
             }
-
-            float deltaX = initPos.x - tmpX;
-            if(deltaX<0){
-                deltaX *= -1;
-            }
-            float deltaY = initPos.y - tmpY;
-            if(deltaY<0){
-                deltaY *= -1;
-            }
-            if(deltaX > 50 && deltaY > 50) {
+            if(i==0){
                 m_pedestrian.add(ped);
-            }else{
-                i--;
-                System.out.println("i--");
             }
-            tmpX = ped.getPosition().x;
-            tmpY = ped.getPosition().y;
+            for (CPedestrian cPedestrian : m_pedestrian) {
+                if (!ped.equals(cPedestrian)) {
+                    int distance = this.getDistance(ped.getPosition().x, ped.getPosition().y, cPedestrian.getPosition().x, cPedestrian.getPosition().y);
+                    System.out.println("distance = " + distance);
+                    if (distance > 50) {
+                        System.out.println("add");
+                        //System.out.println("mped = " + m_pedestrian.size());
+                        //m_pedestrian.add(ped);
+                        tmpPed.add(ped);
+                    } else {
+                        System.out.println("i--");
+                        i--;
+                    }
+                }
+            }
         }
 
-
-
-
-
-//        for (int i = 0; i < m_pedestrian.size()-1; i++) {
-//            if(m_pedestrian.get(i).getSprite().getBoundingRectangle().overlaps(m_pedestrian.get(i+1).getSprite().getBoundingRectangle())){
-//                m_pedestrian.remove(i);
-//            }
-//        }
-
-        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(850,400),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
-        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(450,500),1,new Vector2f(1500,810),new Sprite(personImage)));
-        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(400,500),1,new Vector2f(1500,810),new Sprite(personImage)));
-        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(500,500),1,new Vector2f(1500,810),new Sprite(personImage)));
-        //m_pedestrian.add(new CPedestrian(this,false,new Vector2f(200,500),1,new Vector2f(1200,500),new Sprite(personImage)));
-        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f()))
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(600,450),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
-
-
     }
 
     private void spawnAgent(Vector3 pos){
@@ -336,6 +320,12 @@ public class SocialForceModel extends ApplicationAdapter {
                     }
                     catch ( final Exception l_exception ) {}
                 });
+    }
+
+
+    public int getDistance(float x1, float y1, float x2, float y2) {
+        float distance = (float)Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        return (int) distance;
     }
 
 
