@@ -7,6 +7,7 @@ import java.util.Arrays;
 public class Parameter {
     public String IfcModelPath = "/Users/rys9469/Documents/build_data/10-20room.ifc";
     public static final Vector2f scale = new Vector2f(800*2, 480*2);
+    public static final int STEPINTERVAL = 60;//step60 ＝ 1second
     public static final int CELL_INTERVAL = 10;
     public static final int initPedNum = 50;
     public static final double m_GaussianMean = 1.34;

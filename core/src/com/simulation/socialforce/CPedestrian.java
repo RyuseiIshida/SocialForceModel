@@ -178,39 +178,36 @@ public class CPedestrian implements IPedestrian{
 
 
         /*-----意思決定書き込み部分-------------------------------------------------------------------------------------*/
-        //ルール
-        //出口はあるか
+        //出口を知っているか
         if(this.getisExitInfo()==false) {
             //出口はあるか?
             this.setTargetExit();
-            //step60 ＝ 1second
-            if (l_env.step % 60 == 0) {
+
+            if (l_env.step % Parameter.STEPINTERVAL == 0) {
+                //タグの初期化
+                this.stateTag = "";
                 if (this.getisExitInfo() == false) {
-                    //getTargetPedestrian_turn();
-                    //getTargetPedestrian();
-                    //int random = MathUtils.random(0,2);
-                    //if(this.stateTag == "leader") random = MathUtils.random(0,3);
+                    //int random = MathUtils.random(0,100);
                     switch (MathUtils.random(0, 2)) {
                         case 0:
-                            //if(this.stateTag == "leader") multi_people_following();
-                            multi_people_following();
+                            //if(!(this.stateTag == "leader")) multi_people_following();
+                            this.multi_people_following();
                             break;
                         case 1:
                             //ランダムに歩く
-                            //System.out.println("random");
-                            randomWalk2();
+                            this.randomWalk2();
                             break;
                         case 2:
                             //何もしない
-                            //System.out.println("non_walk");
+                            this.m_goal = new Vector2f(this.m_position.x, this.m_position.y);
+                            //this.m_goal = this.m_velocity;
                             break;
                         case 3:
                             //周りを見渡す
-                            //System.out.println("lookaround");
                             lookAround();
                             break;
                     }
-                    multi_people_following();
+                   //multi_people_following();
                 }
 
             }
@@ -229,7 +226,7 @@ public class CPedestrian implements IPedestrian{
             this.m_goals.clear();
         }
 
-        this.setSubGoal();
+        //this.setSubGoal();
 //        if(this.aisExitInfo==false) {
 //            System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
 //        }
@@ -254,6 +251,114 @@ public class CPedestrian implements IPedestrian{
         }
         return this;
     }
+
+
+    //集団を追従
+    public void multi_people_following(){
+        int count = 0;
+        ArrayList<CPedestrian> multiPed = new ArrayList<>();
+        for (CPedestrian ped : l_env.getPedestrianinfo()) {
+            int distance = getDistance(m_position.x,m_position.y,ped.getPosition().x,ped.getPosition().y);
+            //対象 - 向かっている方向 = delta_x
+            //view_phi-theta/2 - delta_x > 0 -> 重なっている
+            float delta_x = getDegree(m_position.x,m_position.y,ped.getPosition().x,ped.getPosition().y)
+                    - getDegree(m_position.x,m_position.y,m_position.x,m_position.y);
+            if(delta_x < 0) delta_x *= -1;
+            if(parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ) {
+                count++;
+                multiPed.add(ped);
+                if(count>=10){
+                    this.stateTag = "follow";
+                    this.m_goal = ped.getPosition();
+                    if(distance < 10) {
+                        //this.m_goal = new Vector2f();
+                        this.m_goal = ped.getVelocity();
+                        if(ped.getStateTag() == "follow") {
+                            ped.setStateTag("leader");
+                        }
+                    }
+                } else {
+                    randomWalk2();
+                }
+            }
+        }
+        //count = 0;
+    }
+
+    //ランダムウォーク1 周りをランダムに
+    public void randomWalk1(){
+        int randomx = MathUtils.random(-200, 200);
+        int randomy = MathUtils.random(-200, 200);
+        this.m_goal = new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy);
+    }
+
+    //ランダムウォーク2 完全なランダム
+    public void randomWalk2(){
+        this.stateTag = "random";
+        this.m_goals.clear();
+        this.m_goal = new Vector2f(MathUtils.random(Parameter.scale.x),MathUtils.random(Parameter.scale.y));
+    }
+
+    //周りを見渡す
+    public void lookAround(){
+        this.m_goals.clear();
+        ArrayList<Vector2f> directions = new ArrayList<>(Arrays.asList(
+                new Vector2f(this.m_position.x+1, this.m_position.y+1),
+                new Vector2f(this.m_position.x+1, this.m_position.y-1),
+                new Vector2f(this.m_position.x-1, this.m_position.y+1),
+                new Vector2f(this.m_position.x-1, this.m_position.y-1)
+
+        ));
+        for (int i = 4; i >= 0; i--) {
+            int random = MathUtils.random(i);
+            this.setGoalposition(new Vector2f(directions.get(random)));
+            directions.remove(random);
+        }
+    }
+
+
+    //視野最大方向に壁があった場合に
+    public void wall_turn(){
+        for (CStatic wall : Parameter.m_wall) {
+            if(judgeIntersected(m_position.x,m_position.y, viewDegreeVec().x, viewDegreeVec().y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+                //if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+                System.out.println("wall_turn");
+                int randomx = MathUtils.random(-200, 200);
+                int randomy = MathUtils.random(-200, 200);
+                this.m_goal = new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy);
+            }
+        }
+    }
+
+    //移動経路先に壁があった場合に
+    public void wall_turn2(){
+        for (CStatic wall : Parameter.m_wall) {
+            if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+                System.out.println("wall_turn2");
+                int randomx = MathUtils.random(-200, 200);
+                int randomy = MathUtils.random(-200, 200);
+                this.m_goal =  new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy);
+            }
+        }
+    }
+
+
+    public void wall_turn3(){
+        for (CStatic wall : Parameter.m_wall) {
+            if(judgeIntersected(m_position.x,m_position.y, viewDegreeVec2().x, viewDegreeVec2().y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
+                int randomx = MathUtils.random(-200, 200);
+                int randomy = MathUtils.random(-200, 200);
+                this.m_goal = new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy);
+            }
+        }
+    }
+
+
+
+
+
+
+
 
 
     public int getDistance(float x1, float y1, float x2, float y2) {
@@ -312,36 +417,6 @@ public class CPedestrian implements IPedestrian{
     }
 
 
-    public void multi_people_following(){
-        int count = 0;
-        ArrayList<CPedestrian> multiPed = new ArrayList<>();
-        for (CPedestrian ped : l_env.getPedestrianinfo()) {
-            int distance = getDistance(m_position.x,m_position.y,ped.getPosition().x,ped.getPosition().y);
-            //対象 - 向かっている方向 = delta_x
-            //view_phi-theta/2 - delta_x > 0 -> 重なっている
-            float delta_x = getDegree(m_position.x,m_position.y,ped.getPosition().x,ped.getPosition().y)
-                    - getDegree(m_position.x,m_position.y,m_position.x,m_position.y);
-            if(delta_x < 0) delta_x *= -1;
-            if(parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ) {
-                count++;
-                multiPed.add(ped);
-                if(count>=10f){
-                    //this.setGoalposition(multiPed.get(MathUtils.random(multiPed.size())).getPosition());
-                    //this.setGoalposition(new Vector2f(mvec.getPosition().x, mvec.getPosition().y));
-                    this.stateTag = "follow";
-                    this.m_goal = ped.getPosition();
-                    if(distance <= 10) {
-                        //this.m_goal = new Vector2f();
-                        this.m_goal = ped.getVelocity();
-                        if(ped.getStateTag() == "follow") {
-                            ped.setStateTag("leader");
-                        }
-                    }
-                }
-            }
-        }
-        //count = 0;
-    }
 
     public void setTargetExit(){
         for (Vector2f  vec: parameter.exitVec) {
@@ -353,7 +428,7 @@ public class CPedestrian implements IPedestrian{
             if(delta_x < 0) delta_x *= -1;
             if(parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ){
                 this.m_goals.clear();
-                this.setGoalposition(vec);
+                this.m_goal = vec;
                 this.setExitInfo(true);
                 this.stateTag = "GoExit";
             }
@@ -430,63 +505,8 @@ public class CPedestrian implements IPedestrian{
         }
     }
 
-    //視野最大方向に壁があった場合に
-    public void wall_turn(){
-        for (CStatic wall : Parameter.m_wall) {
-            if(judgeIntersected(m_position.x,m_position.y, viewDegreeVec().x, viewDegreeVec().y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
-                //if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
-                System.out.println("wall_turn");
-                int randomx = MathUtils.random(-200, 200);
-                int randomy = MathUtils.random(-200, 200);
-                this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
 
-//                float delta_x = this.m_position.x - this.m_goal.x;
-//                if(delta_x < 0) delta_x *= -1;
-//                float delta_y = this.m_position.y - this.m_goal.y;
-//                if(delta_y < 0) delta_y *= -1;
-//
-//                if(this.getPedestrianDegree() > 0) //向いている方向がプラスなら
-//                    this.m_goal = new Vector2f(this.m_goal.x-delta_x,this.m_goal.y-delta_y);
-//                else //マイナスなら
-//                    this.m_goal = new Vector2f(this.m_goal.y+delta_x,this.m_goal.y+delta_y);
-//                this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
 
-            }
-        }
-    }
-
-    //移動経路先に壁があった場合に
-    public void wall_turn2(){
-        for (CStatic wall : Parameter.m_wall) {
-            if(judgeIntersected(m_position.x,m_position.y, m_goal.x, m_goal.y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
-                System.out.println("wall_turn2");
-                int randomx = MathUtils.random(-200, 200);
-                int randomy = MathUtils.random(-200, 200);
-                this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
-
-//                float delta_x = this.m_position.x - this.m_goal.x;
-//                if(delta_x < 0) delta_x *= -1;
-//                float delta_y = this.m_position.y - this.m_goal.y;
-//                if(delta_y < 0) delta_y *= -1;
-//
-//                if(this.getPedestrianDegree() > 0) //向いている方向がプラスなら
-//                    this.m_goal = new Vector2f(this.m_goal.x-delta_x,this.m_goal.y-delta_y);
-//                else //マイナスなら
-//                    this.m_goal = new Vector2f(this.m_goal.y+delta_x,this.m_goal.y+delta_y);
-//                this.m_goal = this.m_goals.remove(this.m_goals.size()-1);
-
-            }
-        }
-    }
-    public void wall_turn3(){
-        for (CStatic wall : Parameter.m_wall) {
-            if(judgeIntersected(m_position.x,m_position.y, viewDegreeVec2().x, viewDegreeVec2().y, wall.getX1(),wall.getY1(),wall.getX2(),wall.getY2())) {
-                int randomx = MathUtils.random(-200, 200);
-                int randomy = MathUtils.random(-200, 200);
-                this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
-            }
-        }
-    }
 
     public float getGoalRadian(){
         double degree = this.getPedestrianDegree();
@@ -520,37 +540,6 @@ public class CPedestrian implements IPedestrian{
         float result_x =a+this.m_position.x;
         float result_y =b+this.m_position.y;
         return new Vector2f(result_x,result_y);
-    }
-
-    //ランダムウォーク1 周りをランダムに
-    public void randomWalk1(){
-        int randomx = MathUtils.random(-200, 200);
-        int randomy = MathUtils.random(-200, 200);
-        this.m_goal = new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy);
-        //this.m_goals.clear();
-        //this.setGoalposition(new Vector2f(this.m_position.x + randomx, this.m_position.y + randomy));
-    }
-    //ランダムウォーク2 完全なランダム
-    public void randomWalk2(){
-        this.stateTag = "random";
-        this.m_goal = new Vector2f(MathUtils.random(Parameter.scale.x),MathUtils.random(Parameter.scale.y));
-        //this.m_goals.clear();
-        //this.setGoalposition(new Vector2f(MathUtils.random(Parameter.scale.x),MathUtils.random(Parameter.scale.y)));
-    }
-    public void lookAround(){
-        this.m_goals.clear();
-        ArrayList<Vector2f> directions = new ArrayList<>(Arrays.asList(
-                new Vector2f(this.m_position.x+1, this.m_position.y+1),
-                new Vector2f(this.m_position.x+1, this.m_position.y-1),
-                new Vector2f(this.m_position.x-1, this.m_position.y+1),
-                new Vector2f(this.m_position.x-1, this.m_position.y-1)
-
-                ));
-        for (int i = 4; i >= 0; i--) {
-            int random = MathUtils.random(i);
-            this.setGoalposition(new Vector2f(directions.get(random)));
-            directions.remove(random);
-        }
     }
 
 

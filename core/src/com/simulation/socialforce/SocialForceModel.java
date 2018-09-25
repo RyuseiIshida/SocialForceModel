@@ -21,6 +21,7 @@ import java.util.*;
 public class SocialForceModel extends ApplicationAdapter {
     private Texture personImage;
     private Texture exitImage;
+    private BitmapFont bitmapFont;
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
@@ -35,9 +36,6 @@ public class SocialForceModel extends ApplicationAdapter {
     public ArrayList<Double> GoalTime = new ArrayList<>();
     public static double step = 0;
 
-
-    FreeTypeFontGenerator fontGenerator;
-    BitmapFont bitmapFont;
 
 
     @Override
@@ -149,8 +147,15 @@ public class SocialForceModel extends ApplicationAdapter {
     @Override
     public void render () {
         if(isStart){
+            update();
             step++;
         }
+        if(m_pedestrian.isEmpty() && isStart){
+            //System.out.println("総避難完了時間 = " + GoalTime.get(GoalTime.size()-1));
+            System.out.println(GoalTime);
+        }
+
+
         Gdx.gl.glClearColor(255, 255, 255, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -274,18 +279,10 @@ public class SocialForceModel extends ApplicationAdapter {
             for (Sprite sprite : exit) {
                 if(next.getSprite().getBoundingRectangle().overlaps(sprite.getBoundingRectangle())){
                     GoalTime.add(step/60);
-                    System.out.println("goal time = " + String.format("%.2f",step/60));
+                    System.out.println("[" + GoalTime.size() + "] " + "GoalTime = " + String.format("%.2f",step/60));
                     cPedestrianIterator.remove();
                 }
             }
-        }
-
-        if(isStart){
-            update();
-        }
-        if(m_pedestrian.isEmpty() && isStart){
-            //System.out.println("総避難完了時間 = " + GoalTime.get(GoalTime.size()-1));
-            System.out.println(GoalTime);
         }
     }
 
