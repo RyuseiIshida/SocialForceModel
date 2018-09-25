@@ -180,10 +180,9 @@ public class CPedestrian implements IPedestrian{
 
         /*-----意思決定-----------------------------------------------------------------------------------------------*/
         //出口を知っているか
+        //出口はあるか?
+        this.setTargetExit();
         if(this.getisExitInfo()==false){
-            //出口はあるか?
-            this.setTargetExit();
-
 
             if( this.stateTag == "follow") {
                 if (this.getDistance(this.m_position.x, this.m_position.y, this.myleader.getPosition().x, this.myleader.getPosition().y) > 30) {

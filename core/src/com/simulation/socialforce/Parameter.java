@@ -17,7 +17,7 @@ public class Parameter {
     public static final float view_phi_theta = 120;
     public static final float view_dmax = 400;
     //public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
-    public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(10000, 10000)));
+    public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
     public static final ArrayList<Rect> arrayRect = new ArrayList<>();
 
     public static final CStatic wallDownLine     = new CStatic(100,10,1500,10);
