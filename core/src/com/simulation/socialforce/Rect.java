@@ -35,19 +35,19 @@ public class Rect {
     }
 
     public Vector2f getLeftButtom(){
-        return this.getLeftButtom();
+        return this.leftButtom;
     }
 
     public Vector2f getLeftTop(){
-        return this.getLeftTop();
+        return this.leftTop;
     }
 
     public Vector2f getRightButtom(){
-        return this.getRightButtom();
+        return this.rightButtom;
     }
 
     public Vector2f getRightTop(){
-        return getRightTop();
+        return rightTop;
     }
 
     public CStatic getForce(){

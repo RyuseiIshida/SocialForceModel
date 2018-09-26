@@ -245,7 +245,7 @@ public class CPedestrian implements IPedestrian{
             this.m_goals.clear();
         }
 
-        //this.setSubGoal();
+        this.setSubGoal();
 //        if(this.aisExitInfo==false) {
 //            System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
 //        }
@@ -404,11 +404,6 @@ public class CPedestrian implements IPedestrian{
 
 
 
-
-
-
-
-
     public int getDistance(float x1, float y1, float x2, float y2) {
         float distance = (float)Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
         return (int) distance;
@@ -436,12 +431,9 @@ public class CPedestrian implements IPedestrian{
         return getDegree(this.m_position, ped.getPosition());
     }
 
-
     public float getPedestrianDegree(){
         return getDegree(this.m_position.x,this.m_position.y,this.m_goal.x,this.m_goal.y);
     }
-
-
 
     public void getTargetPedestrian_turn(){
         for (CPedestrian mvec : l_env.getPedestrianinfo()) {
@@ -478,8 +470,6 @@ public class CPedestrian implements IPedestrian{
         }
     }
 
-
-
     public void setTargetExit(){
         for (Vector2f  vec: parameter.exitVec) {
             int distance = getDistance(m_position.x,m_position.y,vec.x,vec.y);
@@ -506,59 +496,45 @@ public class CPedestrian implements IPedestrian{
         return tc * td < 0 && ta * tb < 0;
     }
 
-//    public boolean judgeIntersectedRect(Rect rect){
-//        if(judgeIntersected(m_position.x,m_position.y,
-//                m_goal.x,m_goal.y, rect.x,rect.y,rect.leftButtom.x,rect.leftButtom.y))
-//            return true;
-//        else if(judgeIntersected(m_position.x,m_position.y,
-//                m_goal.x,m_goal.y, rect.x,rect.y,rect.leftTop.x,rect.leftTop.y))
-//            return true;
-//        else if(judgeIntersected(m_position.x,m_position.y,
-//                m_goal.x,m_goal.y, rect.x,rect.y,rect.rightButtom.x,rect.rightButtom.y))
-//            return true;
-//        else if(judgeIntersected(m_position.x,m_position.y,
-//                m_goal.x,m_goal.y, rect.x,rect.y,rect.rightTop.x,rect.rightTop.y))
-//            return true;
-//        else return false;
-//    }
+    public boolean judgeIntersected(Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4){
+        return judgeIntersected(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
+    }
 
-//    public void setSubGoal(){
-//        Vector2f goalVec;
-//        for(Rect rect : parameter.arrayRect){
-//            //交差判定
-//            if(judgeIntersectedRect(rect)){
-//                Map<Vector2f, Float> goalDis = new HashMap<>();
-//                //各4点とゴールとの距離をvalueに入れる
-//                goalDis.put(rect.leftButtom, (float) getDistance(m_goal.x,m_goal.y, rect.leftButtom.x, rect.leftButtom.y));
-//                goalDis.put(rect.leftTop, (float) getDistance(m_goal.x,m_goal.y, rect.leftTop.x, rect.leftTop.y));
-//                goalDis.put(rect.rightButtom, (float) getDistance(m_goal.x,m_goal.y, rect.rightButtom.x, rect.rightButtom.y));
-//                goalDis.put(rect.rightTop, (float) getDistance(m_goal.x,m_goal.y, rect.rightTop.x, rect.rightTop.y));
-//                List<Map.Entry<Vector2f, Float>> list_entries = new ArrayList<Map.Entry<Vector2f, Float>>(goalDis.entrySet());
-//                Collections.sort(list_entries, new Comparator<Map.Entry<Vector2f, Float>>() {
-//                    public int compare(Map.Entry<Vector2f, Float> obj1, Map.Entry<Vector2f, Float> obj2) {
-//                        return obj1.getValue().compareTo(obj2.getValue());
-//                    }
-//                });
-//                //最もゴールから近い2点を選ぶ
-//                //そのうち最も歩行者に近い点をゴールとする
-//                int tmpGoal1 = getDistance(m_position.x,m_position.y, list_entries.get(1).getKey().x, list_entries.get(0).getKey().y);
-//                int tmpGoal2 = getDistance(m_position.x,m_position.y, list_entries.get(0).getKey().x, list_entries.get(1).getKey().y);
-//                //if (tmpGoal1 < tmpGoal2) goalVec = list_entries.get(1).getKey();
-//                //else goalVec = list_entries.get(2).getKey();
-//                //if (tmpGoal1 < tmpGoal2) this.setGoalposition(list_entries.get(0).getKey());
-//                if(tmpGoal1>tmpGoal2) {
-//                    System.out.println("tmpGoal");
-//                    this.setGoalposition(new Vector2f(list_entries.get(0).getKey().x - 50, list_entries.get(0).getKey().y));
-//                }
-//                //else this.setGoalposition(list_entries.get(1).getKey());
-//                else this.setGoalposition(new Vector2f(list_entries.get(1).getKey().x-50, list_entries.get(1).getKey().y));
-//                //ped.setSubGoalposition(new Vector2f(goalVec.x+50,goalVec.y));
-//                //ゴールベクトルが重なっていたら
-//                //if (judgeIntersectedRect(ped,rect) setSubGoal(ped);
-//                //else ped.setGoalposition(goalVec);
-//            }
-//        }
-//    }
+    public boolean judgeIntersectedRect(Rect rect){
+        //LeftLine
+        if(judgeIntersected(this.m_position, this.m_goal, rect.getLeftButtom(), rect.getLeftTop())) {
+            return true;
+        }
+        //RightLine
+        if(judgeIntersected(this.m_position, this.m_goal, rect.getRightButtom(), rect.getRightTop())) {
+            return true;
+        }
+        //DownLine
+        if(judgeIntersected(this.m_position, this.m_goal, rect.getLeftButtom(), rect.getRightButtom())) {
+            return true;
+        }
+        //
+        if(judgeIntersected(this.m_position, this.m_goal, rect.getLeftTop(), rect.getRightTop())) {
+            return true;
+        }
+        else return false;
+    }
+
+    public void setSubGoal(){
+        Vector2f goalVec;
+        for(Rect rect : parameter.arrayRect){
+            //交差判定
+            if(judgeIntersectedRect(rect)){
+                ArrayList<Vector2f> distances = new ArrayList<>();
+                distances.add(this.getDistance(this.m_position, rect.getLeftButtom()));
+                distances.add(this.getDistance(this.m_position, rect.getLeftTop()));
+                distances.add(this.getDistance(this.m_position, rect.getRightButtom()));
+                distances.add(this.getDistance(this.m_position, rect.getRightTop()));
+                Collections.sort(distances);
+                this.setGoalposition(distances.get(0));
+            }
+        }
+    }
 
     public void changeGoal(CPedestrian ped){
         float distance = getDistance(ped.getPosition().x,ped.getPosition().y,ped.getGoalposition().x,ped.getGoalposition().y);
@@ -566,9 +542,6 @@ public class CPedestrian implements IPedestrian{
             // next();
         }
     }
-
-
-
 
     public float getGoalRadian(){
         double degree = this.getPedestrianDegree();

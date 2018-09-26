@@ -171,30 +171,30 @@ public class SocialForceModel extends ApplicationAdapter {
         }
         batch.end();
 
-//        shapeRenderer.setProjectionMatrix(camera.combined);
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-//        for (CPedestrian ped : m_pedestrian) {
-//            // 出口情報あり
-//            if(ped.getisExitInfo()){
-//                shapeRenderer.setColor(Color.RED);
-//                shapeRenderer.circle(ped.getPosition().x,ped.getPosition().y, 10);
-//                //shapeRenderer.rect((float)rect.x,(float)rect.y,(float)rect.width,(float)rect.height);
-//                shapeRenderer.arc(ped.getPosition().x,ped.getPosition().y,10, 0,360);
-//            }
-//            if(ped.getStateTag() == "follow"){
-//                shapeRenderer.setColor(Color.BLUE);
-//                shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
-//            }
-//            if(ped.getStateTag() == "leader"){
-//                shapeRenderer.setColor(Color.GREEN);
-//                shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
-//            }
-//            if(ped.getStateTag() == "random"){
-//                shapeRenderer.setColor(Color.BLACK);
-//                shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
-//            }
-//        }
-//        shapeRenderer.end();
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        for (CPedestrian ped : m_pedestrian) {
+            // 出口情報あり
+            if(ped.getisExitInfo()){
+                shapeRenderer.setColor(Color.RED);
+                shapeRenderer.circle(ped.getPosition().x,ped.getPosition().y, 10);
+                //shapeRenderer.rect((float)rect.x,(float)rect.y,(float)rect.width,(float)rect.height);
+                shapeRenderer.arc(ped.getPosition().x,ped.getPosition().y,10, 0,360);
+            }
+            if(ped.getStateTag() == "follow"){
+                shapeRenderer.setColor(Color.BLUE);
+                shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
+            }
+            if(ped.getStateTag() == "leader"){
+                shapeRenderer.setColor(Color.GREEN);
+                shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
+            }
+            if(ped.getStateTag() == "random"){
+                shapeRenderer.setColor(Color.BLACK);
+                shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
+            }
+        }
+        shapeRenderer.end();
 
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -235,10 +235,12 @@ public class SocialForceModel extends ApplicationAdapter {
         }
 
         //障害物の描画
-//        shapeRenderer.setColor(Color.GRAY);
-//        for(Rect rect: parameter.arrayRect) shapeRenderer.rect(rect.getLeftButtom().x,rect.getLeftButtom().y,rect.getWidth(),rect.getHeight());
-//        shapeRenderer.end();
-//        Gdx.gl.glDisable(GL20.GL_BLEND);
+        shapeRenderer.setColor(Color.GRAY);
+        for(Rect rect: parameter.arrayRect) shapeRenderer.rect(rect.getLeftButtom().x,rect.getLeftButtom().y,rect.getWidth(),rect.getHeight());
+
+
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
 
 
         // クリックされたとき

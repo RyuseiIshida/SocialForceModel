@@ -21,7 +21,7 @@ public class Parameter {
     //public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
     public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
 
-    public static final Rect rect = new Rect(500,500,200,200);
+    public static final Rect rect = new Rect(500,500,500,200);
     //public static final ArrayList<Rect> arrayRect = new ArrayList<>();
     public static final ArrayList<Rect> arrayRect = new ArrayList<>(Arrays.asList(rect));
 
