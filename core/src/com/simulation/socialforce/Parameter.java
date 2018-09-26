@@ -12,6 +12,7 @@ public class Parameter {
     public static final int initPedNum = 50;
     public static final int goalPed = 10;
     public static final float judgeFollowNum = 5;
+    public static final float judgeFollowNum2 = 1;
     public static final double m_GaussianMean = 1.34;
     public static final double m_GaussianStandardDeviation = 0.26;
     public static boolean view_Renderer = false;
@@ -19,7 +20,11 @@ public class Parameter {
     public static final float view_dmax = 400;
     //public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
     public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
-    public static final ArrayList<Rect> arrayRect = new ArrayList<>();
+
+    public static final Rect rect = new Rect(500,500,200,200);
+    //public static final ArrayList<Rect> arrayRect = new ArrayList<>();
+    public static final ArrayList<Rect> arrayRect = new ArrayList<>(Arrays.asList(rect));
+
 
     public static final CStatic wallDownLine     = new CStatic(100,10,1500,10);
     public static final CStatic wallUpLine       = new CStatic(100,910,1500,910);

@@ -137,10 +137,10 @@ public class SocialForceModel extends ApplicationAdapter {
 
     private void spawnRect(){
         for (Rect rect : parameter.arrayRect) {
-            m_walledge.add(rect.force.getwall1());
-            m_walledge.add(rect.force.getwall2());
-            m_walledge.add(rect.force.getwall3());
-            m_walledge.add(rect.force.getwall4());
+            m_walledge.add(rect.getForce().getwall1());
+            m_walledge.add(rect.getForce().getwall2());
+            m_walledge.add(rect.getForce().getwall3());
+            m_walledge.add(rect.getForce().getwall4());
         }
     }
 
@@ -161,7 +161,6 @@ public class SocialForceModel extends ApplicationAdapter {
 
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-
         //描画
         batch.begin();
         bitmapFont.draw(batch,"time " + String.format("%.2f",step/60),Parameter.scale.x -200,Parameter.scale.y-10);
@@ -172,7 +171,32 @@ public class SocialForceModel extends ApplicationAdapter {
         }
         batch.end();
 
-        shapeRenderer.setProjectionMatrix(camera.combined);
+//        shapeRenderer.setProjectionMatrix(camera.combined);
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//        for (CPedestrian ped : m_pedestrian) {
+//            // 出口情報あり
+//            if(ped.getisExitInfo()){
+//                shapeRenderer.setColor(Color.RED);
+//                shapeRenderer.circle(ped.getPosition().x,ped.getPosition().y, 10);
+//                //shapeRenderer.rect((float)rect.x,(float)rect.y,(float)rect.width,(float)rect.height);
+//                shapeRenderer.arc(ped.getPosition().x,ped.getPosition().y,10, 0,360);
+//            }
+//            if(ped.getStateTag() == "follow"){
+//                shapeRenderer.setColor(Color.BLUE);
+//                shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
+//            }
+//            if(ped.getStateTag() == "leader"){
+//                shapeRenderer.setColor(Color.GREEN);
+//                shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
+//            }
+//            if(ped.getStateTag() == "random"){
+//                shapeRenderer.setColor(Color.BLACK);
+//                shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
+//            }
+//        }
+//        shapeRenderer.end();
+
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         //壁の描画
         shapeRenderer.setColor(0,0,0,0);
@@ -192,26 +216,6 @@ public class SocialForceModel extends ApplicationAdapter {
                 shapeRenderer.line(agent.getPosition().x, agent.getPosition().y,
                         agent.getMyleader().getPosition().x, agent.getMyleader().getPosition().y);
             }
-
-
-            // 出口情報あり
-            if(agent.getisExitInfo()){
-                shapeRenderer.setColor(Color.RED);
-                shapeRenderer.circle(agent.getPosition().x,agent.getPosition().y, 10);
-            }
-            if(agent.getStateTag() == "follow"){
-                shapeRenderer.setColor(Color.BLUE);
-                shapeRenderer.circle(agent.getPosition().x, agent.getPosition().y, 10);
-            }
-            if(agent.getStateTag() == "leader"){
-                shapeRenderer.setColor(Color.GREEN);
-                shapeRenderer.circle(agent.getPosition().x, agent.getPosition().y, 10);
-            }
-            if(agent.getStateTag() == "random"){
-                shapeRenderer.setColor(Color.BLACK);
-                shapeRenderer.circle(agent.getPosition().x, agent.getPosition().y, 10);
-            }
-
         }
         shapeRenderer.end();
 
@@ -231,10 +235,10 @@ public class SocialForceModel extends ApplicationAdapter {
         }
 
         //障害物の描画
-        shapeRenderer.setColor(Color.GRAY);
-        for(Rect rect: parameter.arrayRect) shapeRenderer.rect((float)rect.x,(float)rect.y,(float)rect.width,(float)rect.height);
-        shapeRenderer.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
+//        shapeRenderer.setColor(Color.GRAY);
+//        for(Rect rect: parameter.arrayRect) shapeRenderer.rect(rect.getLeftButtom().x,rect.getLeftButtom().y,rect.getWidth(),rect.getHeight());
+//        shapeRenderer.end();
+//        Gdx.gl.glDisable(GL20.GL_BLEND);
 
 
         // クリックされたとき
