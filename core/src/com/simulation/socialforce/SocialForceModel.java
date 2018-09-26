@@ -152,7 +152,7 @@ public class SocialForceModel extends ApplicationAdapter {
         }
         if(m_pedestrian.isEmpty() && isStart){
             //System.out.println("総避難完了時間 = " + GoalTime.get(GoalTime.size()-1));
-            System.out.println(GoalTime);
+            //System.out.println(GoalTime);
         }
 
 
@@ -185,11 +185,15 @@ public class SocialForceModel extends ApplicationAdapter {
             float goalDegree = agent.getPedestrianDegree();
             shapeRenderer.setColor(Color.BLACK);
             shapeRenderer.arc(agent.getPosition().x,agent.getPosition().y,13,goalDegree,0.8f);
+
+
             if(agent.getStateTag() == "follow") {
                 shapeRenderer.setColor(Color.BLACK);
                 shapeRenderer.line(agent.getPosition().x, agent.getPosition().y,
                         agent.getMyleader().getPosition().x, agent.getMyleader().getPosition().y);
             }
+
+
             // 出口情報あり
             if(agent.getisExitInfo()){
                 shapeRenderer.setColor(Color.RED);
@@ -284,8 +288,8 @@ public class SocialForceModel extends ApplicationAdapter {
             for (Sprite sprite : exit) {
                 if(next.getSprite().getBoundingRectangle().overlaps(sprite.getBoundingRectangle())){
                     GoalTime.add(step/60);
-                    System.out.println("[" + GoalTime.size() + "] " + "GoalTime = " + String.format("%.2f",step/60));
                     cPedestrianIterator.remove();
+                    System.out.println("[" + GoalTime.size() + "] " + "GoalTime = " + String.format("%.2f",step/60));
                 }
             }
         }

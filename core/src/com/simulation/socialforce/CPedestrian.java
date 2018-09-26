@@ -66,11 +66,6 @@ public class CPedestrian implements IPedestrian{
     {
         this.m_goal = p_position;
         this.m_goals.add(p_position);
-//        System.out.print("[ ");
-//        for (Vector2f mGoal : m_goals) {
-//            System.out.print(mGoal);
-//        }
-//        System.out.println(" ]");
         return this;
     }
 
@@ -277,21 +272,16 @@ public class CPedestrian implements IPedestrian{
         for (CPedestrian ped : l_env.getPedestrianinfo()) {
             if (!(this.equals(ped))) {
                 int distance = getPedDistance(ped);
-                //対象 - 向かっている方向 = delta_x
-                //view_phi-theta/2 - delta_x > 0 -> 重なっている
-                float delta_x = getDegree(m_position.x, m_position.y, ped.getPosition().x, ped.getPosition().y)
-                        - getDegree(m_position.x, m_position.y, m_position.x, m_position.y);
+                float delta_x = getPedDegree(ped) - getDegree(this.m_position, this.m_goal);
                 if (delta_x < 0) delta_x *= -1;
                 if (parameter.view_dmax >= distance && parameter.view_phi_theta / 2 - delta_x >= 0) {
                     count++;
                     multiPed.add(ped);
-                    if (count >= 10) {
-
-
-                        for (CPedestrian cPedestrian : myfollower) {
-                            if (!cPedestrian.equals(ped)) {
+                    if (count >= Parameter.judgeFollowNum) {
+                        //for (CPedestrian cPedestrian : myfollower) {
+                            //if (!cPedestrian.equals(ped)) {
                                 this.m_goal = ped.getPosition();
-                                if (distance < 150) {
+                                if (distance < 250) {
                                     this.stateTag = "follow";
                                     this.myleader = ped;
                                     this.m_goal = myleader.getPosition();
@@ -300,10 +290,13 @@ public class CPedestrian implements IPedestrian{
                                     break;
                                 }
 
-                            }
-                        }
+                            //}
+                        //}
 
 
+                    }
+                    else {
+                        randomWalk2();
                     }
                 }
             }
@@ -405,6 +398,13 @@ public class CPedestrian implements IPedestrian{
         return degree;
     }
 
+    public float getDegree(Vector2f v1, Vector2f v2){
+        return getDegree(v1.x, v1.y, v2.x, v2.y);
+    }
+
+    public float getPedDegree(CPedestrian ped){
+        return getDegree(this.m_position, ped.getPosition());
+    }
 
 
     public float getPedestrianDegree(){
