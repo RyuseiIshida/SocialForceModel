@@ -1,5 +1,6 @@
 package com.simulation.socialforce;
 
+import javax.vecmath.Tuple2f;
 import javax.vecmath.Vector2f;
 import java.lang.reflect.Array;
 import java.util.*;
@@ -178,7 +179,6 @@ public class CPedestrian implements IPedestrian{
     @Override
     public IPedestrian call() throws Exception {
 
-
         /*-----意思決定-----------------------------------------------------------------------------------------------*/
         //出口を知っているか
         //出口はあるか?
@@ -245,7 +245,7 @@ public class CPedestrian implements IPedestrian{
             this.m_goals.clear();
         }
 
-        this.setSubGoal();
+        this.checkObstacle();
 //        if(this.aisExitInfo==false) {
 //            System.out.println("goalpos = " + this.getGoalposition() + "pos = " + this.getPosition());
 //        }
@@ -521,6 +521,26 @@ public class CPedestrian implements IPedestrian{
         else return false;
     }
 
+    public boolean rectjudgeIntersected(Vector2f vec, Rect rect){
+        //LeftLine
+        if(judgeIntersected(vec, Parameter.exitVec.get(0), rect.getLeftButtom(), rect.getLeftTop())) {
+            return true;
+        }
+        //RightLine
+        if(judgeIntersected(vec, Parameter.exitVec.get(0), rect.getRightButtom(), rect.getRightTop())) {
+            return true;
+        }
+        //ButtomLine
+        if(judgeIntersected(vec, Parameter.exitVec.get(0), rect.getLeftButtom(), rect.getRightButtom())) {
+            return true;
+        }
+        //TopLine
+        if(judgeIntersected(vec, Parameter.exitVec.get(0), rect.getLeftTop(), rect.getRightTop())) {
+            return true;
+        }
+        else return false;
+    }
+
 
     public Vector2f rectMinDistancePoint(Rect rect){
         Map<Integer,Vector2f> RectdistanceMap = new Hashtable<>();
@@ -540,39 +560,135 @@ public class CPedestrian implements IPedestrian{
         return RectdistanceMap.get(minDistance);
     }
 
+    public Vector2f pedObstaclePassPoint(Rect rect, Vector2f vec){
+        int x = 30;
+        int y = 30;
+        Vector2f tmpvec;
+        if(rect.getLeftButtom().equals(vec)){
+            tmpvec = rect.getLeftButtom();
+            return new Vector2f(tmpvec.x-x, tmpvec.y-y);
+        }
+        else if(rect.getLeftTop().equals(vec)){
+            tmpvec = rect.getLeftTop();
+            return new Vector2f(tmpvec.x-x, tmpvec.y+y);
+        }
+        else if(rect.getRightButtom().equals(vec)){
+            tmpvec = rect.getRightButtom();
+            return new Vector2f(tmpvec.x+x, tmpvec.y-y);
+        }
+        else if(rect.getRightTop().equals(vec)){
+            tmpvec = rect.getRightTop();
+            return new Vector2f(tmpvec.x+x, tmpvec.y+y);
+        }
+        else{
+            System.out.println(vec);
+            System.out.println("error");
+            return null;
+        }
+    }
 
-    public void setSubGoal(){
+
+    public void checkObstacle(){
         //agentの目的地へ向かうベクトル線が障害物線に重なるか判定し
         //重なる場合は一番近い障害物を探す
         //障害物4端点から目的地までのベクトル線が重なるかチェック
         //重ならない点が3点なら一番近い点を候補から外して2点に
         //重ならない点が2点ならそのまま候補を2点に
         //この候補点からagentが直接移動できる点があればそれを最初のサブゴール点にする
-
-        Vector2f goalVec;
         Map<Integer, Rect> minRectMap = new HashMap<>();
         int minDistance = 0;
-        Rect minRect=null;
+        Rect minRect;
 
+
+        //agentの目的地へ向かうベクトル線が障害物線に重なるか判定し
         for(Rect rect : parameter.arrayRect){
             //交差判定
-            if(this.rectjudgeIntersected(rect)){
-                int distance = this.getDistance(this.m_position,this.rectMinDistancePoint(rect));
+            if(this.rectjudgeIntersected(rect)) {
+                int distance = this.getDistance(this.m_position, this.rectMinDistancePoint(rect));
                 minRectMap.put(distance, rect);
-                for (Integer integer : minRectMap.keySet()){
-                    if(minDistance == 0){
-                        minDistance = integer;
-                    }
-                    if(minDistance < integer){
-                        minDistance = integer;
-                    }
-                }
-                minRect = minRectMap.get(minDistance);
-            }
-            if(!(minRect == null)){
-
             }
         }
+
+
+        //重なる場合は一番近い障害物を探す
+        for (Integer integer : minRectMap.keySet()){
+            if(minDistance == 0){
+                minDistance = integer;
+            }
+            if(minDistance > integer){
+                minDistance = integer;
+            }
+        }
+        minRect = minRectMap.get(minDistance);
+
+        //障害物4端点から目的地までのベクトル線が重なるかチェック
+        if(!(minRect == null)) {
+            //障害物4点をチェック
+            List<Vector2f> points = new ArrayList<>();
+            Map<Integer, Vector2f> pointRecttoExitMap = new HashMap<>();
+            Map<Integer, Vector2f> pointRecttoPed = new HashMap<>();
+
+            if (!this.rectjudgeIntersected(minRect.getLeftButtom(), minRect)) {
+                points.add(minRect.getLeftButtom());
+                System.out.println("leftButom");
+            }
+            if (!this.rectjudgeIntersected(minRect.getLeftTop(), minRect)) {
+                points.add(minRect.getLeftTop());
+                System.out.println("leftTop");
+            }
+            if (!this.rectjudgeIntersected(minRect.getRightButtom(), minRect)) {
+                points.add(minRect.getRightButtom());
+                System.out.println("rightbuttom");
+            }
+            if (!this.rectjudgeIntersected(minRect.getRightTop(), minRect)) {
+                points.add(minRect.getRightTop());
+                System.out.println("rightTop");
+            }
+            //重ならない点が3点なら一番近い点を候補から外して2点に
+            if(points.size() == 3){
+                Vector2f minPoint;
+                minDistance = 0;
+                for (Vector2f point : points) {
+                    pointRecttoExitMap.put(this.getDistance(point,Parameter.exitVec.get(0)),point);
+                }
+                for (Integer integer : pointRecttoExitMap.keySet()) {
+                    if(minDistance ==0){
+                        minDistance = integer;
+                    }
+                    if(minDistance > integer){
+                        minDistance =  integer;
+                    }
+                }
+                //一番近い点を削除
+                pointRecttoExitMap.remove(minDistance);
+                points.clear();
+                for (Vector2f vector2f : pointRecttoExitMap.values()) {
+                    points.add(vector2f);
+                }
+            }
+
+            for (Vector2f point : points) {
+                pointRecttoPed.put(this.getDistance(this.m_position, point), point);
+            }
+
+
+            //候補2点からエージェントに近い方を次の目的地とする
+            minDistance = 0;
+
+            for (Integer integer : pointRecttoPed.keySet()) {
+                if(minDistance==0){
+                    minDistance = integer;
+                }
+                if(minDistance > integer){
+                    minDistance = integer;
+                }
+            }
+
+            this.m_goal = this.pedObstaclePassPoint(minRect, pointRecttoPed.get(minDistance));
+
+        }
+
+
     }
 
     public void changeGoal(CPedestrian ped){
