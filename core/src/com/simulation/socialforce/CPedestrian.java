@@ -196,7 +196,7 @@ public class CPedestrian implements IPedestrian{
 
 
             if(this.getDistance(this.m_position, this.myleader.getPosition()) > 200){
-                //this.stateTag = "";
+                this.stateTag = "";
             }
         }
 
@@ -209,7 +209,7 @@ public class CPedestrian implements IPedestrian{
                             switch (MathUtils.random(0, 2)) {
                             case 0:
                                 //if(!(this.stateTag == "leader")) multi_people_following();
-                                this.multi_people_following2();
+                                this.multi_people_following();
                                 break;
                             case 1:
                                 //ランダムに歩く
@@ -242,7 +242,7 @@ public class CPedestrian implements IPedestrian{
 
         //もし初期目標地点がスケール外は全て削除
         if(this.m_goal.x < 0 || this.m_goal.x > Parameter.scale.x || this.m_goal.y < 0 || this.m_goal.y > Parameter.scale.y){
-            System.out.println("allClear");
+            //System.out.println("allClear");
             this.m_goals.clear();
         }
 
@@ -288,8 +288,6 @@ public class CPedestrian implements IPedestrian{
                     count++;
                     multiPed.add(ped);
                     if (count >= Parameter.judgeFollowNum) {
-                        //for (CPedestrian cPedestrian : myfollower) {
-                            //if (!cPedestrian.equals(ped)) {
                                 this.m_goal = ped.getPosition();
                                 if (distance < 250) {
                                     this.stateTag = "follow";
@@ -299,11 +297,6 @@ public class CPedestrian implements IPedestrian{
                                     ped.addMyfollower(this);
                                     break;
                                 }
-
-                            //}
-                        //}
-
-
                     }
                     else {
                         randomWalk2();
@@ -324,7 +317,6 @@ public class CPedestrian implements IPedestrian{
                 if (distance > parameter.view_dmax) {
                     goal_peds.put(ped,distance);
                     if (goal_peds.size() > parameter.judgeFollowNum2) {
-
                         this.stateTag = "follow";
                         this.myleader = ped;
                         this.m_goal = ped.getGoalposition();
@@ -346,14 +338,14 @@ public class CPedestrian implements IPedestrian{
     //ランダムウォーク2 完全なランダム
     public void randomWalk2(){
         this.stateTag = "random";
-        System.out.println("random to allclear");
+        //System.out.println("random to allclear");
         this.m_goals.clear();
         this.m_goal = new Vector2f(MathUtils.random(Parameter.scale.x),MathUtils.random(Parameter.scale.y));
     }
 
     //周りを見渡す
     public void lookAround(){
-        System.out.println("clear to allclear");
+        //System.out.println("clear to allclear");
         this.m_goals.clear();
         ArrayList<Vector2f> directions = new ArrayList<>(Arrays.asList(
                 new Vector2f(this.m_position.x+1, this.m_position.y+1),
