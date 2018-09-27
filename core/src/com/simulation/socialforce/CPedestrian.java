@@ -486,6 +486,7 @@ public class CPedestrian implements IPedestrian{
             }
         }
     }
+
     public boolean judgeIntersected(float ax,float ay,float bx,float by,float cx,float cy,float dx,float dy){
         //線分交差判定 https://qiita.com/ykob/items/ab7f30c43a0ed52d16f2
         float ta = (cx - dx) * (ay - cy) + (cy - dy) * (cx - ax);
@@ -500,7 +501,7 @@ public class CPedestrian implements IPedestrian{
         return judgeIntersected(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
     }
 
-    public boolean judgeIntersectedRect(Rect rect){
+    public boolean rectjudgeIntersected(Rect rect){
         //LeftLine
         if(judgeIntersected(this.m_position, this.m_goal, rect.getLeftButtom(), rect.getLeftTop())) {
             return true;
@@ -509,29 +510,67 @@ public class CPedestrian implements IPedestrian{
         if(judgeIntersected(this.m_position, this.m_goal, rect.getRightButtom(), rect.getRightTop())) {
             return true;
         }
-        //DownLine
+        //ButtomLine
         if(judgeIntersected(this.m_position, this.m_goal, rect.getLeftButtom(), rect.getRightButtom())) {
             return true;
         }
-        //
+        //TopLine
         if(judgeIntersected(this.m_position, this.m_goal, rect.getLeftTop(), rect.getRightTop())) {
             return true;
         }
         else return false;
     }
 
+
+    public Vector2f rectMinDistancePoint(Rect rect){
+        Map<Integer,Vector2f> RectdistanceMap = new Hashtable<>();
+        int minDistance=0;
+        RectdistanceMap.put(this.getDistance(this.m_position, rect.getLeftButtom()), rect.getLeftButtom());
+        RectdistanceMap.put(this.getDistance(this.m_position, rect.getLeftTop()), rect.getLeftTop());
+        RectdistanceMap.put(this.getDistance(this.m_position, rect.getRightButtom()), rect.getRightButtom());
+        RectdistanceMap.put(this.getDistance(this.m_position, rect.getRightTop()), rect.getRightTop());
+        for (Integer distance : RectdistanceMap.keySet()) {
+            if(minDistance == 0) {
+                minDistance = distance;
+            }
+            if(minDistance < distance){
+                minDistance = distance;
+            }
+        }
+        return RectdistanceMap.get(minDistance);
+    }
+
+
     public void setSubGoal(){
+        //agentの目的地へ向かうベクトル線が障害物線に重なるか判定し
+        //重なる場合は一番近い障害物を探す
+        //障害物4端点から目的地までのベクトル線が重なるかチェック
+        //重ならない点が3点なら一番近い点を候補から外して2点に
+        //重ならない点が2点ならそのまま候補を2点に
+        //この候補点からagentが直接移動できる点があればそれを最初のサブゴール点にする
+
         Vector2f goalVec;
+        Map<Integer, Rect> minRectMap = new HashMap<>();
+        int minDistance = 0;
+        Rect minRect=null;
+
         for(Rect rect : parameter.arrayRect){
             //交差判定
-            if(judgeIntersectedRect(rect)){
-                ArrayList<Vector2f> distances = new ArrayList<>();
-                distances.add(this.getDistance(this.m_position, rect.getLeftButtom()));
-                distances.add(this.getDistance(this.m_position, rect.getLeftTop()));
-                distances.add(this.getDistance(this.m_position, rect.getRightButtom()));
-                distances.add(this.getDistance(this.m_position, rect.getRightTop()));
-                Collections.sort(distances);
-                this.setGoalposition(distances.get(0));
+            if(this.rectjudgeIntersected(rect)){
+                int distance = this.getDistance(this.m_position,this.rectMinDistancePoint(rect));
+                minRectMap.put(distance, rect);
+                for (Integer integer : minRectMap.keySet()){
+                    if(minDistance == 0){
+                        minDistance = integer;
+                    }
+                    if(minDistance < integer){
+                        minDistance = integer;
+                    }
+                }
+                minRect = minRectMap.get(minDistance);
+            }
+            if(!(minRect == null)){
+
             }
         }
     }
