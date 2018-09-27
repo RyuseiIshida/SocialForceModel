@@ -25,7 +25,6 @@ public class Parameter {
     //public static final ArrayList<Rect> arrayRect = new ArrayList<>();
     public static final ArrayList<Rect> arrayRect = new ArrayList<>(Arrays.asList(rect));
 
-
     public static final CStatic wallDownLine     = new CStatic(100,10,1500,10);
     public static final CStatic wallUpLine       = new CStatic(100,910,1500,910);
     public static final CStatic wallLeftLine     = new CStatic(100,70,100,910);

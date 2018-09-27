@@ -21,13 +21,14 @@ public class CPedestrian implements IPedestrian{
     private Vector2f m_goal;
     private ArrayList<Vector2f> m_goals;
     private Vector2f m_velocity;
+    private Vector2f tmpGoal;
     private float m_speed;
     private SocialForceModel l_env;
     private float m_maxspeed;
     private Sprite sprite;
     private boolean aisExitInfo;
-    private String stateTag;
     private boolean included;
+    private String stateTag;
     private CPedestrian myleader;
     private ArrayList<CPedestrian> myfollower;
 
@@ -523,19 +524,19 @@ public class CPedestrian implements IPedestrian{
 
     public boolean rectjudgeIntersected(Vector2f vec, Rect rect){
         //LeftLine
-        if(judgeIntersected(vec, Parameter.exitVec.get(0), rect.getLeftButtom(), rect.getLeftTop())) {
+        if(judgeIntersected(vec, this.m_goal, rect.getLeftButtom(), rect.getLeftTop())) {
             return true;
         }
         //RightLine
-        if(judgeIntersected(vec, Parameter.exitVec.get(0), rect.getRightButtom(), rect.getRightTop())) {
+        if(judgeIntersected(vec, this.m_goal, rect.getRightButtom(), rect.getRightTop())) {
             return true;
         }
         //ButtomLine
-        if(judgeIntersected(vec, Parameter.exitVec.get(0), rect.getLeftButtom(), rect.getRightButtom())) {
+        if(judgeIntersected(vec, this.m_goal, rect.getLeftButtom(), rect.getRightButtom())) {
             return true;
         }
         //TopLine
-        if(judgeIntersected(vec, Parameter.exitVec.get(0), rect.getLeftTop(), rect.getRightTop())) {
+        if(judgeIntersected(vec, this.m_goal, rect.getLeftTop(), rect.getRightTop())) {
             return true;
         }
         else return false;
@@ -589,23 +590,37 @@ public class CPedestrian implements IPedestrian{
 
 
     public void checkObstacle(){
+
+        System.out.println(this.m_goals);
         //agentの目的地へ向かうベクトル線が障害物線に重なるか判定し
         //重なる場合は一番近い障害物を探す
         //障害物4端点から目的地までのベクトル線が重なるかチェック
         //重ならない点が3点なら一番近い点を候補から外して2点に
         //重ならない点が2点ならそのまま候補を2点に
         //この候補点からagentが直接移動できる点があればそれを最初のサブゴール点にする
+
+        //スタックの解消手段
+        //回避行動中は特殊なサブゴールとする
+        //もしサブゴールを達成したら本ゴールを代入する
+
         Map<Integer, Rect> minRectMap = new HashMap<>();
         int minDistance = 0;
         Rect minRect;
-
 
         //agentの目的地へ向かうベクトル線が障害物線に重なるか判定し
         for(Rect rect : parameter.arrayRect){
             //交差判定
             if(this.rectjudgeIntersected(rect)) {
+                if(tmpGoal==null){
+                    tmpGoal = this.m_goal;
+                }
                 int distance = this.getDistance(this.m_position, this.rectMinDistancePoint(rect));
                 minRectMap.put(distance, rect);
+            }
+            else{
+                if(!(tmpGoal==null)){
+                    //this.setGoalposition(tmpGoal);
+                }
             }
         }
 
@@ -630,26 +645,27 @@ public class CPedestrian implements IPedestrian{
 
             if (!this.rectjudgeIntersected(minRect.getLeftButtom(), minRect)) {
                 points.add(minRect.getLeftButtom());
-                System.out.println("leftButom");
+                //System.out.println("leftButom");
             }
             if (!this.rectjudgeIntersected(minRect.getLeftTop(), minRect)) {
                 points.add(minRect.getLeftTop());
-                System.out.println("leftTop");
+                //System.out.println("leftTop");
             }
             if (!this.rectjudgeIntersected(minRect.getRightButtom(), minRect)) {
                 points.add(minRect.getRightButtom());
-                System.out.println("rightbuttom");
+                //System.out.println("rightbuttom");
             }
             if (!this.rectjudgeIntersected(minRect.getRightTop(), minRect)) {
                 points.add(minRect.getRightTop());
-                System.out.println("rightTop");
+                //System.out.println("rightTop");
             }
             //重ならない点が3点なら一番近い点を候補から外して2点に
             if(points.size() == 3){
                 Vector2f minPoint;
                 minDistance = 0;
                 for (Vector2f point : points) {
-                    pointRecttoExitMap.put(this.getDistance(point,Parameter.exitVec.get(0)),point);
+                    //pointRecttoExitMap.put(this.getDistance(point,Parameter.exitVec.get(0)),point);
+                    pointRecttoExitMap.put(this.getDistance(point,this.m_goal),point);
                 }
                 for (Integer integer : pointRecttoExitMap.keySet()) {
                     if(minDistance ==0){
