@@ -18,8 +18,8 @@ public class Parameter {
     public static boolean view_Renderer = false;
     public static final float view_phi_theta = 120;
     public static final float view_dmax = 400;
-    //public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
-    public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(600, 40)));
+    public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
+    //public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(600, 40)));
 
     public static final Rect rect = new Rect(500,500,500,200);
     //public static final ArrayList<Rect> arrayRect = new ArrayList<>();

@@ -242,7 +242,7 @@ public class CPedestrian implements IPedestrian{
 
         //もし初期目標地点がスケール外は全て削除
         if(this.m_goal.x < 0 || this.m_goal.x > Parameter.scale.x || this.m_goal.y < 0 || this.m_goal.y > Parameter.scale.y){
-            //System.out.println("allClear");
+            System.out.println("allClear");
             this.m_goals.clear();
         }
 
@@ -252,6 +252,8 @@ public class CPedestrian implements IPedestrian{
 //        }
 
         final float l_check = CVector.sub( this.getGoalposition(), this.getPosition() ).length(); //ゴールとの距離
+        //final float l_check = CVector.sub( this.m_goals.get(0), this.getPosition() ).length(); //ゴールとの距離
+
         //System.out.println("l_check = " + l_check);
 
         if ( l_check <= this.getM_radius() * 0.8 ) //ゴールについたかの判断
@@ -344,12 +346,14 @@ public class CPedestrian implements IPedestrian{
     //ランダムウォーク2 完全なランダム
     public void randomWalk2(){
         this.stateTag = "random";
+        System.out.println("random to allclear");
         this.m_goals.clear();
         this.m_goal = new Vector2f(MathUtils.random(Parameter.scale.x),MathUtils.random(Parameter.scale.y));
     }
 
     //周りを見渡す
     public void lookAround(){
+        System.out.println("clear to allclear");
         this.m_goals.clear();
         ArrayList<Vector2f> directions = new ArrayList<>(Arrays.asList(
                 new Vector2f(this.m_position.x+1, this.m_position.y+1),
@@ -480,7 +484,6 @@ public class CPedestrian implements IPedestrian{
                     - getDegree(m_position.x,m_position.y,m_goal.x,m_goal.y);
             if(delta_x < 0) delta_x *= -1;
             if(parameter.view_dmax >= distance && parameter.view_phi_theta/2 - delta_x >= 0 ){
-                this.m_goals.clear();
                 this.m_goal = vec;
                 this.setExitInfo(true);
                 this.stateTag = "GoExit";
@@ -562,8 +565,8 @@ public class CPedestrian implements IPedestrian{
     }
 
     public Vector2f pedObstaclePassPoint(Rect rect, Vector2f vec){
-        int x = 30;
-        int y = 30;
+        int x = 50;
+        int y = 50;
         Vector2f tmpvec;
         if(rect.getLeftButtom().equals(vec)){
             tmpvec = rect.getLeftButtom();
@@ -590,8 +593,6 @@ public class CPedestrian implements IPedestrian{
 
 
     public void checkObstacle(){
-
-        System.out.println(this.m_goals);
         //agentの目的地へ向かうベクトル線が障害物線に重なるか判定し
         //重なる場合は一番近い障害物を探す
         //障害物4端点から目的地までのベクトル線が重なるかチェック
@@ -611,15 +612,12 @@ public class CPedestrian implements IPedestrian{
         for(Rect rect : parameter.arrayRect){
             //交差判定
             if(this.rectjudgeIntersected(rect)) {
-                if(tmpGoal==null){
-                    tmpGoal = this.m_goal;
-                }
                 int distance = this.getDistance(this.m_position, this.rectMinDistancePoint(rect));
                 minRectMap.put(distance, rect);
             }
             else{
-                if(!(tmpGoal==null)){
-                    //this.setGoalposition(tmpGoal);
+                if(this.m_goals.size()==1) {
+                    this.m_goals.add(this.m_goals.get(0));
                 }
             }
         }
