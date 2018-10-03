@@ -83,19 +83,38 @@ public class SocialForceModel extends ApplicationAdapter {
             if(i==0) {
                 m_pedestrian.add(ped);
             }
+//            for (CPedestrian cPedestrian : m_pedestrian) {
+//                for (Rect rect : Parameter.arrayRect) {
+//                    int distance = this.getDistance(ped.getPosition().x, ped.getPosition().y, cPedestrian.getPosition().x, cPedestrian.getPosition().y);
+//                    if (distance > 50)
+//                            //&&
+//                            //!(ped.getPosition().x > rect.getLeftButtom().x && ped.getPosition().y > rect.getLeftButtom().y &&
+//                            //ped.getPosition().x < rect.getRightTop().x &&  ped.getPosition().y < rect.getRightTop().y) )
+//                    {
+//                        System.out.println("true");
+//                        DETERMINE = true;
+//                    } else {
+//                        DETERMINE = false;
+//                        break;
+//                    }
+//                }
+//            }
+
             for (CPedestrian cPedestrian : m_pedestrian) {
                 int distance = this.getDistance(ped.getPosition().x, ped.getPosition().y, cPedestrian.getPosition().x, cPedestrian.getPosition().y);
-                if(distance > 30){
+                if(distance > 30 &&
+                            !(ped.getPosition().x > Parameter.arrayRect.get(0).getLeftButtom().x-50 && ped.getPosition().y > Parameter.arrayRect.get(0).getLeftButtom().y-50 &&
+                            ped.getPosition().x < Parameter.arrayRect.get(0).getRightTop().x+50 &&  ped.getPosition().y < Parameter.arrayRect.get(0).getRightTop().y+50))
+                {
                     DETERMINE = true;
                 } else {
                     DETERMINE =false;
                     break;
                 }
             }
-            if(DETERMINE){
+            if (DETERMINE) {
                 m_pedestrian.add(ped);
             }
-
         }
 
         //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(600,450),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
