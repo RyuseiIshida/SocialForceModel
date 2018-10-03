@@ -21,10 +21,9 @@ public class Parameter {
     public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
     //public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(600, 40)));
 
-    public static final Rect rect = new Rect(500,500,500,200);
-
-    //public static final ArrayList<Rect> arrayRect = new ArrayList<>();
-    public static final ArrayList<Rect> arrayRect = new ArrayList<>(Arrays.asList(rect));
+    //public static final Rect rect = new Rect(500,300,500,100);
+    public static final ArrayList<Rect> arrayRect = new ArrayList<>();
+    //public static final ArrayList<Rect> arrayRect = new ArrayList<>(Arrays.asList(rect));
 
     public static final CStatic wallDownLine     = new CStatic(100,10,1500,10);
     public static final CStatic wallUpLine       = new CStatic(100,910,1500,910);
