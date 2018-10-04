@@ -83,22 +83,6 @@ public class SocialForceModel extends ApplicationAdapter {
             if(i==0) {
                 m_pedestrian.add(ped);
             }
-//            for (CPedestrian cPedestrian : m_pedestrian) {
-//                for (Rect rect : Parameter.arrayRect) {
-//                    int distance = this.getDistance(ped.getPosition().x, ped.getPosition().y, cPedestrian.getPosition().x, cPedestrian.getPosition().y);
-//                    if (distance > 50)
-//                            //&&
-//                            //!(ped.getPosition().x > rect.getLeftButtom().x && ped.getPosition().y > rect.getLeftButtom().y &&
-//                            //ped.getPosition().x < rect.getRightTop().x &&  ped.getPosition().y < rect.getRightTop().y) )
-//                    {
-//                        System.out.println("true");
-//                        DETERMINE = true;
-//                    } else {
-//                        DETERMINE = false;
-//                        break;
-//                    }
-//                }
-//            }
 
             for (CPedestrian cPedestrian : m_pedestrian) {
                 int distance = this.getDistance(ped.getPosition().x, ped.getPosition().y, cPedestrian.getPosition().x, cPedestrian.getPosition().y);
