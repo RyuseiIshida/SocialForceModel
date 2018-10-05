@@ -32,7 +32,9 @@ public class CPedestrian implements IPedestrian{
     private CPedestrian myleader;
     private ArrayList<CPedestrian> myfollower;
 
+
     private int counter;
+    private Vector2f tmpPos;
 
 
     public CPedestrian(SocialForceModel p_env,boolean isExitInfo,final Vector2f p_position, final float p_speed, Vector2f p_goal,Sprite sprites) {
@@ -52,6 +54,7 @@ public class CPedestrian implements IPedestrian{
         included = false;
         myfollower = new ArrayList<>();
         counter = 0;
+        tmpPos = new Vector2f();
     }
 
 
@@ -201,6 +204,27 @@ public class CPedestrian implements IPedestrian{
             if(this.getDistance(this.m_position, this.myleader.getPosition()) > 200){
                 this.stateTag = "";
             }
+
+            if(this.getVelocity().x == 0 && this.getVelocity().y == 0){
+                this.counter++;
+                if(this.counter==1000){
+                    this.stateTag = "";
+                    counter = 0;
+                    System.out.println("集団の解除");
+                }
+            }
+
+
+//            if(l_env.step % Parameter.STEPINTERVAL*2 == 0){
+//                float tmpx = this.tmpPos.x - this.getPosition().x;
+//                float tmpy = Math.abs(this.tmpPos.y - this.getPosition().y);
+//                if(tmpx < 100 && tmpy < 100){
+//                    this.stateTag = "";
+//                    randomWalk2();
+//                    System.out.println("集団の解除");
+//                }
+//                this.tmpPos = this.getPosition();
+//            }
         }
 
 
