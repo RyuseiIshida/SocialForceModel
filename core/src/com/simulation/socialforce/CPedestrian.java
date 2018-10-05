@@ -198,6 +198,8 @@ public class CPedestrian implements IPedestrian{
             if(this.getDistance(this.m_position, this.myleader.getPosition()) > 200){
                 this.stateTag = "";
             }
+
+
         }
 
 
