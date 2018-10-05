@@ -148,10 +148,10 @@ public class CPedestrian implements IPedestrian{
         //Vector2f rule3f = new Vector2f((float)rule3.x,(float)rule2.y);
         //applyForce(migrate);
         Vector2f boidVector = new Vector2f();
-        //boidVector.add(rule1f,rule2f);
-        //boidVector.add(boidVector,rule3f);
-        //l_temp.add(l_temp, boidVector);
-        //l_temp.add(l_temp, rule1f);
+//        boidVector.add(rule1f,rule2f);
+//        boidVector.add(boidVector,rule3f);d
+//        l_temp.add(l_temp, boidVector);
+        l_temp.add(l_temp, rule1f);
 
         return CVector.truncate( CVector.add( l_temp, l_repulsetoWall ), m_maxforce );
     }
