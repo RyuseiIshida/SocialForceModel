@@ -276,29 +276,83 @@ public class CPedestrian implements IPedestrian{
         return this;
     }
 
+//
+//    //集団を追従
+//    public void multi_people_following(){
+//        int count = 0;
+//        ArrayList<CPedestrian> multiPed = new ArrayList<>();
+//        for (CPedestrian ped : l_env.getPedestrianinfo()) {
+//            if (!(this.equals(ped))) {
+//                int distance = getPedDistance(ped);
+//                float delta_x = getPedDegree(ped) - getDegree(this.m_position, this.m_goal);
+//                if (delta_x < 0) delta_x *= -1;
+//                if (parameter.view_dmax >= distance && parameter.view_phi_theta / 2 - delta_x >= 0) {
+//                    count++;
+//                    multiPed.add(ped);
+//                    if (count >= Parameter.judgeFollowNum) {
+//                                this.m_goal = ped.getPosition();
+//                                if (distance < 250) {
+//                                    this.stateTag = "follow";
+//                                    this.myleader = ped;
+//                                    this.m_goal = myleader.getPosition();
+//                                    ped.setStateTag("leader");
+//                                    ped.addMyfollower(this);
+//                                    break;
+//                                }
+//                    }
+//                    else {
+//                        randomWalk2();
+//                    }
+//                }
+//            }
+//        }
+//    }
+
 
     //集団を追従
     public void multi_people_following(){
-        int count = 0;
         ArrayList<CPedestrian> multiPed = new ArrayList<>();
-        for (CPedestrian ped : l_env.getPedestrianinfo()) {
+        M : for (CPedestrian ped : l_env.getPedestrianinfo()) {
             if (!(this.equals(ped))) {
                 int distance = getPedDistance(ped);
                 float delta_x = getPedDegree(ped) - getDegree(this.m_position, this.m_goal);
-                if (delta_x < 0) delta_x *= -1;
+                Math.abs(delta_x);
                 if (parameter.view_dmax >= distance && parameter.view_phi_theta / 2 - delta_x >= 0) {
-                    count++;
                     multiPed.add(ped);
-                    if (count >= Parameter.judgeFollowNum) {
-                                this.m_goal = ped.getPosition();
-                                if (distance < 250) {
+                    if( multiPed.size() >= Parameter.judgeFollowNum && !(ped.getStateTag() == "follow")){
+                        //if( multiPed.size() >= Parameter.judgeFollowNum){
+                        this.m_goal = ped.getPosition();
+                        if (distance < 200) {
+                            for (CPedestrian mulped : multiPed) {
+                                if(mulped.getisExitInfo()){
                                     this.stateTag = "follow";
                                     this.myleader = ped;
                                     this.m_goal = myleader.getPosition();
-                                    ped.setStateTag("leader");
                                     ped.addMyfollower(this);
-                                    break;
+                                    break M;
                                 }
+                            }
+                            int minDis = 0;
+                            int tmpDis;
+                            CPedestrian tmpPed = ped;
+                            for (CPedestrian mulped : multiPed) {
+                                if(minDis == 0){
+                                    minDis = this.getPedDistance(mulped);
+                                }
+                                tmpDis = this.getPedDistance(mulped);
+                                if(minDis < tmpDis){
+                                    minDis = tmpDis;
+                                    tmpPed = mulped;
+                                }
+                            }
+                            this.stateTag = "follow";
+                            this.myleader = tmpPed;
+                            //this.myleader = ped;
+                            this.m_goal = myleader.getPosition();
+                            ped.setStateTag("leader");
+                            ped.addMyfollower(this);
+                            break;
+                        }
                     }
                     else {
                         randomWalk2();

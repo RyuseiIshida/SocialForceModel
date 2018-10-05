@@ -10,7 +10,7 @@ public class Parameter {
     public static final int STEPINTERVAL = 60;//step60 ＝ 1second
     public static final int CELL_INTERVAL = 10;
     public static final int initPedNum = 50;
-    public static final int goalPed = 0;
+    public static final int goalPed = 10;
     public static final float judgeFollowNum = 5;
     public static final float judgeFollowNum2 = 1;
     public static final double m_GaussianMean = 1.34;
