@@ -5,14 +5,14 @@ import java.util.ArrayList;
 
 // getCellPointでスケール以上の数字が渡された時のエラー文を書く
 
-public class Cell {
+public final class Cell {
     private float endx = Parameter.scale.x;
     private float endy = Parameter.scale.y;
     private int cell_interval = Parameter.CELL_INTERVAL;
     private ArrayList<Vector2f> end_cellPoints = new ArrayList<>();
     private ArrayList<Vector2f> center_cellPoints = new ArrayList<>();
 
-    Cell() {
+    public Cell() {
 //        for(int i=cell_interval; i<=endx; i+=cell_interval){
 //            for(int j=cell_interval; j<=endy; j+=cell_interval){
         for (int i = cell_interval; i <= 30; i += cell_interval) {
