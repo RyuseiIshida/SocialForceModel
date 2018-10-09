@@ -13,44 +13,42 @@ public class Rect {
     private Vector2f rightButtom;
     private Vector2f rightTop;
     private CStatic force;
-    Rect(float x, float y, int w, int h){
-        //x = X;
-        //y = Y;
+
+    Rect(float x, float y, int w, int h) {
         width = w;
         height = h;
-        //vector = new Vector2f(x,y);
-        leftButtom = new Vector2f(x,y);
-        leftTop = new Vector2f(x,y+h);
-        rightButtom = new Vector2f(x+w,y);
-        rightTop = new Vector2f(x+w,y+h);
-        force = new CStatic((int)x,(int)y,(int)(x+w),(int)(y+h));
+        leftButtom = new Vector2f(x, y);
+        leftTop = new Vector2f(x, y + h);
+        rightButtom = new Vector2f(x + w, y);
+        rightTop = new Vector2f(x + w, y + h);
+        force = new CStatic((int) x, (int) y, (int) (x + w), (int) (y + h));
     }
 
-    public int getWidth(){
+    public int getWidth() {
         return this.width;
     }
 
-    public int getHeight(){
+    public int getHeight() {
         return this.height;
     }
 
-    public Vector2f getLeftButtom(){
+    public Vector2f getLeftButtom() {
         return this.leftButtom;
     }
 
-    public Vector2f getLeftTop(){
+    public Vector2f getLeftTop() {
         return this.leftTop;
     }
 
-    public Vector2f getRightButtom(){
+    public Vector2f getRightButtom() {
         return this.rightButtom;
     }
 
-    public Vector2f getRightTop(){
+    public Vector2f getRightTop() {
         return rightTop;
     }
 
-    public CStatic getForce(){
+    public CStatic getForce() {
         return force;
     }
 
