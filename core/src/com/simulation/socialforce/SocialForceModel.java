@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.simulation.Cell.Cell;
+import com.simulation.Cell.Cells;
 import com.simulation.ifcparser.IfcParser;
 
 import javax.vecmath.Vector2f;
@@ -31,10 +33,12 @@ public class SocialForceModel extends ApplicationAdapter {
     private ArrayList<Sprite> exit = new ArrayList<>();
     private boolean isStart = false; //スペースボタン
     private boolean isGoalInfo = false; //Fボタン
+    private boolean hasDrawCell = false;
     private Vector2f initVec = new Vector2f(0, 0);
     public ArrayList<Double> GoalTime = new ArrayList<>();
     public static double step = 0;
 
+    public Cells cells;
 
     @Override
     public void create() {
@@ -52,6 +56,7 @@ public class SocialForceModel extends ApplicationAdapter {
         bitmapFont = new BitmapFont();
         bitmapFont.setColor(Color.BLACK);
         bitmapFont.getData().setScale(2);
+        cells = new Cells(Parameter.scale,Parameter.CELL_INTERVAL);
     }
 
 
@@ -75,6 +80,7 @@ public class SocialForceModel extends ApplicationAdapter {
             ped = i < Parameter.goalPed
                     ? new CPedestrian(this, true, initPos, 1, Parameter.exitVec.get(0), new Sprite(personImage))
                     : new CPedestrian(this, false, initPos, 1, new Vector2f(initDirectionX, initDirectionY), new Sprite(personImage));
+
 
             if (i == 0) {
                 m_pedestrian.add(ped);
@@ -212,6 +218,14 @@ public class SocialForceModel extends ApplicationAdapter {
             //障害物
             shapeRenderer.setColor(Color.GRAY);
             parameter.arrayRect.forEach(rect -> shapeRenderer.rect(rect.getLeftButtom().x, rect.getLeftButtom().y, rect.getWidth(), rect.getHeight()));
+
+            //セル
+            if(hasDrawCell) {
+                for (Cell cell : cells.getCells()) {
+                    shapeRenderer.line(cell.getLeftTopPoint().x, cell.getLeftTopPoint().y, cell.getRightTopPoint().x, cell.getRightTopPoint().y);
+                    shapeRenderer.line(cell.getRightButtomPoint().x, cell.getRightButtomPoint().y, cell.getRightTopPoint().x, cell.getRightTopPoint().y);
+                }
+            }
         }
         shapeRenderer.end();
 
@@ -265,11 +279,10 @@ public class SocialForceModel extends ApplicationAdapter {
         else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT))
             initVec.set(-1, 0);
         else if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {
-            if (Parameter.view_Renderer) {
-                Parameter.view_Renderer = false;
-            } else {
-                Parameter.view_Renderer = true;
-            }
+            Parameter.view_Renderer = Parameter.view_Renderer ? false : true;
+        }
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.C)){
+            hasDrawCell = hasDrawCell ? false : true;
         }
 
         //ゴールについたら消す → exitImageと重なったら削除
