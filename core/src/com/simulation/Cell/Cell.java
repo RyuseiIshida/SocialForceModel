@@ -11,9 +11,6 @@ public class Cell {
     private Vector2f rightTopPoint;
     private Vector2f centerPoint;
 
-    public Cell() {
-    }
-
     public Cell(int interval, Vector2f point) {
         this.cellInterval = interval;
         leftButtomPoint = new Vector2f(point);
@@ -22,7 +19,6 @@ public class Cell {
         rightTopPoint = new Vector2f(point.x + interval, point.y + interval);
         centerPoint = new Vector2f(point.x + interval / 2, point.y + interval / 2);
     }
-
 
     public Vector2f getLeftButtomPoint() {
         return leftButtomPoint;

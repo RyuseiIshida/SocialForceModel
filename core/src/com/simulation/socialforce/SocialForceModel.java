@@ -12,8 +12,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.simulation.Cell.Cell;
-import com.simulation.Cell.Cells;
+import com.simulation.Potential.PotentialCell;
 import com.simulation.ifcparser.IfcParser;
 
 import javax.vecmath.Vector2f;
@@ -38,8 +37,6 @@ public class SocialForceModel extends ApplicationAdapter {
     public ArrayList<Double> GoalTime = new ArrayList<>();
     public static double step = 0;
 
-    public Cells cells;
-
     @Override
     public void create() {
         personImage = new Texture(Gdx.files.internal("person.png"));
@@ -56,7 +53,6 @@ public class SocialForceModel extends ApplicationAdapter {
         bitmapFont = new BitmapFont();
         bitmapFont.setColor(Color.BLACK);
         bitmapFont.getData().setScale(2);
-        cells = new Cells(Parameter.scale,Parameter.CELL_INTERVAL);
     }
 
 
@@ -166,6 +162,33 @@ public class SocialForceModel extends ApplicationAdapter {
             bitmapFont.draw(batch, "pedestrian = " + String.format(String.valueOf(m_pedestrian.size())), Parameter.scale.x - 450, Parameter.scale.y - 10);
             m_pedestrian.forEach(ped -> ped.getSprite().draw(batch));
             exit.forEach(spexit -> spexit.draw(batch));
+
+//            m_pedestrian.forEach(ped -> {
+//                PotentialCell cell = ped.getPotentialCells().getPotentialCell(ped.getPosition());
+//                PotentialCell leftCell = ped.getPotentialCells().getLeftPotentialCell(cell);
+//                PotentialCell rightCell = ped.getPotentialCells().getRightPotentialCell(cell);
+//                PotentialCell upCell = ped.getPotentialCells().getUpPotentialCell(cell);
+//                PotentialCell downCell = ped.getPotentialCells().getDownPotentialCell(cell);
+//                bitmapFont.draw(batch, String.valueOf(leftCell.getPotential()), leftCell.getCenterPoint().x, leftCell.getCenterPoint().y);
+//                bitmapFont.draw(batch, String.valueOf(rightCell.getPotential()), rightCell.getCenterPoint().x, rightCell.getCenterPoint().y);
+//                bitmapFont.draw(batch, String.valueOf(upCell.getPotential()), upCell.getCenterPoint().x, upCell.getCenterPoint().y);
+//                bitmapFont.draw(batch, String.valueOf(downCell.getPotential()), downCell.getCenterPoint().x, downCell.getCenterPoint().y);
+//
+//            });
+//
+//            for (CPedestrian cPedestrian : m_pedestrian) {
+//                for (PotentialCell potentialCell : cPedestrian.getPotentialCells().getPotentialCells()) {
+//                    float potential = potentialCell.getPotential();
+//                    bitmapFont.draw(batch, String.valueOf(potential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
+//                }
+//            }
+
+            for (PotentialCell potentialCell : Parameter.potentialCells.getPotentialCells()) {
+                float potential = Parameter.potentialCells.totalPotential(potentialCell);
+                bitmapFont.draw(batch, String.valueOf(potential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
+            }
+            //bitmapFont.draw(batch, String.valueOf(leftCell.getPotencialObstacle()), leftCell.getCenterPoint().x, leftCell.getCenterPoint().y);
+
         }
         batch.end();
 
@@ -194,7 +217,15 @@ public class SocialForceModel extends ApplicationAdapter {
                     shapeRenderer.setColor(Color.BLACK);
                     shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
                 }
+
             }
+
+
+//            //障害物
+//            shapeRenderer.setColor(Color.GRAY);
+//            for (PotentialCell cell : Parameter.obstacle.getObstacleCell()) {
+//                shapeRenderer.rect(cell.getLeftButtomPoint().x,cell.getLeftButtomPoint().y,cell.getInterval(),cell.getInterval());
+//            }
         }
         shapeRenderer.end();
 
@@ -221,10 +252,16 @@ public class SocialForceModel extends ApplicationAdapter {
 
             //セル
             if(hasDrawCell) {
-                for (Cell cell : cells.getCells()) {
+                for (PotentialCell cell : Parameter.potentialCells.getPotentialCells()) {
                     shapeRenderer.line(cell.getLeftTopPoint().x, cell.getLeftTopPoint().y, cell.getRightTopPoint().x, cell.getRightTopPoint().y);
                     shapeRenderer.line(cell.getRightButtomPoint().x, cell.getRightButtomPoint().y, cell.getRightTopPoint().x, cell.getRightTopPoint().y);
                 }
+            }
+
+            //障害物
+            shapeRenderer.setColor(Color.GRAY);
+            for (PotentialCell cell : Parameter.obstacle.getObstacleCell()) {
+                shapeRenderer.rect(cell.getLeftButtomPoint().x,cell.getLeftButtomPoint().y,cell.getInterval(),cell.getInterval());
             }
         }
         shapeRenderer.end();
