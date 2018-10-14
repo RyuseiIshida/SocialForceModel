@@ -258,14 +258,16 @@ public class PotentialCells {
     }
 
     public float totalPotential(PotentialCell targetCell){
-        float totalPotential = 0;
+        float obstaclePotential = 0, agentPotential = 0;
+        float totalPotential;
         for (Obstacle obstacle : obstacles) {
-            for (PotentialCell potentialCell : obstacle.getObstacleCell()) {
-                if(targetCell.equals(potentialCell)){
-                    totalPotential += maxPotential;
+            for (PotentialCell obstacleCell : obstacle.getObstacleCell()) {
+                if(targetCell.equals(obstacleCell)){
+                    obstaclePotential = obstacleCell.getPotential();
                 }
             }
         }
+        totalPotential = obstaclePotential + agentPotential;
         return totalPotential;
     }
 

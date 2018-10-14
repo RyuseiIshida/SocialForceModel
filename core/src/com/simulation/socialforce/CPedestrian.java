@@ -35,6 +35,7 @@ public class CPedestrian implements IPedestrian {
     private ArrayList<CPedestrian> myfollower;
 
     private PotentialCells envPotentials;
+    private PotentialCells myPotentialMap;
 
 
     public CPedestrian(SocialForceModel p_env, boolean isExitInfo, final Vector2f p_position, final float p_speed, Vector2f p_goal, Sprite sprites) {
@@ -54,9 +55,14 @@ public class CPedestrian implements IPedestrian {
         included = false;
         myfollower = new ArrayList<>();
         envPotentials = Parameter.potentialCells;
+        myPotentialMap = new PotentialCells(Parameter.scale, Parameter.CELL_INTERVAL, Parameter.MAXPOTENTIAL);
+        //fitPotential();
+        //myPotentialMap = Parameter.potentialCells;
     }
 
-
+    public PotentialCells getMyPotentialMap() {
+        return myPotentialMap;
+    }
 
     public void setExitInfo(boolean bool) {
         aisExitInfo = bool;
@@ -555,20 +561,49 @@ public class CPedestrian implements IPedestrian {
 
     }
 
+    public void subPotentialGoal(){
+        for (PotentialCell potentialCell : myPotentialMap.getPotentialCells()) {
+            float distance;
+            Vector2f tmpGoal = new Vector2f(Parameter.exitVec.get(0));
+            float nomalize = getDistance(0, 0,Parameter.scale.x, Parameter.scale.y);
+            //distance = getDistance(m_goal, potentialCell.getCenterPoint());
+            distance = getDistance(tmpGoal, potentialCell.getCenterPoint());
+            distance = distance / nomalize;
+            potentialCell.setPotentialGoal(distance-1);
+        }
+    }
+
+    public void fitPotential(){
+        for (PotentialCell envPotentialCell : envPotentials.getPotentialCells()) {
+            for (PotentialCell myPotentialCell : myPotentialMap.getPotentialCells()) {
+                myPotentialCell.addTotalPotential(envPotentialCell.getPotential());
+            }
+        }
+    }
+
     public void checkPotential(){
-        PotentialCell posCell = envPotentials.getPotentialCell(m_position);
+        subPotentialGoal();
+        PotentialCell posCell = myPotentialMap.getPotentialCell(m_position);
         float P = 5f;
         Vector2f pv = new Vector2f(m_velocity.x * P + m_position.x, m_velocity.y  * P + m_position.y);
-        PotentialCell velocityCell = envPotentials.getPotentialCell(pv);
+        PotentialCell velocityCell = myPotentialMap.getPotentialCell(pv);
 
-        PotentialCell leftCell = envPotentials.getLeftPotentialCell(posCell);
-        PotentialCell leftButtomCell = envPotentials.getLeftButtomPotentialCell(posCell);
-        PotentialCell leftTopCell = envPotentials.getLeftTopPotentialCell(posCell);
-        PotentialCell rightCell = envPotentials.getRightPotentialCell(posCell);
-        PotentialCell rightButtomCell = envPotentials.getRightButtomPotentialCell(posCell);
-        PotentialCell rightTopCell = envPotentials.getRightTopPotentialCell(posCell);
-        PotentialCell topCell = envPotentials.getUpPotentialCell(posCell);
-        PotentialCell buttomCell = envPotentials.getDownPotentialCell(posCell);
+//        PotentialCell leftCell = envPotentials.getLeftPotentialCell(posCell);
+//        PotentialCell leftButtomCell = envPotentials.getLeftButtomPotentialCell(posCell);
+//        PotentialCell leftTopCell = envPotentials.getLeftTopPotentialCell(posCell);
+//        PotentialCell rightCell = envPotentials.getRightPotentialCell(posCell);
+//        PotentialCell rightButtomCell = envPotentials.getRightButtomPotentialCell(posCell);
+//        PotentialCell rightTopCell = envPotentials.getRightTopPotentialCell(posCell);
+//        PotentialCell topCell = envPotentials.getUpPotentialCell(posCell);
+//        PotentialCell buttomCell = envPotentials.getDownPotentialCell(posCell);
+        PotentialCell leftCell = myPotentialMap.getLeftPotentialCell(posCell);
+        PotentialCell leftButtomCell = myPotentialMap.getLeftButtomPotentialCell(posCell);
+        PotentialCell leftTopCell = myPotentialMap.getLeftTopPotentialCell(posCell);
+        PotentialCell rightCell = myPotentialMap.getRightPotentialCell(posCell);
+        PotentialCell rightButtomCell = myPotentialMap.getRightButtomPotentialCell(posCell);
+        PotentialCell rightTopCell = myPotentialMap.getRightTopPotentialCell(posCell);
+        PotentialCell topCell = myPotentialMap.getUpPotentialCell(posCell);
+        PotentialCell buttomCell = myPotentialMap.getDownPotentialCell(posCell);
         ArrayList<PotentialCell> nearCells = new ArrayList<>();
         nearCells.add(leftCell);
         nearCells.add(leftButtomCell);
@@ -581,13 +616,13 @@ public class CPedestrian implements IPedestrian {
 
         Map<Float,PotentialCell> potentialCellMap = new HashMap<>();
         for (PotentialCell nearCell : nearCells) {
-            potentialCellMap.put(envPotentials.totalPotential(nearCell), nearCell);
+            potentialCellMap.put(myPotentialMap.totalPotential(nearCell), nearCell);
         }
 
-        float tmp = 100;
+        float tmp = 1000;
         PotentialCell tmpCell = null;
         for (Map.Entry<Float, PotentialCell> cellEntry : potentialCellMap.entrySet()) {
-            if(tmp==100){
+            if(tmp==1000){
                 tmp = cellEntry.getKey();
                 tmpCell = cellEntry.getValue();
             }
@@ -596,7 +631,10 @@ public class CPedestrian implements IPedestrian {
                 tmpCell = cellEntry.getValue();
             }
         }
-        System.out.println(tmpCell.getCenterPoint());
+        //まず自分の位置からセルまでの方向を算出;
+        float tmpx = m_position.x - tmpCell.getCenterPoint().x;
+        float tmpy = m_position.y - tmpCell.getCenterPoint().y;
+        //System.out.println(tmpCell.getCenterPoint());
         m_goal = tmpCell.getCenterPoint();
     }
 

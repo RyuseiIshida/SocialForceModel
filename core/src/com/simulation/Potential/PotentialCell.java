@@ -9,6 +9,8 @@ public class PotentialCell extends Cell {
     float maxPotential;
     float potencialObstacle;
     float potentialAgent;
+    float potentialGoal;
+    float totalPotential;
     int interval;
 
     ArrayList<Object> objPotential;
@@ -19,19 +21,36 @@ public class PotentialCell extends Cell {
         this.interval = interval;
         potencialObstacle = 0;
         potentialAgent = 0;
+        potentialGoal = 0;
+        totalPotential = 0;
         objPotential = new ArrayList<>();
     }
 
     public void setPotencialObstacle(){
         potencialObstacle = maxPotential;
+        setTotalPotential();
     }
 
     public void setPotentialAgent(){
         potentialAgent = maxPotential;
+        setTotalPotential();
+    }
+
+    public void setPotentialGoal(float distance){
+        potentialGoal = distance;
+        setTotalPotential();
+    }
+
+    public void setTotalPotential() {
+        totalPotential = potencialObstacle + potentialAgent + potentialGoal;
+    }
+
+    public void addTotalPotential(float potential){
+        totalPotential += potential;
     }
 
     public float getPotential(){
-        return potencialObstacle + potentialAgent;
+        return totalPotential;
 
     }
 
@@ -41,6 +60,10 @@ public class PotentialCell extends Cell {
 
     public float getPotencialPerson() {
         return potentialAgent;
+    }
+
+    public float getPotentialGoal() {
+        return potentialGoal;
     }
 
     public int getInterval() {

@@ -45,6 +45,9 @@ public class Obstacle {
     }
 
     public void setPotential(){
+        for (PotentialCell potentialCell : obstacleCell) {
+            potentialCell.setPotencialObstacle();
+        }
         potentialCells.setObstacle(this);
     }
 
