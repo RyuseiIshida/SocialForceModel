@@ -157,18 +157,6 @@ public class SocialForceModel extends ApplicationAdapter {
             m_pedestrian.forEach(ped -> ped.getSprite().draw(batch));
             exit.forEach(spexit -> spexit.draw(batch));
 
-//            m_pedestrian.forEach(ped -> {
-//                PotentialCell cell = ped.getPotentialCells().getPotentialCell(ped.getPosition());
-//                PotentialCell leftCell = ped.getPotentialCells().getLeftPotentialCell(cell);
-//                PotentialCell rightCell = ped.getPotentialCells().getRightPotentialCell(cell);
-//                PotentialCell upCell = ped.getPotentialCells().getUpPotentialCell(cell);
-//                PotentialCell downCell = ped.getPotentialCells().getDownPotentialCell(cell);
-//                bitmapFont.draw(batch, String.valueOf(leftCell.getPotential()), leftCell.getCenterPoint().x, leftCell.getCenterPoint().y);
-//                bitmapFont.draw(batch, String.valueOf(rightCell.getPotential()), rightCell.getCenterPoint().x, rightCell.getCenterPoint().y);
-//                bitmapFont.draw(batch, String.valueOf(upCell.getPotential()), upCell.getCenterPoint().x, upCell.getCenterPoint().y);
-//                bitmapFont.draw(batch, String.valueOf(downCell.getPotential()), downCell.getCenterPoint().x, downCell.getCenterPoint().y);
-//
-//            });
 //
 //            for (CPedestrian cPedestrian : m_pedestrian) {
 //                for (PotentialCell potentialCell : cPedestrian.getMyPotentialMap().getPotentialCells()) {
@@ -177,13 +165,6 @@ public class SocialForceModel extends ApplicationAdapter {
 //                    bitmapFont.draw(batch, String.format("%.2f",poqtential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
 //                }
 //            }
-
-
-//            for (PotentialCell potentialCell : Parameter.potentialMap.getPotentialCells()) {
-//                float potential = Parameter.potentialMap.totalPotential(potentialCell);
-//                bitmapFont.draw(batch, String.valueOf(potential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
-//            }
-            //bitmapFont.draw(batch, String.valueOf(leftCell.getPotencialObstacle()), leftCell.getCenterPoint().x, leftCell.getCenterPoint().y);
 
         }
         batch.end();
@@ -198,7 +179,6 @@ public class SocialForceModel extends ApplicationAdapter {
                 if (ped.getisExitInfo()) {
                     shapeRenderer.setColor(Color.RED);
                     shapeRenderer.circle(ped.getPosition().x, ped.getPosition().y, 10);
-                    //shapeRenderer.rect((float)rect.x,(float)rect.y,(float)rect.width,(float)rect.height);
                     shapeRenderer.arc(ped.getPosition().x, ped.getPosition().y, 10, 0, 360);
                 }
                 if (ped.getStateTag() == "follow") {
