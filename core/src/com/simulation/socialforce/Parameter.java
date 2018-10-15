@@ -14,7 +14,7 @@ public class Parameter {
     public static final int STEPINTERVAL = 60;//step60 ＝ 1second
     public static final int CELL_INTERVAL = 30;
     public static final int MAXPOTENTIAL = 5;
-    public static final int initPedNum = 0;
+    public static final int initPedNum = 30;
     public static final int goalPed = 20;
     public static final float judgeFollowNum = 5;
     public static final float judgeFollowNum2 = 1;
