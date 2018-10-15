@@ -1,28 +1,20 @@
 package com.simulation.Potential;
 
-import Obstacle.Obstacle;
-import org.omg.PortableServer.POA;
-
 import javax.vecmath.Vector2f;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ListIterator;
-import java.util.Map;
 
-public class PotentialCells {
+public class PotentialMap {
     ArrayList<PotentialCell> potentialCells;
     ArrayList<ArrayList<PotentialCell>> matrixPotentialCells;
-    ArrayList<Obstacle> obstacles;
     Vector2f scale;
     float maxPotential;
     int cellInterval;
     int row;
     int column;
 
-    public PotentialCells(Vector2f scale, int cellInterval, float maxPotential) {
+    public PotentialMap(Vector2f scale, int cellInterval, float maxPotential) {
         potentialCells = new ArrayList<>();
         matrixPotentialCells = new ArrayList<>();
-        obstacles = new ArrayList<>();
         this.maxPotential = maxPotential;
         this.scale = scale;
         this.cellInterval = cellInterval;
@@ -43,14 +35,6 @@ public class PotentialCells {
             matrixPotentialCells.add(array);
             column++;
         }
-    }
-
-    public void setObstacle(Obstacle obstacle){
-        this.obstacles.add(obstacle);
-    }
-
-    public ArrayList<Obstacle> getObstacles() {
-        return obstacles;
     }
 
     public ArrayList<PotentialCell> getPotentialCells() {
@@ -113,17 +97,7 @@ public class PotentialCells {
         return matrixNumber;
     }
 
-    public float totalPotential(PotentialCell targetCell){
-        float obstaclePotential = 0, agentPotential = 0;
-        float totalPotential;
-        for (Obstacle obstacle : obstacles) {
-            for (PotentialCell obstacleCell : obstacle.getObstacleCell()) {
-                if(targetCell.equals(obstacleCell)){
-                    obstaclePotential = obstacleCell.getPotential();
-                }
-            }
-        }
-        totalPotential = obstaclePotential + agentPotential;
-        return totalPotential;
+    public int getCellInterval() {
+        return cellInterval;
     }
 }

@@ -1,4 +1,4 @@
-package com.simulation.Cell;
+package com.simulation.Potential.Cell;
 
 import javax.vecmath.Vector2f;
 import java.util.ArrayList;

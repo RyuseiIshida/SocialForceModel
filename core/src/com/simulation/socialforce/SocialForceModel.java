@@ -48,7 +48,7 @@ public class SocialForceModel extends ApplicationAdapter {
         //getIfc();
         spawnExit();
         spawnWall();
-        spawnRect();
+
         spawnInitAgent();
         bitmapFont = new BitmapFont();
         bitmapFont.setColor(Color.BLACK);
@@ -131,14 +131,6 @@ public class SocialForceModel extends ApplicationAdapter {
         }
     }
 
-    private void spawnRect() {
-        for (Rect rect : parameter.arrayRect) {
-            m_walledge.add(rect.getForce().getwall1());
-            m_walledge.add(rect.getForce().getwall2());
-            m_walledge.add(rect.getForce().getwall3());
-            m_walledge.add(rect.getForce().getwall4());
-        }
-    }
 
     @Override
     public void render() {
@@ -185,8 +177,8 @@ public class SocialForceModel extends ApplicationAdapter {
 //            }
 
 
-//            for (PotentialCell potentialCell : Parameter.potentialCells.getPotentialCells()) {
-//                float potential = Parameter.potentialCells.totalPotential(potentialCell);
+//            for (PotentialCell potentialCell : Parameter.potentialMap.getPotentialCells()) {
+//                float potential = Parameter.potentialMap.totalPotential(potentialCell);
 //                bitmapFont.draw(batch, String.valueOf(potential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
 //            }
             //bitmapFont.draw(batch, String.valueOf(leftCell.getPotencialObstacle()), leftCell.getCenterPoint().x, leftCell.getCenterPoint().y);
@@ -248,23 +240,20 @@ public class SocialForceModel extends ApplicationAdapter {
             //壁
             shapeRenderer.setColor(Color.BLACK);
             parameter.m_wall.forEach(wall -> shapeRenderer.line(wall.getX1(), wall.getY1(), wall.getX2(), wall.getY2()));
-            //障害物
-            shapeRenderer.setColor(Color.GRAY);
-            parameter.arrayRect.forEach(rect -> shapeRenderer.rect(rect.getLeftButtom().x, rect.getLeftButtom().y, rect.getWidth(), rect.getHeight()));
 
             //セル
             if(hasDrawCell) {
-                for (PotentialCell cell : Parameter.potentialCells.getPotentialCells()) {
+                for (PotentialCell cell : Parameter.potentialMap.getPotentialCells()) {
                     shapeRenderer.line(cell.getLeftTopPoint().x, cell.getLeftTopPoint().y, cell.getRightTopPoint().x, cell.getRightTopPoint().y);
                     shapeRenderer.line(cell.getRightButtomPoint().x, cell.getRightButtomPoint().y, cell.getRightTopPoint().x, cell.getRightTopPoint().y);
                 }
             }
 
-            //障害物
-            shapeRenderer.setColor(Color.GRAY);
-            for (PotentialCell cell : Parameter.obstacle.getObstacleCell()) {
-                shapeRenderer.rect(cell.getLeftButtomPoint().x,cell.getLeftButtomPoint().y,cell.getInterval(),cell.getInterval());
-            }
+//            //障害物
+//            shapeRenderer.setColor(Color.GRAY);
+//            for (PotentialCell cell : Parameter.obstacle.getObstacleCell()) {
+//                shapeRenderer.rect(cell.getLeftButtomPoint().x,cell.getLeftButtomPoint().y,cell.getInterval(),cell.getInterval());
+//            }
         }
         shapeRenderer.end();
 

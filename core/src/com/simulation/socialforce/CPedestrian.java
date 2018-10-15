@@ -1,16 +1,14 @@
 package com.simulation.socialforce;
 
-import javax.vecmath.Tuple2f;
 import javax.vecmath.Vector2f;
-import java.lang.reflect.Array;
 import java.util.*;
 
-import Obstacle.Obstacle;
+import com.simulation.Potential.Obstacle.Obstacle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.simulation.Potential.PotentialCell;
-import com.simulation.Potential.PotentialCells;
+import com.simulation.Potential.PotentialManager;
+import com.simulation.Potential.PotentialMap;
 
 import static java.lang.Math.*;
 
@@ -35,8 +33,8 @@ public class CPedestrian implements IPedestrian {
     private CPedestrian myleader;
     private ArrayList<CPedestrian> myfollower;
 
-    private PotentialCells envPotentials;
-    private PotentialCells myPotentialMap;
+    private PotentialMap envPotentials;
+    private PotentialMap myPotentialMap;
 
 
     public CPedestrian(SocialForceModel p_env, boolean isExitInfo, final Vector2f p_position, final float p_speed, Vector2f p_goal, Sprite sprites) {
@@ -55,13 +53,13 @@ public class CPedestrian implements IPedestrian {
         stateTag = "";
         included = false;
         myfollower = new ArrayList<>();
-        envPotentials = Parameter.potentialCells;
-        myPotentialMap = new PotentialCells(Parameter.scale, Parameter.CELL_INTERVAL, Parameter.MAXPOTENTIAL);
+        envPotentials = Parameter.potentialMap;
+        myPotentialMap = new PotentialMap(Parameter.scale, Parameter.CELL_INTERVAL, Parameter.MAXPOTENTIAL);
         //fitPotential();
-        //myPotentialMap = Parameter.potentialCells;
+        //myPotentialMap = Parameter.potentialMap;
     }
 
-    public PotentialCells getMyPotentialMap() {
+    public PotentialMap getMyPotentialMap() {
         return myPotentialMap;
     }
 
@@ -469,75 +467,44 @@ public class CPedestrian implements IPedestrian {
         return judgeIntersected(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
     }
 
-    public boolean rectjudgeIntersected(Rect rect) {
-        //LeftLine
-        if (judgeIntersected(this.m_position, this.m_goal, rect.getLeftButtom(), rect.getLeftTop())) {
-            return true;
-        }
-        //RightLine
-        if (judgeIntersected(this.m_position, this.m_goal, rect.getRightButtom(), rect.getRightTop())) {
-            return true;
-        }
-        //ButtomLine
-        if (judgeIntersected(this.m_position, this.m_goal, rect.getLeftButtom(), rect.getRightButtom())) {
-            return true;
-        }
-        //TopLine
-        if (judgeIntersected(this.m_position, this.m_goal, rect.getLeftTop(), rect.getRightTop())) {
-            return true;
-        } else return false;
-    }
-
-    public boolean rectjudgeIntersected(Vector2f vec, Rect rect) {
-        //LeftLine
-        if (judgeIntersected(vec, this.m_goal, rect.getLeftButtom(), rect.getLeftTop())) {
-            return true;
-        }
-        //RightLine
-        if (judgeIntersected(vec, this.m_goal, rect.getRightButtom(), rect.getRightTop())) {
-            return true;
-        }
-        //ButtomLine
-        if (judgeIntersected(vec, this.m_goal, rect.getLeftButtom(), rect.getRightButtom())) {
-            return true;
-        }
-        //TopLine
-        if (judgeIntersected(vec, this.m_goal, rect.getLeftTop(), rect.getRightTop())) {
-            return true;
-        } else return false;
-    }
-
-    public void setObstaclePotential(){
-        ArrayList<Obstacle> obstacles = envPotentials.getObstacles();
-        for (Obstacle obstacle : obstacles) {
-            for(PotentialCell obstaclePotentialCell : obstacle.getObstacleCell()){
-                Vector2f index = envPotentials.getMatrixNumber(obstaclePotentialCell);
-                myPotentialMap.getPotentialCell(((int) index.x), ((int) index.y)).setObstaclePotential(obstaclePotentialCell.getPotential());
-            }
-        }
-    }
 
 
-    public void setGoalPotential(){
-        for (PotentialCell potentialCell : myPotentialMap.getPotentialCells()) {
-            float distance;
-            Vector2f tmpGoal = new Vector2f(Parameter.exitVec.get(0));
-            float nomalize = getDistance(0, 0,Parameter.scale.x, Parameter.scale.y);
-            //distance = getDistance(m_goal, potentialCell.getCenterPoint());
-            distance = getDistance(tmpGoal, potentialCell.getCenterPoint());
-            distance = distance / nomalize;
-            potentialCell.setGoalPotential(distance-1);
-        }
-    }
+//    public void setObstaclePotential(){
+//        //managerにここのenvpotentialの値を教えてもう
+//        //自分のポテンシャルマップを渡して新しいポテンシャルマップにしてもらう
+//        myPotentialMap.
+//        ArrayList<Obstacle> obstacles = envPotentials.getObstacles();
+//        for (Obstacle obstacle : obstacles) {
+//            for(PotentialCell obstaclePotentialCell : obstacle.getObstacleCell()){
+//                Vector2f index = envPotentials.getMatrixNumber(obstaclePotentialCell);
+//                myPotentialMap.getPotentialCell(((int) index.x), ((int) index.y)).setObstaclePotential(obstaclePotentialCell.getPotential());
+//            }
+//        }
+//    }
+//
+//
+//    public void setGoalPotential(){
+//        for (PotentialCell potentialCell : myPotentialMap.getPotentialCells()) {
+//            float distance;
+//            Vector2f tmpGoal = new Vector2f(Parameter.exitVec.get(0));
+//            float nomalize = getDistance(0, 0,Parameter.scale.x, Parameter.scale.y);
+//            //distance = getDistance(m_goal, potentialCell.getCenterPoint());
+//            distance = getDistance(tmpGoal, potentialCell.getCenterPoint());
+//            distance = distance / nomalize;
+//            potentialCell.setGoalPotential(distance-1);
+//        }
+//    }
 
 
     public void matrixSetCell(){
-        setObstaclePotential();
-        setGoalPotential();
+        //setObstaclePotential();
+        PotentialManager.setObstacleMap(this);
+        //setGoalPotential();
+        PotentialManager.setGoalPotentialMap(this);
         ArrayList<ArrayList<PotentialCell>> matrixCells = myPotentialMap.getMatrixPotentialCells();
         PotentialCell posCell = myPotentialMap.getPotentialCell(m_position);
         Vector2f number = myPotentialMap.getMatrixNumber(posCell);
-        System.out.println("pos number = " + number);
+        //System.out.println("pos number = " + number);
         Map<Float, PotentialCell> potentialMap = new HashMap<>();
         int range = 1;
         for (int i = (int)number.x - range; i < (int)number.x + range; i++) {
@@ -562,7 +529,7 @@ public class CPedestrian implements IPedestrian {
         if(tmpCell == null){
             System.out.println("TMPCELL = NULL");
         }
-        System.out.println("goalPosCell Number = " + myPotentialMap.getMatrixNumber(tmpCell));
+        //System.out.println("goalPosCell Number = " + myPotentialMap.getMatrixNumber(tmpCell));
         m_goal = tmpCell.getCenterPoint();
     }
 

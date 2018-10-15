@@ -1,9 +1,8 @@
 package com.simulation.Potential;
 
-import com.simulation.Cell.Cell;
+import com.simulation.Potential.Cell.Cell;
 
 import javax.vecmath.Vector2f;
-import java.util.ArrayList;
 
 public class PotentialCell extends Cell {
     float maxPotential;

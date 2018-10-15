@@ -1,7 +1,8 @@
 package com.simulation.socialforce;
 
-import Obstacle.Obstacle;
-import com.simulation.Potential.PotentialCells;
+import com.simulation.Potential.Obstacle.Obstacle;
+import com.simulation.Potential.PotentialManager;
+import com.simulation.Potential.PotentialMap;
 
 import javax.vecmath.Vector2f;
 import java.util.ArrayList;
@@ -11,9 +12,9 @@ public class Parameter {
     public String IfcModelPath = "/Users/rys9469/Documents/build_data/10-20room.ifc";
     public static final Vector2f scale = new Vector2f(800 * 2, 480 * 2);
     public static final int STEPINTERVAL = 60;//step60 ＝ 1second
-    public static final int CELL_INTERVAL = 30;
+    public static final int CELL_INTERVAL = 20;
     public static final int MAXPOTENTIAL = 5;
-    public static final int initPedNum = 0;
+    public static final int initPedNum = 50;
     public static final int goalPed = 20;
     public static final float judgeFollowNum = 5;
     public static final float judgeFollowNum2 = 1;
@@ -23,16 +24,13 @@ public class Parameter {
     public static final float view_phi_theta = 120;
     public static final float view_dmax = 400;
 
-    public static PotentialCells potentialCells = new PotentialCells(scale, CELL_INTERVAL, MAXPOTENTIAL);
+    public static PotentialMap potentialMap = new PotentialMap(scale, CELL_INTERVAL, MAXPOTENTIAL);
     public static ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(60, 40)));
     //public static final ArrayList<Vector2f> exitVec = new ArrayList<>(Arrays.asList(new Vector2f(600, 40)));
 
 
-    public static final Obstacle obstacle = new Obstacle(potentialCells,400,400,300,300);
+    public PotentialManager potentialManager = new PotentialManager();
     public static final float VALUEOBSTACLEPOTENTIAL = 9;
-    public static final Rect rect = new Rect(420, 200, 300, 100);
-    public static final ArrayList<Rect> arrayRect = new ArrayList<>();
-    //public static final ArrayList<Rect> arrayRect = new ArrayList<>(Arrays.asList(rect));
 
     public static final CStatic wallDownLine = new CStatic(100, 10, 1500, 10);
     public static final CStatic wallUpLine = new CStatic(100, 910, 1500, 910);
