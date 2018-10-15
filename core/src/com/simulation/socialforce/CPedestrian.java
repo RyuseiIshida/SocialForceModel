@@ -465,36 +465,35 @@ public class CPedestrian implements IPedestrian {
 
 
 
-//    public void setObstaclePotential(){
-//        //managerにここのenvpotentialの値を教えてもう
-//        //自分のポテンシャルマップを渡して新しいポテンシャルマップにしてもらう
-//        myPotentialMap.
-//        ArrayList<Obstacle> obstacles = envPotentials.getObstacles();
-//        for (Obstacle obstacle : obstacles) {
-//            for(PotentialCell obstaclePotentialCell : obstacle.getObstacleCell()){
-//                Vector2f index = envPotentials.getMatrixNumber(obstaclePotentialCell);
-//                myPotentialMap.getPotentialCell(((int) index.x), ((int) index.y)).setObstaclePotential(obstaclePotentialCell.getPotential());
-//            }
-//        }
-//    }
-//
-//
-    public void setGoalPotential(){
-        for (PotentialCell potentialCell : myPotentialMap.getPotentialCells()) {
-            float distance;
-            Vector2f tmpGoal = new Vector2f(Parameter.exitVec.get(0));
-            float nomalize = getDistance(0, 0,Parameter.scale.x, Parameter.scale.y);
-            //distance = getDistance(m_goal, potentialCell.getCenterPoint());
-            distance = getDistance(tmpGoal, potentialCell.getCenterPoint());
-            distance = distance / nomalize;
-            potentialCell.setGoalPotential(distance-1);
+    public void setObstaclePotential(){
+        ArrayList<Obstacle> obstacles = PotentialManager.getObstacles();
+        for (Obstacle obstacle : obstacles) {
+            for(PotentialCell obstaclePotentialCell : obstacle.getObstacleCellMap()){
+                Vector2f index = Parameter.potentialMap.getMatrixNumber(obstaclePotentialCell);
+                myPotentialMap.getPotentialCell(((int) index.x), ((int) index.y)).setObstaclePotential(obstaclePotentialCell.getPotential());
+            }
         }
     }
 
 
+//
+
+//    public void setGoalPotential(){
+//        for (PotentialCell potentialCell : myPotentialMap.getPotentialCells()) {
+//            float distance;
+//            Vector2f tmpGoal = new Vector2f(Parameter.exitVec.get(0));
+//            float nomalize = getDistance(0, 0,Parameter.scale.x, Parameter.scale.y);
+//            //distance = getDistance(m_goal, potentialCell.getCenterPoint());
+//            distance = getDistance(tmpGoal, potentialCell.getCenterPoint());
+//            distance = distance / nomalize;
+//            potentialCell.setGoalPotential(distance-1);
+//        }
+//    }
+
+
     public void matrixSetCell(){
-        //setObstaclePotential();
-        PotentialManager.setObstacleMap(this);
+        setObstaclePotential();
+        //PotentialManager.setObstacleMap(this);
         //setGoalPotential();
         PotentialManager.setGoalPotentialMap(this);
         ArrayList<ArrayList<PotentialCell>> matrixCells = myPotentialMap.getMatrixPotentialCells();

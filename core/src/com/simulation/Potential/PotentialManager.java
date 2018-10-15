@@ -34,10 +34,16 @@ public class PotentialManager {
 
     public static void setObstacleMap(CPedestrian ped){
         PotentialMap agentMap =  ped.getMyPotentialMap();
-        for (PotentialCell potentialCell : agentMap.getPotentialCells()) {
-            Vector2f matrixNumber = agentMap.getMatrixNumber(potentialCell);
-            float value = envPotentialMap.getPotentialCell((int)matrixNumber.x, (int)matrixNumber.y).getObstaclePotential();
-            potentialCell.setObstaclePotential(value);
+//        for (PotentialCell potentialCell : agentMap.getPotentialCells()) {
+//            Vector2f matrixNumber = agentMap.getMatrixNumber(potentialCell);
+//            float value = envPotentialMap.getPotentialCell((int)matrixNumber.x, (int)matrixNumber.y).getObstaclePotential();
+//            potentialCell.setObstaclePotential(value);
+//        }
+        for (Obstacle obstacle : obstacles) {
+            for (PotentialCell potentialCell : obstacle.getObstacleCellMap()) {
+                Vector2f matrixNumber = envPotentialMap.getMatrixNumber(potentialCell);
+                ped.getMyPotentialMap().getPotentialCell(((int) matrixNumber.x), ((int) matrixNumber.y)).setObstaclePotential(potentialCell.getPotential());
+            }
         }
     }
 

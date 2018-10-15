@@ -91,9 +91,9 @@ public class PotentialMap {
             }
             column++;
         }
-        if(matrixNumber == null){
-            System.out.println("getMatrixNumber == NUll");
-        }
+//        if(matrixNumber == null){
+//            System.out.println("getMatrixNumber == NUll");
+//        }
         return matrixNumber;
     }
 
