@@ -15,24 +15,27 @@ public class PotentialCells {
     ArrayList<Obstacle> obstacles;
     Vector2f scale;
     float maxPotential;
-    int interval;
+    int cellInterval;
     int row;
     int column;
 
-    public PotentialCells(Vector2f scale, int interval, float maxPotential) {
+    public PotentialCells(Vector2f scale, int cellInterval, float maxPotential) {
         potentialCells = new ArrayList<>();
         matrixPotentialCells = new ArrayList<>();
         obstacles = new ArrayList<>();
         this.maxPotential = maxPotential;
         this.scale = scale;
-        this.interval = interval;
+        this.cellInterval = cellInterval;
+        initCell();
+    }
 
+    public void initCell(){
         column = 0;
-        for (int i = 0; i <= scale.x; i += interval) {
+        for (int i = 0; i <= scale.x; i += cellInterval) {
             ArrayList<PotentialCell> array = new ArrayList<>();
             row = 0;
-            for (int j = 0; j <= scale.y; j += interval) {
-                PotentialCell cell = new PotentialCell(interval, new Vector2f(i, j), maxPotential);
+            for (int j = 0; j <= scale.y; j += cellInterval) {
+                PotentialCell cell = new PotentialCell(cellInterval, new Vector2f(i, j), maxPotential);
                 potentialCells.add(cell);
                 array.add(cell);
                 row++;
@@ -58,27 +61,6 @@ public class PotentialCells {
         return matrixPotentialCells;
     }
 
-    public Vector2f getScale() {
-        return scale;
-    }
-
-    public float getMaxPotential() {
-        return maxPotential;
-    }
-
-    public int getInterval() {
-        return interval;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public int getColumn() {
-        return column;
-    }
-
-
     public PotentialCell getPotentialCell(Vector2f targetPoint) {
         PotentialCell matchPotentialCell = null;
 
@@ -88,7 +70,9 @@ public class PotentialCells {
                 break;
             }
         }
-
+        if(matchPotentialCell == null){
+            System.out.println("getPotentialCell = NULL");
+        }
         return matchPotentialCell;
     }
 
@@ -99,7 +83,14 @@ public class PotentialCells {
                 matchPotentialCell = potentialCell;
             }
         }
+        if(matchPotentialCell == null){
+            System.out.println("getPotentialCell = NULL");
+        }
         return matchPotentialCell;
+    }
+
+    public PotentialCell getPotentialCell(int i, int j){
+        return matrixPotentialCells.get(i).get(j);
     }
 
     public Vector2f getMatrixNumber(PotentialCell potentialCell){
@@ -116,145 +107,10 @@ public class PotentialCells {
             }
             column++;
         }
+        if(matrixNumber == null){
+            System.out.println("getMatrixNumber == NUll");
+        }
         return matrixNumber;
-    }
-
-    public PotentialCell getLeftPotentialCell(PotentialCell targetCell) {
-        Vector2f leftButtomPoint = targetCell.getLeftButtomPoint();
-        Vector2f leftTopPoint = targetCell.getLeftTopPoint();
-        PotentialCell matchPotentialCell = null;
-        for (PotentialCell potentialCell : potentialCells) {
-            if (leftButtomPoint.equals(potentialCell.getRightButtomPoint())
-                    && leftTopPoint.equals(potentialCell.getRightTopPoint())) {
-                matchPotentialCell = potentialCell;
-            }
-        }
-
-        return matchPotentialCell;
-    }
-
-    public PotentialCell getRightPotentialCell(PotentialCell targetCell) {
-        Vector2f rightButtomPoint = targetCell.getRightButtomPoint();
-        Vector2f rightTopPoint = targetCell.getRightTopPoint();
-        PotentialCell matchPotentialCell = null;
-        for (PotentialCell potentialCell : potentialCells) {
-            if (rightButtomPoint.equals(potentialCell.getLeftButtomPoint())
-                    && rightTopPoint.equals(potentialCell.getLeftTopPoint())) {
-                matchPotentialCell = potentialCell;
-            }
-        }
-
-        return matchPotentialCell;
-    }
-
-    public PotentialCell getUpPotentialCell(PotentialCell targetCell) {
-        ListIterator<PotentialCell> iterator = potentialCells.listIterator();
-        PotentialCell matchCell = null;
-        while (iterator.hasNext()) {
-            PotentialCell next = iterator.next();
-            if (next.equals(targetCell)) {
-                matchCell = iterator.next();
-                break;
-            }
-        }
-
-        return matchCell;
-    }
-
-    public PotentialCell getDownPotentialCell(PotentialCell targetCell) {
-        PotentialCell matchPotentialCell = null;
-        Vector2f leftButtomPoint = targetCell.getLeftButtomPoint();
-        Vector2f rightButtomPoint = targetCell.getRightButtomPoint();
-        for (PotentialCell potentialCell : potentialCells) {
-            if (leftButtomPoint.equals(potentialCell.getLeftTopPoint()) && rightButtomPoint.equals(potentialCell.getRightTopPoint())) {
-                matchPotentialCell = potentialCell;
-            }
-        }
-
-        return matchPotentialCell;
-    }
-
-    public PotentialCell getLeftButtomPotentialCell(PotentialCell targetCell) {
-        Vector2f leftButtomPoint = targetCell.getLeftButtomPoint();
-        PotentialCell matchPotentialCell = null;
-
-        for (PotentialCell potentialCell : potentialCells) {
-            if (leftButtomPoint.equals(potentialCell.getRightTopPoint())) {
-                matchPotentialCell = potentialCell;
-            }
-        }
-
-        return matchPotentialCell;
-    }
-
-    public PotentialCell getLeftTopPotentialCell(PotentialCell targetCell) {
-        Vector2f leftTopPoint = targetCell.getLeftTopPoint();
-        PotentialCell matchPotentialCell = null;
-
-        for (PotentialCell potentialCell : potentialCells) {
-            if (leftTopPoint.equals(potentialCell.getRightButtomPoint())) {
-                matchPotentialCell = potentialCell;
-            }
-        }
-
-        return matchPotentialCell;
-    }
-
-    public PotentialCell getRightButtomPotentialCell(PotentialCell targetCell) {
-        Vector2f rightButtomPoint = targetCell.getRightButtomPoint();
-        PotentialCell matchPotentialCell = null;
-
-        for (PotentialCell potentialCell : potentialCells) {
-            if (rightButtomPoint.equals(potentialCell.getLeftTopPoint())) {
-                matchPotentialCell = potentialCell;
-            }
-        }
-
-        return matchPotentialCell;
-    }
-
-    public PotentialCell getRightTopPotentialCell(PotentialCell targetCell) {
-        Vector2f rightTopPoint = targetCell.getRightTopPoint();
-        PotentialCell matchPotentialCell = null;
-
-        for (PotentialCell potentialCell : potentialCells) {
-            if (rightTopPoint.equals(potentialCell.getLeftButtomPoint())) {
-                matchPotentialCell = potentialCell;
-            }
-        }
-
-        return matchPotentialCell;
-    }
-
-    public ArrayList getNearPotentialCells(Vector2f targetPoint) {
-        ArrayList<PotentialCell> potentialCells = new ArrayList<>();
-        PotentialCell oneSelfCell = getPotentialCell(targetPoint);
-
-        potentialCells.add(getLeftButtomPotentialCell(oneSelfCell));
-        potentialCells.add(getLeftPotentialCell(oneSelfCell));
-        potentialCells.add(getLeftTopPotentialCell(oneSelfCell));
-        potentialCells.add(getDownPotentialCell(oneSelfCell));
-        potentialCells.add(getUpPotentialCell(oneSelfCell));
-        potentialCells.add(getRightButtomPotentialCell(oneSelfCell));
-        potentialCells.add(getRightPotentialCell(oneSelfCell));
-        potentialCells.add(getRightTopPotentialCell(oneSelfCell));
-
-        return potentialCells;
-    }
-
-    public ArrayList getNearPotentialCells(PotentialCell oneSelfCell) {
-        ArrayList<PotentialCell> potentialCells = new ArrayList<>();
-
-        potentialCells.add(getLeftButtomPotentialCell(oneSelfCell));
-        potentialCells.add(getLeftPotentialCell(oneSelfCell));
-        potentialCells.add(getLeftTopPotentialCell(oneSelfCell));
-        potentialCells.add(getDownPotentialCell(oneSelfCell));
-        potentialCells.add(getUpPotentialCell(oneSelfCell));
-        potentialCells.add(getRightButtomPotentialCell(oneSelfCell));
-        potentialCells.add(getRightPotentialCell(oneSelfCell));
-        potentialCells.add(getRightTopPotentialCell(oneSelfCell));
-
-        return potentialCells;
     }
 
     public float totalPotential(PotentialCell targetCell){
@@ -270,20 +126,4 @@ public class PotentialCells {
         totalPotential = obstaclePotential + agentPotential;
         return totalPotential;
     }
-
-    public boolean isObstacles(PotentialCell targetCell){
-        for (Obstacle obstacle : obstacles) {
-            for(PotentialCell potentialCell : obstacle.getObstacleCell()){
-                if(targetCell.equals(potentialCell)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-
-
-
 }

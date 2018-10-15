@@ -176,13 +176,13 @@ public class SocialForceModel extends ApplicationAdapter {
 //
 //            });
 //
-            for (CPedestrian cPedestrian : m_pedestrian) {
-                for (PotentialCell potentialCell : cPedestrian.getMyPotentialMap().getPotentialCells()) {
-                    float poqtential = potentialCell.getPotential();
-                    //bitmapFont.draw(batch, String.valueOf(potential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
-                    bitmapFont.draw(batch, String.format("%.2f",poqtential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
-                }
-            }
+//            for (CPedestrian cPedestrian : m_pedestrian) {
+//                for (PotentialCell potentialCell : cPedestrian.getMyPotentialMap().getPotentialCells()) {
+//                    float poqtential = potentialCell.getPotential();
+//                    //bitmapFont.draw(batch, String.valueOf(potential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
+//                    bitmapFont.draw(batch, String.format("%.2f",poqtential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
+//                }
+//            }
 
 
 //            for (PotentialCell potentialCell : Parameter.potentialCells.getPotentialCells()) {

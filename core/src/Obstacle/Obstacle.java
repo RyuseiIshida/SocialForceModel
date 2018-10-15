@@ -2,6 +2,7 @@ package Obstacle;
 
 import com.simulation.Potential.PotentialCell;
 import com.simulation.Potential.PotentialCells;
+import com.simulation.socialforce.Parameter;
 
 import javax.vecmath.Vector2f;
 import java.util.ArrayList;
@@ -41,18 +42,13 @@ public class Obstacle {
     }
 
     public void setShapeCircle(Vector2f pos, int w, int h) {
-
     }
 
     public void setPotential(){
         for (PotentialCell potentialCell : obstacleCell) {
-            potentialCell.setPotencialObstacle();
+            potentialCell.setObstaclePotential(Parameter.VALUEOBSTACLEPOTENTIAL);
         }
         potentialCells.setObstacle(this);
-    }
-
-    public PotentialCells getPotentialCells() {
-        return potentialCells;
     }
 
     public ArrayList<PotentialCell> getObstacleCell() {

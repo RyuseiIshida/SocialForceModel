@@ -5,6 +5,7 @@ import javax.vecmath.Vector2f;
 import java.lang.reflect.Array;
 import java.util.*;
 
+import Obstacle.Obstacle;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -168,7 +169,7 @@ public class CPedestrian implements IPedestrian {
 //        boidVector.add(rule1f,rule2f);
 //        boidVector.add(boidVector,rule3f);d
 //        l_temp.add(l_temp, boidVector);
-        l_temp.add(l_temp, rule1f);
+        //l_temp.add(l_temp, rule1f);
 
         Vector2f v = CVector.truncate(CVector.add(l_temp, l_repulsetoWall), m_maxforce);
         return v;
@@ -267,7 +268,7 @@ public class CPedestrian implements IPedestrian {
         final float l_check = CVector.sub(this.getGoalposition(), this.getPosition()).length(); //ゴールとの距離
         //final float l_check = CVector.sub( this.m_goals.get(0), this.getPosition() ).length(); //ゴールとの距離
 
-        if (l_check <= this.getM_radius() * 0.8) //ゴールについたかの判断
+        if (l_check <= this.getM_radius() * 0.1) //ゴールについたかの判断
         {
             this.m_velocity = new Vector2f(0, 0); //スピードベクトルを0にする
             if (this.m_goals.size() > 0) //もしゴール集合が残っているなら
@@ -506,62 +507,18 @@ public class CPedestrian implements IPedestrian {
         } else return false;
     }
 
-
-    public Vector2f rectMinDistancePoint(Rect rect) {
-        Map<Integer, Vector2f> RectdistanceMap = new Hashtable<>();
-        int minDistance = 0;
-        RectdistanceMap.put(this.getDistance(this.m_position, rect.getLeftButtom()), rect.getLeftButtom());
-        RectdistanceMap.put(this.getDistance(this.m_position, rect.getLeftTop()), rect.getLeftTop());
-        RectdistanceMap.put(this.getDistance(this.m_position, rect.getRightButtom()), rect.getRightButtom());
-        RectdistanceMap.put(this.getDistance(this.m_position, rect.getRightTop()), rect.getRightTop());
-        for (Integer distance : RectdistanceMap.keySet()) {
-            if (minDistance == 0) {
-                minDistance = distance;
+    public void setObstaclePotential(){
+        ArrayList<Obstacle> obstacles = envPotentials.getObstacles();
+        for (Obstacle obstacle : obstacles) {
+            for(PotentialCell obstaclePotentialCell : obstacle.getObstacleCell()){
+                Vector2f index = envPotentials.getMatrixNumber(obstaclePotentialCell);
+                myPotentialMap.getPotentialCell(((int) index.x), ((int) index.y)).setObstaclePotential(obstaclePotentialCell.getPotential());
             }
-            if (minDistance < distance) {
-                minDistance = distance;
-            }
-        }
-        return RectdistanceMap.get(minDistance);
-    }
-
-    public Vector2f pedObstaclePassPoint(Rect rect, Vector2f vec) {
-        int x = 50;
-        int y = 50;
-        Vector2f tmpvec;
-        if (rect.getLeftButtom().equals(vec)) {
-            tmpvec = rect.getLeftButtom();
-            return new Vector2f(tmpvec.x - x, tmpvec.y - y);
-        } else if (rect.getLeftTop().equals(vec)) {
-            tmpvec = rect.getLeftTop();
-            return new Vector2f(tmpvec.x - x, tmpvec.y + y);
-        } else if (rect.getRightButtom().equals(vec)) {
-            tmpvec = rect.getRightButtom();
-            return new Vector2f(tmpvec.x + x, tmpvec.y - y);
-        } else if (rect.getRightTop().equals(vec)) {
-            tmpvec = rect.getRightTop();
-            return new Vector2f(tmpvec.x + x, tmpvec.y + y);
-        } else {
-            System.out.println(vec);
-            System.out.println("error");
-            return null;
         }
     }
 
-    public void checkObstacle(){
-        //agentの目的地へ向かうベクトル線が障害物線に重なるか判定
-        for (Rect rect : parameter.arrayRect) {
-            //交差判定
-            if (rectjudgeIntersected(rect)) {
-                //System.out.println(potentialCells.getPotentialCell(rect.getLeftButtom()).getCellPoints());
-            //    ArrayList<PotentialCell> potentialCells = new ArrayList<>();
-            }
-        }
 
-
-    }
-
-    public void subPotentialGoal(){
+    public void setGoalPotential(){
         for (PotentialCell potentialCell : myPotentialMap.getPotentialCells()) {
             float distance;
             Vector2f tmpGoal = new Vector2f(Parameter.exitVec.get(0));
@@ -569,29 +526,24 @@ public class CPedestrian implements IPedestrian {
             //distance = getDistance(m_goal, potentialCell.getCenterPoint());
             distance = getDistance(tmpGoal, potentialCell.getCenterPoint());
             distance = distance / nomalize;
-            potentialCell.setPotentialGoal(distance-1);
+            potentialCell.setGoalPotential(distance-1);
         }
     }
 
-    public void fitPotential(){
-        for (PotentialCell envPotentialCell : envPotentials.getPotentialCells()) {
-            for (PotentialCell myPotentialCell : myPotentialMap.getPotentialCells()) {
-                myPotentialCell.addTotalPotential(envPotentialCell.getPotential());
-            }
-        }
-    }
 
     public void matrixSetCell(){
+        setObstaclePotential();
+        setGoalPotential();
         ArrayList<ArrayList<PotentialCell>> matrixCells = myPotentialMap.getMatrixPotentialCells();
-        //this.getPedestrianDegree();
         PotentialCell posCell = myPotentialMap.getPotentialCell(m_position);
         Vector2f number = myPotentialMap.getMatrixNumber(posCell);
         System.out.println("pos number = " + number);
         Map<Float, PotentialCell> potentialMap = new HashMap<>();
-        //とりあえず２マス分で
-        int range = 2;
+        int range = 1;
         for (int i = (int)number.x - range; i < (int)number.x + range; i++) {
+            i = i < 0 ? 0 : i;
             for(int j = (int)number.y - range; j < (int)number.y + range; j++){
+                j = j < 0 ? 0 : j;
                 potentialMap.put(matrixCells.get(i).get(j).getPotential(),matrixCells.get(i).get(j));
             }
         }
@@ -607,72 +559,17 @@ public class CPedestrian implements IPedestrian {
                 tmpCell = cellEntry.getValue();
             }
         }
-
-        //まず自分の位置からセルまでの方向を算出;
-        //float tmpx = m_position.x - tmpCell.getCenterPoint().x;
-        //float tmpy = m_position.y - tmpCell.getCenterPoint().y;
-        //System.out.println(tmpCell.getCenterPoint());
+        if(tmpCell == null){
+            System.out.println("TMPCELL = NULL");
+        }
         System.out.println("goalPosCell Number = " + myPotentialMap.getMatrixNumber(tmpCell));
         m_goal = tmpCell.getCenterPoint();
-
     }
 
     public void checkPotential(){
-        subPotentialGoal();
-        PotentialCell posCell = myPotentialMap.getPotentialCell(m_position);
-        float P = 5f;
-        Vector2f pv = new Vector2f(m_velocity.x * P + m_position.x, m_velocity.y  * P + m_position.y);
-        PotentialCell velocityCell = myPotentialMap.getPotentialCell(pv);
-
-//        PotentialCell leftCell = myPotentialMap.getLeftPotentialCell(posCell);
-//        PotentialCell leftButtomCell = myPotentialMap.getLeftButtomPotentialCell(posCell);
-//        PotentialCell leftTopCell = myPotentialMap.getLeftTopPotentialCell(posCell);
-//        PotentialCell rightCell = myPotentialMap.getRightPotentialCell(posCell);
-//        PotentialCell rightButtomCell = myPotentialMap.getRightButtomPotentialCell(posCell);
-//        PotentialCell rightTopCell = myPotentialMap.getRightTopPotentialCell(posCell);
-//        PotentialCell topCell = myPotentialMap.getUpPotentialCell(posCell);
-//        PotentialCell buttomCell = myPotentialMap.getDownPotentialCell(posCell);
-//        ArrayList<PotentialCell> nearCells = new ArrayList<>();
-//        nearCells.add(leftCell);
-//        nearCells.add(leftButtomCell);
-//        nearCells.add(leftTopCell);
-//        nearCells.add(rightCell);
-//        nearCells.add(rightButtomCell);
-//        nearCells.add(rightTopCell);
-//        nearCells.add(topCell);
-//        nearCells.add(buttomCell);
-//
-//        Map<Float,PotentialCell> potentialCellMap = new HashMap<>();
-//        for (PotentialCell nearCell : nearCells) {
-//            potentialCellMap.put(nearCell.getPotential(), nearCell);
-//        }
-//
-//        float tmp = 1000;
-//        PotentialCell tmpCell = null;
-//        for (Map.Entry<Float, PotentialCell> cellEntry : potentialCellMap.entrySet()) {
-//            if(tmp==1000){
-//                tmp = cellEntry.getKey();
-//                tmpCell = cellEntry.getValue();
-//            }
-//            if(tmp > cellEntry.getKey()){
-//                tmp = cellEntry.getKey();
-//                tmpCell = cellEntry.getValue();
-//            }
-//        }
-//        //まず自分の位置からセルまでの方向を算出;
-//        float tmpx = m_position.x - tmpCell.getCenterPoint().x;
-//        float tmpy = m_position.y - tmpCell.getCenterPoint().y;
-//        //System.out.println(tmpCell.getCenterPoint());
-//        m_goal = tmpCell.getCenterPoint();
         matrixSetCell();
     }
 
-    public void changeGoal(CPedestrian ped) {
-        float distance = getDistance(ped.getPosition().x, ped.getPosition().y, ped.getGoalposition().x, ped.getGoalposition().y);
-        if (distance > 30) {
-            // next();
-        }
-    }
 
     public float getGoalRadian() {
         double degree = this.getPedestrianDegree();

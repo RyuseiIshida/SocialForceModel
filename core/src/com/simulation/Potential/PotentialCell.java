@@ -7,63 +7,51 @@ import java.util.ArrayList;
 
 public class PotentialCell extends Cell {
     float maxPotential;
-    float potencialObstacle;
-    float potentialAgent;
-    float potentialGoal;
+    float obstaclePotential;
+    float agentPotential;
+    float goalPotential;
     float totalPotential;
     int interval;
-
-    ArrayList<Object> objPotential;
 
     public PotentialCell(int interval, Vector2f point,float maxPotential) {
         super(interval, point);
         this.maxPotential = maxPotential;
         this.interval = interval;
-        potencialObstacle = 0;
-        potentialAgent = 0;
-        potentialGoal = 0;
+        obstaclePotential = 0;
+        agentPotential = 0;
+        goalPotential = 0;
         totalPotential = 0;
-        objPotential = new ArrayList<>();
     }
 
-    public void setPotencialObstacle(){
-        potencialObstacle = maxPotential;
-        setTotalPotential();
+    public void setObstaclePotential(float value){
+        obstaclePotential = value;
     }
 
-    public void setPotentialAgent(){
-        potentialAgent = maxPotential;
-        setTotalPotential();
+    public void setAgentPotential(float value){
+        agentPotential = value;
     }
 
-    public void setPotentialGoal(float distance){
-        potentialGoal = distance;
-        setTotalPotential();
+    public void setGoalPotential(float value){
+        goalPotential = value;
     }
 
-    public void setTotalPotential() {
-        totalPotential = potencialObstacle + potentialAgent + potentialGoal;
-    }
-
-    public void addTotalPotential(float potential){
-        totalPotential += potential;
-    }
 
     public float getPotential(){
+        totalPotential = obstaclePotential + goalPotential + agentPotential;
+        //totalPotential = totalPotential > maxPotential ? maxPotential : totalPotential;
         return totalPotential;
-
     }
 
-    public float getPotencialObstacle() {
-        return potencialObstacle;
+    public float getObstaclePotential() {
+        return obstaclePotential;
     }
 
-    public float getPotencialPerson() {
-        return potentialAgent;
+    public float getAgentPotential() {
+        return agentPotential;
     }
 
-    public float getPotentialGoal() {
-        return potentialGoal;
+    public float getGoalPotential() {
+        return goalPotential;
     }
 
     public int getInterval() {
