@@ -33,7 +33,6 @@ public class CPedestrian implements IPedestrian {
     private CPedestrian myleader;
     private ArrayList<CPedestrian> myfollower;
 
-    private PotentialMap envPotentials;
     private PotentialMap myPotentialMap;
 
 
@@ -53,10 +52,7 @@ public class CPedestrian implements IPedestrian {
         stateTag = "";
         included = false;
         myfollower = new ArrayList<>();
-        envPotentials = Parameter.potentialMap;
         myPotentialMap = new PotentialMap(Parameter.scale, Parameter.CELL_INTERVAL, Parameter.MAXPOTENTIAL);
-        //fitPotential();
-        //myPotentialMap = Parameter.potentialMap;
     }
 
     public PotentialMap getMyPotentialMap() {
@@ -483,17 +479,17 @@ public class CPedestrian implements IPedestrian {
 //    }
 //
 //
-//    public void setGoalPotential(){
-//        for (PotentialCell potentialCell : myPotentialMap.getPotentialCells()) {
-//            float distance;
-//            Vector2f tmpGoal = new Vector2f(Parameter.exitVec.get(0));
-//            float nomalize = getDistance(0, 0,Parameter.scale.x, Parameter.scale.y);
-//            //distance = getDistance(m_goal, potentialCell.getCenterPoint());
-//            distance = getDistance(tmpGoal, potentialCell.getCenterPoint());
-//            distance = distance / nomalize;
-//            potentialCell.setGoalPotential(distance-1);
-//        }
-//    }
+    public void setGoalPotential(){
+        for (PotentialCell potentialCell : myPotentialMap.getPotentialCells()) {
+            float distance;
+            Vector2f tmpGoal = new Vector2f(Parameter.exitVec.get(0));
+            float nomalize = getDistance(0, 0,Parameter.scale.x, Parameter.scale.y);
+            //distance = getDistance(m_goal, potentialCell.getCenterPoint());
+            distance = getDistance(tmpGoal, potentialCell.getCenterPoint());
+            distance = distance / nomalize;
+            potentialCell.setGoalPotential(distance-1);
+        }
+    }
 
 
     public void matrixSetCell(){

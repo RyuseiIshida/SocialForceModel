@@ -12,7 +12,9 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.simulation.Potential.Obstacle.Obstacle;
 import com.simulation.Potential.PotentialCell;
+import com.simulation.Potential.PotentialManager;
 import com.simulation.ifcparser.IfcParser;
 
 import javax.vecmath.Vector2f;
@@ -249,11 +251,14 @@ public class SocialForceModel extends ApplicationAdapter {
                 }
             }
 
-//            //障害物
-//            shapeRenderer.setColor(Color.GRAY);
-//            for (PotentialCell cell : Parameter.obstacle.getObstacleCell()) {
-//                shapeRenderer.rect(cell.getLeftButtomPoint().x,cell.getLeftButtomPoint().y,cell.getInterval(),cell.getInterval());
-//            }
+            //障害物
+            shapeRenderer.setColor(Color.GRAY);
+            for (Obstacle obstacle : PotentialManager.getObstacles()) {
+                for (PotentialCell cell : obstacle.getObstacleCellMap()) {
+                    shapeRenderer.rect(cell.getLeftButtomPoint().x,cell.getLeftButtomPoint().y,cell.getInterval(),cell.getInterval());
+                }
+            }
+
         }
         shapeRenderer.end();
 

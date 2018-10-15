@@ -12,9 +12,9 @@ public class Parameter {
     public String IfcModelPath = "/Users/rys9469/Documents/build_data/10-20room.ifc";
     public static final Vector2f scale = new Vector2f(800 * 2, 480 * 2);
     public static final int STEPINTERVAL = 60;//step60 ＝ 1second
-    public static final int CELL_INTERVAL = 20;
+    public static final int CELL_INTERVAL = 30;
     public static final int MAXPOTENTIAL = 5;
-    public static final int initPedNum = 50;
+    public static final int initPedNum = 0;
     public static final int goalPed = 20;
     public static final float judgeFollowNum = 5;
     public static final float judgeFollowNum2 = 1;

@@ -35,6 +35,10 @@ public class Obstacle {
         }
     }
 
+    public ArrayList<PotentialCell> getObstacleCellMap() {
+        return obstacleCellMap;
+    }
+
     public void setShapeObstacle(int x, int y, int w, int h) {
         setShapeObstacle(new Vector2f(x, y), w, h);
     }

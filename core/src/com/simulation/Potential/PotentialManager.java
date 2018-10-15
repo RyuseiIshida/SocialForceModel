@@ -42,11 +42,15 @@ public class PotentialManager {
     }
 
     public static void setGoalPotentialMap(CPedestrian ped){
-        float distance = ped.getDistance(ped.getPosition(), ped.getGoalposition());
-        float nomalize = ped.getDistance(0, 0, scale.x, scale.y);
-        distance = distance / nomalize;
         for (PotentialCell potentialCell : ped.getMyPotentialMap().getPotentialCells()) {
-            potentialCell.setGoalPotential(distance - 1);
+            float distance;
+            Vector2f tmpGoal = new Vector2f(Parameter.exitVec.get(0));
+            //Vector2f tmpGoal = new Vector2f(ped.getGoalposition());
+            float nomalize = ped.getDistance(0, 0,Parameter.scale.x, Parameter.scale.y);
+            //distance = getDistance(m_goal, potentialCell.getCenterPoint());
+            distance = ped.getDistance(tmpGoal, potentialCell.getCenterPoint());
+            distance = distance / nomalize;
+            potentialCell.setGoalPotential(distance-1);
         }
     }
 
