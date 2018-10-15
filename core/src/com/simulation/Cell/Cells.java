@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Cells {
     private ArrayList<Cell> cells;
 
+
     public Cells(Vector2f scale, int cellInterval) {
         cells = new ArrayList<>();
         for (int i = 0; i <= scale.x; i += cellInterval) {
