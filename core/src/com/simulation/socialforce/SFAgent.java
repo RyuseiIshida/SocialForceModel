@@ -13,6 +13,7 @@ public class SFAgent{
     private SFVector closestWallPoint;
     //parameters
 
+
     private double b = 0.1;
     private double interactionFactor = 0.35;
     private double n = 2, n_prime = 3;
