@@ -178,9 +178,9 @@ public class SocialForceModel extends ApplicationAdapter {
 //
             for (CPedestrian cPedestrian : m_pedestrian) {
                 for (PotentialCell potentialCell : cPedestrian.getMyPotentialMap().getPotentialCells()) {
-                    float potential = potentialCell.getPotential();
+                    float poqtential = potentialCell.getPotential();
                     //bitmapFont.draw(batch, String.valueOf(potential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
-                    bitmapFont.draw(batch, String.format("%.2f",potential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
+                    bitmapFont.draw(batch, String.format("%.2f",poqtential), potentialCell.getCenterPoint().x, potentialCell.getCenterPoint().y);
                 }
             }
 
@@ -282,6 +282,11 @@ public class SocialForceModel extends ApplicationAdapter {
                 shapeRenderer.setColor(new Color(0, 1, 0, 0.1f));
                 shapeRenderer.arc((float) agent.getPosition().x, (float) agent.getPosition().y, parameter.view_dmax, goaltheta, parameter.view_phi_theta);
             }
+        }
+
+        for (CPedestrian cPedestrian : m_pedestrian) {
+            PotentialCell posCell = cPedestrian.getMyPotentialMap().getPotentialCell(cPedestrian.getPosition());
+            shapeRenderer.rect(posCell.getLeftButtomPoint().x, posCell.getLeftButtomPoint().y, Parameter.CELL_INTERVAL, Parameter.CELL_INTERVAL);
         }
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);

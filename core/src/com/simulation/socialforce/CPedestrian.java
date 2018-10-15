@@ -581,47 +581,23 @@ public class CPedestrian implements IPedestrian {
         }
     }
 
-    public void checkPotential(){
-        subPotentialGoal();
+    public void matrixSetCell(){
+        ArrayList<ArrayList<PotentialCell>> matrixCells = myPotentialMap.getMatrixPotentialCells();
+        //this.getPedestrianDegree();
         PotentialCell posCell = myPotentialMap.getPotentialCell(m_position);
-        float P = 5f;
-        Vector2f pv = new Vector2f(m_velocity.x * P + m_position.x, m_velocity.y  * P + m_position.y);
-        PotentialCell velocityCell = myPotentialMap.getPotentialCell(pv);
-
-//        PotentialCell leftCell = envPotentials.getLeftPotentialCell(posCell);
-//        PotentialCell leftButtomCell = envPotentials.getLeftButtomPotentialCell(posCell);
-//        PotentialCell leftTopCell = envPotentials.getLeftTopPotentialCell(posCell);
-//        PotentialCell rightCell = envPotentials.getRightPotentialCell(posCell);
-//        PotentialCell rightButtomCell = envPotentials.getRightButtomPotentialCell(posCell);
-//        PotentialCell rightTopCell = envPotentials.getRightTopPotentialCell(posCell);
-//        PotentialCell topCell = envPotentials.getUpPotentialCell(posCell);
-//        PotentialCell buttomCell = envPotentials.getDownPotentialCell(posCell);
-        PotentialCell leftCell = myPotentialMap.getLeftPotentialCell(posCell);
-        PotentialCell leftButtomCell = myPotentialMap.getLeftButtomPotentialCell(posCell);
-        PotentialCell leftTopCell = myPotentialMap.getLeftTopPotentialCell(posCell);
-        PotentialCell rightCell = myPotentialMap.getRightPotentialCell(posCell);
-        PotentialCell rightButtomCell = myPotentialMap.getRightButtomPotentialCell(posCell);
-        PotentialCell rightTopCell = myPotentialMap.getRightTopPotentialCell(posCell);
-        PotentialCell topCell = myPotentialMap.getUpPotentialCell(posCell);
-        PotentialCell buttomCell = myPotentialMap.getDownPotentialCell(posCell);
-        ArrayList<PotentialCell> nearCells = new ArrayList<>();
-        nearCells.add(leftCell);
-        nearCells.add(leftButtomCell);
-        nearCells.add(leftTopCell);
-        nearCells.add(rightCell);
-        nearCells.add(rightButtomCell);
-        nearCells.add(rightTopCell);
-        nearCells.add(topCell);
-        nearCells.add(buttomCell);
-
-        Map<Float,PotentialCell> potentialCellMap = new HashMap<>();
-        for (PotentialCell nearCell : nearCells) {
-            potentialCellMap.put(myPotentialMap.totalPotential(nearCell), nearCell);
+        Vector2f number = myPotentialMap.getMatrixNumber(posCell);
+        System.out.println("pos number = " + number);
+        Map<Float, PotentialCell> potentialMap = new HashMap<>();
+        //とりあえず２マス分で
+        int range = 2;
+        for (int i = (int)number.x - range; i < (int)number.x + range; i++) {
+            for(int j = (int)number.y - range; j < (int)number.y + range; j++){
+                potentialMap.put(matrixCells.get(i).get(j).getPotential(),matrixCells.get(i).get(j));
+            }
         }
-
         float tmp = 1000;
         PotentialCell tmpCell = null;
-        for (Map.Entry<Float, PotentialCell> cellEntry : potentialCellMap.entrySet()) {
+        for (Map.Entry<Float, PotentialCell> cellEntry : potentialMap.entrySet()) {
             if(tmp==1000){
                 tmp = cellEntry.getKey();
                 tmpCell = cellEntry.getValue();
@@ -631,11 +607,64 @@ public class CPedestrian implements IPedestrian {
                 tmpCell = cellEntry.getValue();
             }
         }
+
         //まず自分の位置からセルまでの方向を算出;
-        float tmpx = m_position.x - tmpCell.getCenterPoint().x;
-        float tmpy = m_position.y - tmpCell.getCenterPoint().y;
+        //float tmpx = m_position.x - tmpCell.getCenterPoint().x;
+        //float tmpy = m_position.y - tmpCell.getCenterPoint().y;
         //System.out.println(tmpCell.getCenterPoint());
+        System.out.println("goalPosCell Number = " + myPotentialMap.getMatrixNumber(tmpCell));
         m_goal = tmpCell.getCenterPoint();
+
+    }
+
+    public void checkPotential(){
+        subPotentialGoal();
+        PotentialCell posCell = myPotentialMap.getPotentialCell(m_position);
+        float P = 5f;
+        Vector2f pv = new Vector2f(m_velocity.x * P + m_position.x, m_velocity.y  * P + m_position.y);
+        PotentialCell velocityCell = myPotentialMap.getPotentialCell(pv);
+
+//        PotentialCell leftCell = myPotentialMap.getLeftPotentialCell(posCell);
+//        PotentialCell leftButtomCell = myPotentialMap.getLeftButtomPotentialCell(posCell);
+//        PotentialCell leftTopCell = myPotentialMap.getLeftTopPotentialCell(posCell);
+//        PotentialCell rightCell = myPotentialMap.getRightPotentialCell(posCell);
+//        PotentialCell rightButtomCell = myPotentialMap.getRightButtomPotentialCell(posCell);
+//        PotentialCell rightTopCell = myPotentialMap.getRightTopPotentialCell(posCell);
+//        PotentialCell topCell = myPotentialMap.getUpPotentialCell(posCell);
+//        PotentialCell buttomCell = myPotentialMap.getDownPotentialCell(posCell);
+//        ArrayList<PotentialCell> nearCells = new ArrayList<>();
+//        nearCells.add(leftCell);
+//        nearCells.add(leftButtomCell);
+//        nearCells.add(leftTopCell);
+//        nearCells.add(rightCell);
+//        nearCells.add(rightButtomCell);
+//        nearCells.add(rightTopCell);
+//        nearCells.add(topCell);
+//        nearCells.add(buttomCell);
+//
+//        Map<Float,PotentialCell> potentialCellMap = new HashMap<>();
+//        for (PotentialCell nearCell : nearCells) {
+//            potentialCellMap.put(nearCell.getPotential(), nearCell);
+//        }
+//
+//        float tmp = 1000;
+//        PotentialCell tmpCell = null;
+//        for (Map.Entry<Float, PotentialCell> cellEntry : potentialCellMap.entrySet()) {
+//            if(tmp==1000){
+//                tmp = cellEntry.getKey();
+//                tmpCell = cellEntry.getValue();
+//            }
+//            if(tmp > cellEntry.getKey()){
+//                tmp = cellEntry.getKey();
+//                tmpCell = cellEntry.getValue();
+//            }
+//        }
+//        //まず自分の位置からセルまでの方向を算出;
+//        float tmpx = m_position.x - tmpCell.getCenterPoint().x;
+//        float tmpy = m_position.y - tmpCell.getCenterPoint().y;
+//        //System.out.println(tmpCell.getCenterPoint());
+//        m_goal = tmpCell.getCenterPoint();
+        matrixSetCell();
     }
 
     public void changeGoal(CPedestrian ped) {
