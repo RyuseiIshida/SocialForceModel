@@ -459,42 +459,8 @@ public class CPedestrian implements IPedestrian {
         return tc * td < 0 && ta * tb < 0;
     }
 
-    public boolean judgeIntersected(Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4) {
-        return judgeIntersected(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
-    }
-
-
-
-    public void setObstaclePotential(){
-        ArrayList<Obstacle> obstacles = PotentialManager.getObstacles();
-        for (Obstacle obstacle : obstacles) {
-            for(PotentialCell obstaclePotentialCell : obstacle.getObstacleCellMap()){
-                Vector2f index = Parameter.potentialMap.getMatrixNumber(obstaclePotentialCell);
-                myPotentialMap.getPotentialCell(((int) index.x), ((int) index.y)).setObstaclePotential(obstaclePotentialCell.getPotential());
-            }
-        }
-    }
-
-
-//
-
-//    public void setGoalPotential(){
-//        for (PotentialCell potentialCell : myPotentialMap.getPotentialCells()) {
-//            float distance;
-//            Vector2f tmpGoal = new Vector2f(Parameter.exitVec.get(0));
-//            float nomalize = getDistance(0, 0,Parameter.scale.x, Parameter.scale.y);
-//            //distance = getDistance(m_goal, potentialCell.getCenterPoint());
-//            distance = getDistance(tmpGoal, potentialCell.getCenterPoint());
-//            distance = distance / nomalize;
-//            potentialCell.setGoalPotential(distance-1);
-//        }
-//    }
-
-
     public void matrixSetCell(){
-        setObstaclePotential();
-        //PotentialManager.setObstacleMap(this);
-        //setGoalPotential();
+        PotentialManager.setObstacleMap(this);
         PotentialManager.setGoalPotentialMap(this);
         ArrayList<ArrayList<PotentialCell>> matrixCells = myPotentialMap.getMatrixPotentialCells();
         PotentialCell posCell = myPotentialMap.getPotentialCell(m_position);
