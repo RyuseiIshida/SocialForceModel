@@ -26,39 +26,39 @@ public class PotentialManager {
         //setObstacle(400, 500, 30, 100);
         //setObstacle(530, 600, 60,30);
         setObstacle(500, 500,100,100);
+        setObstacle(100,100, 30,20);
         //setObstacle(400,550,100,30);
         setGoalPotentialMap();
         setdtObstaclePotentialMap();
     }
 
-    public void setObstacle(int x, int y, int width, int height) {
+    public static void setObstacle(int x, int y, int width, int height) {
         obstaclePotentialMap = new PotentialMap(scale, cellInterval, maxValuePotential);
         Obstacle obstacle = new Obstacle(obstaclePotentialMap, obstacleValuePotential, x, y, width, height);
-        setObstaclePotentialMap(obstacle);
+        for (PotentialCell cell : obstacle.getObstacleCellMap()) {
+            Vector2f  matrixNumber = obstaclePotentialMap.getMatrixNumber(cell);
+            obstaclePotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).setObstaclePotential(obstacleValuePotential);
+        }
         obstacles.add(obstacle);
     }
 
-    public void setObstacle(Vector2f vec1, Vector2f vec2) {
+    public static void setObstacle(Vector2f vec1, Vector2f vec2) {
         float d_x = Math.abs(vec1.x - vec2.x);
         float d_y = Math.abs(vec1.y - vec2.y);
         setObstacle((int) vec1.x, (int) vec1.x, (int) d_x, (int) d_y);
     }
 
 
-    private void setObstaclePotentialMap(Obstacle obstacle){
-        for(PotentialCell potentialCell : obstacle.getObstacleCellMap()){
-            Vector2f  matrixNumber = obstaclePotentialMap.getMatrixNumber(potentialCell);
-            obstaclePotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).setObstaclePotential(obstacleValuePotential);
-        }
-    }
-
     public static void setdtObstaclePotentialMap(){
         Vector2f matrixNumber;
+        System.out.println("obstacles.size() = " + obstacles.size());
         for (Obstacle obstacle : obstacles) {
             for (PotentialCell cell : obstacle.getObstacleCellMap()) {
                 matrixNumber = obstaclePotentialMap.getMatrixNumber(cell);
                 for (int i = (int)matrixNumber.x - 1; i <= (int)matrixNumber.x + 1; i++) {
+                    i = i < 0 ? 0 : i;
                     for (int j = (int)matrixNumber.y - 1; j <= (int)matrixNumber.y + 1; j++) {
+                        j = j < 0 ? 0 : j;
                         obstaclePotentialMap.getMatrixPotentialCells(i,j).setObstaclePotential(1);
                     }
                 }

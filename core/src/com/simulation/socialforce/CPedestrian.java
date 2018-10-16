@@ -466,7 +466,7 @@ public class CPedestrian implements IPedestrian {
         setNeighboringCells();//近傍を調べる
         PotentialManager.setPedObstacleMap(this); //近く障害物情報
         PotentialManager.setPedGoalPotentialMap(this); //ゴールのポテンシャルをゲット
-        if(MOVEFLAG) {
+        if(aisExitInfo) {
             float minPotential = 100;
             PotentialCell moveCell = null;
             for (Vector2f matrixNumber : neighboringCellsNumber) {
