@@ -34,6 +34,8 @@ public class CPedestrian implements IPedestrian {
     private ArrayList<CPedestrian> myfollower;
 
     private PotentialMap myPotentialMap;
+    private ArrayList<Vector2f> neighboringCellsNumber;
+    private boolean MOVEFLAG;
 
 
     public CPedestrian(SocialForceModel p_env, boolean isExitInfo, final Vector2f p_position, final float p_speed, Vector2f p_goal, Sprite sprites) {
@@ -144,30 +146,11 @@ public class CPedestrian implements IPedestrian {
         }
 
         //たぶん全てのベクトルを足していると思う
-        //final Vector2f l_temp = CVector.add( CForce.drivingForce( l_desiredVelocity, this.getVelocity() ), l_repulsetoOthers );
-        Vector2f l_temp = CVector.add(CForce.drivingForce(l_desiredVelocity, this.getVelocity()), l_repulsetoOthers);
+        final Vector2f l_temp = CVector.add(CForce.drivingForce(l_desiredVelocity, this.getVelocity()), l_repulsetoOthers);
+        //Vector2f l_temp = CVector.add(CForce.drivingForce(l_desiredVelocity, this.getVelocity()), l_repulsetoOthers);
 
-        //Boidベクトルを計算
-        this.view();
-        Vec rule1 = separation();
-        Vec rule2 = alignment();
-        Vec rule3 = cohesion();
-        rule1.mult(2.0); //パラメータ2.5
-        rule2.mult(1.5); //パラメータ1.5
-        rule3.mult(1.3); //パラメータ1.3
-        Vector2f rule1f = new Vector2f((float) rule1.x, (float) rule1.y);
-        //Vector2f rule2f = new Vector2f((float)rule2.x,(float)rule2.y);
-        //Vector2f rule3f = new Vector2f((float)rule3.x,(float)rule2.y);
-        //applyForce(migrate);
-        Vector2f boidVector = new Vector2f();
-//        boidVector.add(rule1f,rule2f);
-//        boidVector.add(boidVector,rule3f);d
-//        l_temp.add(l_temp, boidVector);
-        //l_temp.add(l_temp, rule1f);
 
-        Vector2f v = CVector.truncate(CVector.add(l_temp, l_repulsetoWall), m_maxforce);
-        return v;
-        //return CVector.truncate(CVector.add(l_temp, l_repulsetoWall), m_maxforce);
+        return CVector.truncate(CVector.add(l_temp, l_repulsetoWall), m_maxforce);
     }
 
 
@@ -256,7 +239,7 @@ public class CPedestrian implements IPedestrian {
         }
 
         //this.checkObstacle();
-        checkPotential();
+        moveCell();
 
 
         final float l_check = CVector.sub(this.getGoalposition(), this.getPosition()).length(); //ゴールとの距離
@@ -459,44 +442,46 @@ public class CPedestrian implements IPedestrian {
         return tc * td < 0 && ta * tb < 0;
     }
 
-    public void matrixSetCell(){
-        PotentialManager.setObstacleMap(this);
-        PotentialManager.setGoalPotentialMap(this);
-        ArrayList<ArrayList<PotentialCell>> matrixCells = myPotentialMap.getMatrixPotentialCells();
+    public void setNeighboringCells() { //問題なし
         PotentialCell posCell = myPotentialMap.getPotentialCell(m_position);
-        Vector2f number = myPotentialMap.getMatrixNumber(posCell);
-        //System.out.println("pos number = " + number);
-        Map<Float, PotentialCell> potentialMap = new HashMap<>();
+        Vector2f matrixNumber = myPotentialMap.getMatrixNumber(posCell);
         int range = 1;
-        for (int i = (int)number.x - range; i < (int)number.x + range; i++) {
+        neighboringCellsNumber = new ArrayList<>();
+        for (float i = matrixNumber.x - range; i <= matrixNumber.x + range; i++) {
             i = i < 0 ? 0 : i;
-            for(int j = (int)number.y - range; j < (int)number.y + range; j++){
+            for (float j = matrixNumber.y - range; j <= matrixNumber.y + range; j++) {
                 j = j < 0 ? 0 : j;
-                potentialMap.put(matrixCells.get(i).get(j).getPotential(),matrixCells.get(i).get(j));
+                if (!(i == matrixNumber.x && j == matrixNumber.y)) { //自分のセルは省く
+                    neighboringCellsNumber.add(new Vector2f(i, j));
+                }
             }
         }
-        float tmp = 1000;
-        PotentialCell tmpCell = null;
-        for (Map.Entry<Float, PotentialCell> cellEntry : potentialMap.entrySet()) {
-            if(tmp==1000){
-                tmp = cellEntry.getKey();
-                tmpCell = cellEntry.getValue();
-            }
-            if(tmp > cellEntry.getKey()){
-                tmp = cellEntry.getKey();
-                tmpCell = cellEntry.getValue();
-            }
-        }
-        if(tmpCell == null){
-            System.out.println("TMPCELL = NULL");
-        }
-        //System.out.println("goalPosCell Number = " + myPotentialMap.getMatrixNumber(tmpCell));
-        m_goal = tmpCell.getCenterPoint();
     }
 
-    public void checkPotential(){
-        matrixSetCell();
+    public ArrayList<Vector2f> getNeighboringCellsNumber() {
+        return neighboringCellsNumber;
     }
+
+    public void moveCell() {
+        setNeighboringCells();//近傍を調べる
+        PotentialManager.setPedObstacleMap(this); //近く障害物情報
+        PotentialManager.setPedGoalPotentialMap(this); //ゴールのポテンシャルをゲット
+
+        float minPotential = 100;
+        PotentialCell moveCell = null;
+        for (Vector2f matrixNumber : neighboringCellsNumber) {
+            if (minPotential == 100) {
+                minPotential = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).getPotential();
+                moveCell = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y);
+            }
+            if (minPotential > myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).getPotential()) {
+                minPotential = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).getPotential();
+                moveCell = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y);
+            }
+        }
+        m_goal = moveCell.getCenterPoint();
+    }
+
 
 
     public float getGoalRadian() {
@@ -533,224 +518,6 @@ public class CPedestrian implements IPedestrian {
         return new Vector2f(result_x, result_y);
     }
 
-
-    //Vec seek(Vec target) {
-    Vec seek(Vec target) {
-        //Vec steer = Vec.sub(target, location);
-        Vec steer = Vec.sub(target, new Vec(this.getPosition().x, this.getPosition().y));
-        steer.normalize();
-        //steer.mult(maxSpeed);
-        steer.mult(1);
-        //steer.sub(velocity);
-        steer.sub(new Vec(this.getVelocity().x, this.getVelocity().y));
-        //steer.limit(maxForce);
-        steer.limit(1);
-        return steer;
-    }
-
-
-    //ボイドの近傍内か判断
-    void view() {
-        double sightDistance = 100;
-        double peripheryAngle = PI * 0.85;
-
-        //for (Boid b : boids) {
-        for (CPedestrian b : l_env.getPedestrianinfo()) {
-            b.included = false;
-
-            if (b == this)
-                continue;
-
-            //double d = Vec.dist(location, b.location); //対象との距離
-            double d = Vec.dist(new Vec(this.getPosition().x, this.getPosition().y), new Vec(b.getPosition().x, b.getPosition().y));
-            if (d <= 0 || d > sightDistance) //対象との距離が近傍判断距離内か?
-                continue;
-
-            //Vec lineOfSight = Vec.sub(b.location, location);
-            Vec lineOfSight = Vec.sub(new Vec(b.m_position.x, b.m_position.y), new Vec(this.m_position.x, this.m_position.y));
-
-            //double angle = Vec.angleBetween(lineOfSight, velocity); //角度
-            double angle = Vec.angleBetween(lineOfSight, new Vec(this.getVelocity().x, this.getVelocity().y));
-            if (angle < peripheryAngle) {
-                b.included = true;
-                //System.out.println("included!");
-            }
-        }
-    }
-
-
-    //separation(引き離し) 衝突の回避
-    //Vec separation(List<Boid> boids) {
-    Vec separation() {
-        double desiredSeparation = 100; //目的回避判定の距離
-
-        Vec steer = new Vec(0, 0); //操縦
-        int count = 0;
-        //for (Boid b : boids) {
-        for (CPedestrian b : l_env.getPedestrianinfo()) {
-            if (!b.included)
-                continue;
-            //double d = Vec.dist(location, b.location);//対象との距離
-            double d = Vec.dist(new Vec(this.getPosition().x, this.getPosition().y), new Vec(b.getPosition().x, b.getPosition().y));//対象との距離a
-            if ((d > 0) && (d < desiredSeparation)) {
-                //Vec diff = Vec.sub(location, b.location); //逆ベクトル
-                Vec diff = Vec.sub(new Vec(this.getPosition().x, this.getPosition().y), new Vec(b.getPosition().x, b.getPosition().y)); //逆ベクトル
-                diff.normalize();//逆ベクトルの正規化
-                diff.div(d);        //距離による重みを追加
-                steer.add(diff); //方向ベクトルを追加
-                count++;
-            }
-        }
-        if (count > 0) {
-            steer.div(count); //対象となった分だけ重みを調整(平均化)
-        }
-
-        if (steer.mag() > 0) {
-            steer.normalize(); //操縦ベクトルを正規化
-            //steer.mult(maxSpeed); //正規化されたベクトルにスピードを追加
-            steer.mult(1);
-            //steer.sub(velocity); //前のステップの速度を見て調整する
-            steer.sub(new Vec(this.getVelocity().x, this.getVelocity().y)); //前のステップの速度を見て調整する
-            //steer.limit(maxForce);
-            steer.limit(1);
-            return steer;
-        }
-        return new Vec(0, 0);
-    }
-
-    //alignment(整列) 群の中心に向かう
-    //Vec alignment(List<Boid> boids) {
-    Vec alignment() {
-        double preferredDist = 50; //近傍判断距離
-
-        Vec steer = new Vec(0, 0);
-        int count = 0;
-
-        //for (Boid b : boids) {
-        for (CPedestrian b : l_env.getPedestrianinfo()) {
-            if (!b.included)
-                continue;
-
-            //double d = Vec.dist(location, b.location); //対象との距離
-            double d = Vec.dist(new Vec(this.getPosition().x, this.getPosition().y), new Vec(b.getPosition().x, b.getPosition().y));//対象との距離a
-            if ((d > 0) && (d < preferredDist)) { //対象との距離が近傍判断距離内か?
-                //steer.add(b.velocity); // 前ステップの速度ベクトルを追加
-                steer.add(new Vec(b.getVelocity().x, b.getVelocity().y)); // 前ステップの速度ベクトルを追加
-                count++;
-            }
-        }
-
-        if (count > 0) {
-            steer.div(count); //平均化
-            steer.normalize(); //正規化
-            //steer.mult(maxSpeed); //正規化されたベクトルにスピードを追加
-            //steer.sub(velocity); //前ステップの速度ベクトルを調整する
-            //steer.limit(maxForce); //速度ベクトルの調整
-            steer.mult(1); //正規化されたベクトルにスピードを追加
-            steer.sub(new Vec(this.getVelocity().x, this.getVelocity().y)); //前ステップの速度ベクトルを調整する
-            steer.limit(1); //速度ベクトルの調整
-        }
-        return steer;
-    }
-
-    //Cohesion(結合) 向きを合わせる
-    //Vec cohesion(List<Boid> boids) {
-    Vec cohesion() {
-        double preferredDist = 50; //近傍判断距離
-
-        Vec target = new Vec(0, 0);
-        int count = 0;
-
-        //for (Boid b : boids) {
-        for (CPedestrian b : l_env.getPedestrianinfo()) {
-            if (!b.included)
-                continue;
-
-            //double d = Vec.dist(location, b.location); //対象との距離
-            double d = Vec.dist(new Vec(this.getPosition().x, this.getPosition().y), new Vec(b.getPosition().x, b.getPosition().y));
-            if ((d > 0) && (d < preferredDist)) { //対象との距離が近傍判断距離内か?
-                //target.add(b.location); //ターゲットの位置を追加
-                target.add(new Vec(b.getPosition().x, b.getPosition().y));
-                count++;
-            }
-        }
-        if (count > 0) {
-            target.div(count); //ターゲット位置ベクトルの平均化
-            return seek(target);
-        }
-        return target;
-    }
 }
 
 
-class Vec {
-    double x, y;
-
-    Vec() {
-    }
-
-    Vec(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    void add(Vec v) {
-        x += v.x;
-        y += v.y;
-    }
-
-    void sub(Vec v) {
-        x -= v.x;
-        y -= v.y;
-    }
-
-    void div(double val) {
-        x /= val;
-        y /= val;
-    }
-
-    void mult(double val) {
-        x *= val;
-        y *= val;
-    }
-
-    double mag() { //ベクトルの大きさ(絶対値)
-        return sqrt(pow(x, 2) + pow(y, 2));
-    }
-
-    double dot(Vec v) {
-        return x * v.x + y * v.y;
-    }
-
-    void normalize() { //正規化
-        double mag = mag();
-        if (mag != 0) {
-            x /= mag;
-            y /= mag;
-        }
-    }
-
-    void limit(double lim) {
-        double mag = mag();
-        if (mag != 0 && mag > lim) {
-            x *= lim / mag;
-            y *= lim / mag;
-        }
-    }
-
-    double heading() {
-        return atan2(y, x);
-    }
-
-    static Vec sub(Vec v, Vec v2) {
-        return new Vec(v.x - v2.x, v.y - v2.y);
-    }
-
-    static double dist(Vec v, Vec v2) {
-        return sqrt(pow(v.x - v2.x, 2) + pow(v.y - v2.y, 2));
-    }
-
-    static double angleBetween(Vec v, Vec v2) {
-        return acos(v.dot(v2) / (v.mag() * v2.mag()));
-    }
-}

@@ -2,16 +2,20 @@ package com.simulation.socialforce;
 
 import com.badlogic.gdx.math.MathUtils;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Test {
     public static void main(String[] args) {
-        boolean flag = false;
-        int result;
-
-        result = flag ? 1 : 0;
-
-        System.out.println(result);
+        final int a = 1;
+        int b = 2;
+        int c = 3;
+        ArrayList<Integer> i = new ArrayList<>(Arrays.asList(a,b,c));
+        for (Integer integer : i) {
+            integer++;
+            System.out.println(integer);
+        }
     }
 }

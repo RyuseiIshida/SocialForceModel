@@ -50,7 +50,6 @@ public class SocialForceModel extends ApplicationAdapter {
         //getIfc();
         spawnExit();
         spawnWall();
-
         spawnInitAgent();
         bitmapFont = new BitmapFont();
         bitmapFont.setColor(Color.BLACK);
@@ -79,10 +78,7 @@ public class SocialForceModel extends ApplicationAdapter {
                     ? new CPedestrian(this, true, initPos, 1, Parameter.exitVec.get(0), new Sprite(personImage))
                     : new CPedestrian(this, false, initPos, 1, new Vector2f(initDirectionX, initDirectionY), new Sprite(personImage));
 
-
-            if (i == 0) {
-                m_pedestrian.add(ped);
-            }
+            if (i == 0) { m_pedestrian.add(ped); }
             for (CPedestrian cPedestrian : m_pedestrian) {
                 int distance = this.getDistance(ped.getPosition().x, ped.getPosition().y, cPedestrian.getPosition().x, cPedestrian.getPosition().y);
                 if (distance > 30) {
@@ -92,12 +88,8 @@ public class SocialForceModel extends ApplicationAdapter {
                     break;
                 }
             }
-            if (DETERMINE) {
-                m_pedestrian.add(ped);
-            }
-
+            if (DETERMINE) { m_pedestrian.add(ped); }
         }
-        //m_pedestrian.add(new CPedestrian(this,true,new Vector2f(600,450),1,new Vector2f(parameter.exitVec.get(0)),new Sprite(personImage)));
     }
 
     private void spawnAgent(Vector3 pos) {
@@ -157,7 +149,7 @@ public class SocialForceModel extends ApplicationAdapter {
             m_pedestrian.forEach(ped -> ped.getSprite().draw(batch));
             exit.forEach(spexit -> spexit.draw(batch));
 
-//
+
 //            for (CPedestrian cPedestrian : m_pedestrian) {
 //                for (PotentialCell potentialCell : cPedestrian.getMyPotentialMap().getPotentialCells()) {
 //                    float poqtential = potentialCell.getPotential();
@@ -223,13 +215,13 @@ public class SocialForceModel extends ApplicationAdapter {
             shapeRenderer.setColor(Color.BLACK);
             parameter.m_wall.forEach(wall -> shapeRenderer.line(wall.getX1(), wall.getY1(), wall.getX2(), wall.getY2()));
 
-            //セル
-            if(hasDrawCell) {
-                for (PotentialCell cell : Parameter.potentialMap.getPotentialCells()) {
-                    shapeRenderer.line(cell.getLeftTopPoint().x, cell.getLeftTopPoint().y, cell.getRightTopPoint().x, cell.getRightTopPoint().y);
-                    shapeRenderer.line(cell.getRightButtomPoint().x, cell.getRightButtomPoint().y, cell.getRightTopPoint().x, cell.getRightTopPoint().y);
-                }
-            }
+//            //セル
+//            if(hasDrawCell) {
+//                for (PotentialCell cell : Parameter.potentialMap.getPotentialCells()) {
+//                    shapeRenderer.line(cell.getLeftTopPoint().x, cell.getLeftTopPoint().y, cell.getRightTopPoint().x, cell.getRightTopPoint().y);
+//                    shapeRenderer.line(cell.getRightButtomPoint().x, cell.getRightButtomPoint().y, cell.getRightTopPoint().x, cell.getRightTopPoint().y);
+//                }
+//            }
 
             //障害物
             shapeRenderer.setColor(Color.GRAY);
