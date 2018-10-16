@@ -35,7 +35,7 @@ public class CPedestrian implements IPedestrian {
 
     private PotentialMap myPotentialMap;
     private ArrayList<Vector2f> neighboringCellsNumber;
-    private boolean MOVEFLAG;
+    private boolean MOVEFLAG = true;
 
 
     public CPedestrian(SocialForceModel p_env, boolean isExitInfo, final Vector2f p_position, final float p_speed, Vector2f p_goal, Sprite sprites) {
@@ -466,20 +466,21 @@ public class CPedestrian implements IPedestrian {
         setNeighboringCells();//近傍を調べる
         PotentialManager.setPedObstacleMap(this); //近く障害物情報
         PotentialManager.setPedGoalPotentialMap(this); //ゴールのポテンシャルをゲット
-
-        float minPotential = 100;
-        PotentialCell moveCell = null;
-        for (Vector2f matrixNumber : neighboringCellsNumber) {
-            if (minPotential == 100) {
-                minPotential = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).getPotential();
-                moveCell = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y);
+        if(MOVEFLAG) {
+            float minPotential = 100;
+            PotentialCell moveCell = null;
+            for (Vector2f matrixNumber : neighboringCellsNumber) {
+                if (minPotential == 100) {
+                    minPotential = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).getPotential();
+                    moveCell = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y);
+                }
+                if (minPotential > myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).getPotential()) {
+                    minPotential = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).getPotential();
+                    moveCell = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y);
+                }
             }
-            if (minPotential > myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).getPotential()) {
-                minPotential = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y).getPotential();
-                moveCell = myPotentialMap.getMatrixPotentialCells(matrixNumber.x, matrixNumber.y);
-            }
+            m_goal = moveCell.getCenterPoint();
         }
-        m_goal = moveCell.getCenterPoint();
     }
 
 

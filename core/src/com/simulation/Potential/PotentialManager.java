@@ -97,7 +97,7 @@ public class PotentialManager {
     }
 
     public static float getLength(Vector2f vec1, Vector2f vec2) {
-        return(float)Math.sqrt((vec1.x - vec2.x) * (vec1.x - vec1.x) + (vec1.y - vec2.y) * (vec1.y - vec2.y));
+        return(float)Math.sqrt((vec1.x - vec2.x) * (vec1.x - vec2.x) + (vec1.y - vec2.y) * (vec1.y - vec2.y));
     }
 
     public static void setPedGoalPotentialMap(CPedestrian ped) {
