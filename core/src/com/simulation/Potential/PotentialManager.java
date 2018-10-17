@@ -25,8 +25,7 @@ public class PotentialManager {
         //setObstacle(400, 500, 50, 50);
         //setObstacle(400, 500, 30, 100);
         //setObstacle(530, 600, 60,30);
-        setObstacle(500, 500,100,100);
-        setObstacle(100,100, 30,20);
+        setObstacle(500, 500,500,200);
         //setObstacle(400,550,100,30);
         setGoalPotentialMap();
         setdtObstaclePotentialMap();
